@@ -114,30 +114,49 @@ const exampleData: Conversation[] = [
 const columns = [
   {
     header: "Conversación",
-    accessorKey: "title"
+    accessorKey: "title",
+    cell: ({ row }: { row: { original: Conversation } }) => (
+      <div className="w-[45%]">
+        <span className="block whitespace-nowrap">{row.original.title}</span>
+      </div>
+    )
   },
   {
     header: "Usuario",
-    accessorKey: "user"
+    accessorKey: "user",
+    cell: ({ row }: { row: { original: Conversation } }) => (
+      <div className="w-[35%]">
+        <span className="block">{row.original.user}</span>
+      </div>
+    )
   },
   {
     header: "Canal",
     accessorKey: "channel",
     cell: ({ row }: { row: { original: Conversation } }) => (
-      <Badge variant="secondary">{row.original.channel}</Badge>
+      <div className="w-[10%]">
+        <Badge variant="secondary">{row.original.channel}</Badge>
+      </div>
     )
   },
   {
     header: "Mensajes",
-    accessorKey: "messages"
+    accessorKey: "messages",
+    cell: ({ row }: { row: { original: Conversation } }) => (
+      <div className="w-[5%] flex items-center justify-center text-center">
+        {row.original.messages}
+      </div>
+    )
   },
   {
     header: "Fecha",
     accessorKey: "date",
     cell: ({ row }: { row: { original: Conversation } }) => (
-      <span>
-        {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
-      </span>
+      <div className="w-[20%]">
+        <span className="block text-right whitespace-nowrap">
+          {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
+        </span>
+      </div>
     )
   }
 ];
