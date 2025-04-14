@@ -2,26 +2,27 @@
 import React from "react";
 import { StatCard } from "@/components/ui/stat-card";
 import { LineChart } from "@/components/ui/line-chart";
+import { subDays, format } from "date-fns";
+import { es } from "date-fns/locale";
 
-const conversationData = [
-  { date: '2024-04-08', value: 12 },
-  { date: '2024-04-09', value: 17 },
-  { date: '2024-04-10', value: 15 },
-  { date: '2024-04-11', value: 14 },
-  { date: '2024-04-12', value: 13 },
-  { date: '2024-04-13', value: 15 },
-  { date: '2024-04-14', value: 25 },
-];
+// Generar datos de ejemplo para un mes
+const generateMonthData = () => {
+  const data = [];
+  for (let i = 30; i >= 0; i--) {
+    const date = subDays(new Date(), i);
+    data.push({
+      date: format(date, 'yyyy-MM-dd'),
+      value: Math.floor(Math.random() * 20) + 10 // Valores entre 10 y 30
+    });
+  }
+  return data;
+};
 
-const messageData = [
-  { date: '2024-04-08', value: 25 },
-  { date: '2024-04-09', value: 32 },
-  { date: '2024-04-10', value: 28 },
-  { date: '2024-04-11', value: 25 },
-  { date: '2024-04-12', value: 30 },
-  { date: '2024-04-13', value: 35 },
-  { date: '2024-04-14', value: 40 },
-];
+const conversationData = generateMonthData();
+const messageData = generateMonthData().map(item => ({
+  ...item,
+  value: item.value * 2 // Duplicamos los valores para mensajes
+}));
 
 export function Stats() {
   return (
@@ -31,15 +32,21 @@ export function Stats() {
         value="15.231" 
         change="+20,1% desde el mes pasado"
       >
-        <LineChart data={conversationData} />
+        <LineChart 
+          data={conversationData}
+          className="h-full w-full"
+        />
       </StatCard>
 
       <StatCard 
         title="Mensajes Totales" 
-        value="15.231" 
-        change="+20,1% desde el mes pasado"
+        value="35.842" 
+        change="+15,3% desde el mes pasado"
       >
-        <LineChart data={messageData} />
+        <LineChart 
+          data={messageData}
+          className="h-full w-full"
+        />
       </StatCard>
     </div>
   );
