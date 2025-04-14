@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -82,7 +81,7 @@ const columns = [
     accessorKey: "user",
     cell: ({ original }: { original: Conversation }) => (
       <div className="w-[35%]">
-        <span className="block truncate">{original.user}</span>
+        <span className="block">{original.user}</span>
       </div>
     ),
   },
@@ -107,7 +106,7 @@ const columns = [
     accessorKey: "date",
     cell: ({ original }: { original: Conversation }) => (
       <div className="w-[15%]">
-        <span className="block text-right truncate">
+        <span className="block text-right">
           {format(original.date, "dd MMM yyyy HH:mm", { locale: es })}
         </span>
       </div>
@@ -149,4 +148,3 @@ export function RecentConversations() {
     </div>
   );
 }
-
