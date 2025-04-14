@@ -1,21 +1,21 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 // Tipos para las conversaciones
 interface Conversation {
   id: string;
-  title: string;
-  user: string;
-  channel: string;
+  title: string; // 10 word summary
+  user: string; // phone, email or "Anónimo"
+  channel: "Web" | "Whatsapp";
   messages: number;
-  date: string;
+  date: Date;
   status?: 'done' | 'in-progress';
 }
 
@@ -23,63 +23,28 @@ interface Conversation {
 const exampleData: Conversation[] = [
   {
     id: "1",
-    title: "Cover page",
-    user: "Cover page",
-    channel: "M Process",
+    title: "Consulta sobre configuración inicial del proyecto React",
+    user: "usuario@email.com",
+    channel: "Web",
     messages: 18,
-    date: "Eddie Lake",
+    date: new Date("2024-04-14T10:30:00"),
     status: "in-progress"
   },
   {
     id: "2",
-    title: "Table of contents",
-    user: "Table of contents",
-    channel: "Done",
+    title: "Problema con la instalación de dependencias npm",
+    user: "+1234567890",
+    channel: "Whatsapp",
     messages: 29,
-    date: "Eddie Lake"
+    date: new Date("2024-04-14T09:15:00")
   },
   {
     id: "3",
-    title: "Executive summary",
-    user: "Narrative",
-    channel: "Done",
+    title: "Error en la compilación del código TypeScript",
+    user: "Anónimo",
+    channel: "Web",
     messages: 10,
-    date: "Eddie Lake"
-  },
-  {
-    id: "4",
-    title: "Technical approach",
-    user: "Narrative",
-    channel: "Done",
-    messages: 27,
-    date: "Jamie Tashulatov"
-  },
-  {
-    id: "5",
-    title: "Design",
-    user: "Narrative",
-    channel: "In Process",
-    messages: 2,
-    date: "Jamie Tashulatov",
-    status: "in-progress"
-  },
-  {
-    id: "6",
-    title: "Capabilities",
-    user: "Narrative",
-    channel: "In Process",
-    messages: 20,
-    date: "Jamie Tashulatov",
-    status: "in-progress"
-  },
-  {
-    id: "7",
-    title: "Integration with existing systems",
-    user: "Narrative",
-    channel: "In Process",
-    messages: 19,
-    date: "Jamie Tashulatov",
-    status: "in-progress"
+    date: new Date("2024-04-13T15:45:00")
   }
 ];
 
@@ -96,8 +61,8 @@ const columns = [
   {
     header: "Canal",
     accessorKey: "channel",
-    cell: (conversation: Conversation) => (
-      <Badge variant="secondary">{conversation.channel}</Badge>
+    cell: ({ row }: { row: { original: Conversation } }) => (
+      <Badge variant="secondary">{row.original.channel}</Badge>
     )
   },
   {
@@ -106,7 +71,12 @@ const columns = [
   },
   {
     header: "Fecha",
-    accessorKey: "date"
+    accessorKey: "date",
+    cell: ({ row }: { row: { original: Conversation } }) => (
+      <span>
+        {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
+      </span>
+    )
   }
 ];
 
