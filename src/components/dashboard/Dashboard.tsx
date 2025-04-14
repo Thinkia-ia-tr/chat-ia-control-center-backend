@@ -5,8 +5,12 @@ import { Stats } from "./Stats";
 import { RecentConversations } from "./RecentConversations";
 
 export function Dashboard() {
-  const [startDate, setStartDate] = useState<Date>(new Date('2023-01-20'));
-  const [endDate, setEndDate] = useState<Date>(new Date('2023-02-09'));
+  const now = new Date();
+  const oneMonthAgo = new Date(now);
+  oneMonthAgo.setDate(now.getDate() - 30);
+  
+  const [startDate, setStartDate] = useState<Date>(oneMonthAgo);
+  const [endDate, setEndDate] = useState<Date>(now);
 
   const handleDateRangeChange = (start: Date, end: Date) => {
     setStartDate(start);
@@ -31,4 +35,3 @@ export function Dashboard() {
 }
 
 export default Dashboard;
-
