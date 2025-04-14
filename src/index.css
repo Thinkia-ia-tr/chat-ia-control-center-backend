@@ -27,40 +27,40 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 100%; // Pure white background
+    --foreground: 240 10% 3.9%; // Dark text for contrast
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 10% 3.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 240 10% 3.9%;
 
-    --primary: 184 85% 45%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 184 85% 45%; // Turquoise/Cyan primary color
+    --primary-foreground: 240 5.9% 10%; // Dark text on primary
 
-    --secondary: 184 85% 95%;
-    --secondary-foreground: 184 85% 35%;
+    --secondary: 184 85% 95%; // Light turquoise secondary
+    --secondary-foreground: 184 85% 35%; // Darker turquoise for text
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 240 4.8% 95.9%; // Very light gray
+    --muted-foreground: 240 3.8% 46.1%; // Muted text color
 
-    --accent: 25 95% 53%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 25 95% 53%; // Orange accent
+    --accent-foreground: 0 0% 100%; // White text on accent
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84.2% 60.2%; // Red for destructive actions
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 184 85% 45%;
+    --border: 240 5.9% 90%; // Light border
+    --input: 240 5.9% 90%;
+    --ring: 184 85% 45%; // Turquoise ring color
 
     --radius: 0.5rem;
 
-    --chart-primary: 184 85% 45%;
-    --chart-secondary: 25 95% 53%;
-    --chart-tertiary: 184 85% 35%;
-    --chart-quaternary: 184 85% 25%;
+    --chart-primary: 184 85% 45%; // Turquoise primary chart color
+    --chart-secondary: 25 95% 53%; // Orange secondary chart color
+    --chart-tertiary: 184 85% 35%; // Darker turquoise
+    --chart-quaternary: 184 85% 25%; // Even darker turquoise
   }
 
   :root {
