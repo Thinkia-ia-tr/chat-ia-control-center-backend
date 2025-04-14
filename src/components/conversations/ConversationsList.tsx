@@ -24,87 +24,87 @@ interface Conversation {
 const exampleData: Conversation[] = [
   {
     id: "1",
-    title: "Consulta sobre configuración inicial del proyecto React",
-    user: "usuario@email.com",
+    title: "Cliente consulta estado de pedido #45672 realizado ayer",
+    user: "maria@gmail.com",
     channel: "Web",
-    messages: 18,
+    messages: 8,
     date: new Date("2024-04-14T10:30:00"),
     status: "in-progress"
   },
   {
     id: "2",
-    title: "Problema con la instalación de dependencias npm",
-    user: "+1234567890",
+    title: "Problema con entrega en dirección incorrecta pedido",
+    user: "+34611223344",
     channel: "Whatsapp",
-    messages: 29,
+    messages: 12,
     date: new Date("2024-04-14T09:15:00"),
     status: "done"
   },
   {
     id: "3",
-    title: "Error en la compilación del código TypeScript",
+    title: "Consulta sobre disponibilidad tallas producto deportivo",
     user: "Anónimo",
     channel: "Web",
-    messages: 10,
+    messages: 5,
     date: new Date("2024-04-13T15:45:00")
   },
   {
     id: "4",
-    title: "Dudas sobre implementación de autenticación OAuth",
-    user: "dev@company.com",
+    title: "Seguimiento envío retrasado pedido #89012 urgente",
+    user: "carlos@empresa.com",
     channel: "Web",
-    messages: 25,
+    messages: 15,
     date: new Date("2024-04-13T14:20:00"),
     status: "in-progress"
   },
   {
     id: "5",
-    title: "Consulta sobre integración de API REST",
-    user: "+34600123456",
+    title: "Duda sobre características producto nuevo modelo",
+    user: "+34655443322",
     channel: "Whatsapp",
-    messages: 15,
+    messages: 7,
     date: new Date("2024-04-13T11:10:00")
   },
   {
     id: "6",
-    title: "Problema con el despliegue en producción",
-    user: "admin@startup.com",
+    title: "Pedido #34567 dañado durante transporte reclamo",
+    user: "laura@tienda.com",
     channel: "Web",
-    messages: 32,
+    messages: 18,
     date: new Date("2024-04-12T16:40:00"),
     status: "done"
   },
   {
     id: "7",
-    title: "Optimización de rendimiento en React Native",
+    title: "Información sobre devolución producto defectuoso",
     user: "Anónimo",
     channel: "Web",
-    messages: 21,
+    messages: 9,
     date: new Date("2024-04-12T13:25:00")
   },
   {
     id: "8",
-    title: "Configuración de CI/CD en GitHub Actions",
-    user: "+44789123456",
+    title: "Consulta disponibilidad envío express pedido #67890",
+    user: "+34699887766",
     channel: "Whatsapp",
-    messages: 27,
+    messages: 6,
     date: new Date("2024-04-12T10:55:00"),
     status: "in-progress"
   },
   {
     id: "9",
-    title: "Implementación de tests unitarios Jest",
-    user: "tester@qa.com",
+    title: "Pregunta sobre diferencias entre modelos productos",
+    user: "pedro@outlook.com",
     channel: "Web",
-    messages: 14,
+    messages: 11,
     date: new Date("2024-04-11T17:30:00")
   },
   {
     id: "10",
-    title: "Migración de base de datos MongoDB",
-    user: "+52555123456",
+    title: "Reclamo pedido incompleto #56789 seguimiento",
+    user: "+34677889900",
     channel: "Whatsapp",
-    messages: 23,
+    messages: 14,
     date: new Date("2024-04-11T09:45:00"),
     status: "done"
   }
