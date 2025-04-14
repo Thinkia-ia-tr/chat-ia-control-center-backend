@@ -7,13 +7,13 @@ interface DataTableProps<T> {
   columns: {
     header: string;
     accessorKey: string;
-    cell?: (item: T) => React.ReactNode;
+    cell?: (item: { row: { original: T } }) => React.ReactNode;
   }[];
-  data: T[];
-  selectedRows?: T[];
-  onRowSelect?: (row: T) => void;
-  onRowClick?: (row: T) => void;
-  getRowId?: (row: T) => string | number;
+  data: { row: { original: T } }[];
+  selectedRows?: { row: { original: T } }[];
+  onRowSelect?: (row: { row: { original: T } }) => void;
+  onRowClick?: (row: { row: { original: T } }) => void;
+  getRowId?: (row: { row: { original: T } }) => string | number;
   className?: string;
 }
 
@@ -69,7 +69,7 @@ export function DataTable<T>({
                       {column.cell
                         ? column.cell(row)
                         // @ts-ignore - This is a simplification, in practice we'd want to create a proper type
-                        : row[column.accessorKey]
+                        : row.row.original[column.accessorKey]
                       }
                     </TableCell>
                   ))}
