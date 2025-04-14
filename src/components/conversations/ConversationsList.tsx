@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -38,7 +37,8 @@ const exampleData: Conversation[] = [
     user: "+1234567890",
     channel: "Whatsapp",
     messages: 29,
-    date: new Date("2024-04-14T09:15:00")
+    date: new Date("2024-04-14T09:15:00"),
+    status: "done"
   },
   {
     id: "3",
@@ -47,6 +47,66 @@ const exampleData: Conversation[] = [
     channel: "Web",
     messages: 10,
     date: new Date("2024-04-13T15:45:00")
+  },
+  {
+    id: "4",
+    title: "Dudas sobre implementación de autenticación OAuth",
+    user: "dev@company.com",
+    channel: "Web",
+    messages: 25,
+    date: new Date("2024-04-13T14:20:00"),
+    status: "in-progress"
+  },
+  {
+    id: "5",
+    title: "Consulta sobre integración de API REST",
+    user: "+34600123456",
+    channel: "Whatsapp",
+    messages: 15,
+    date: new Date("2024-04-13T11:10:00")
+  },
+  {
+    id: "6",
+    title: "Problema con el despliegue en producción",
+    user: "admin@startup.com",
+    channel: "Web",
+    messages: 32,
+    date: new Date("2024-04-12T16:40:00"),
+    status: "done"
+  },
+  {
+    id: "7",
+    title: "Optimización de rendimiento en React Native",
+    user: "Anónimo",
+    channel: "Web",
+    messages: 21,
+    date: new Date("2024-04-12T13:25:00")
+  },
+  {
+    id: "8",
+    title: "Configuración de CI/CD en GitHub Actions",
+    user: "+44789123456",
+    channel: "Whatsapp",
+    messages: 27,
+    date: new Date("2024-04-12T10:55:00"),
+    status: "in-progress"
+  },
+  {
+    id: "9",
+    title: "Implementación de tests unitarios Jest",
+    user: "tester@qa.com",
+    channel: "Web",
+    messages: 14,
+    date: new Date("2024-04-11T17:30:00")
+  },
+  {
+    id: "10",
+    title: "Migración de base de datos MongoDB",
+    user: "+52555123456",
+    channel: "Whatsapp",
+    messages: 23,
+    date: new Date("2024-04-11T09:45:00"),
+    status: "done"
   }
 ];
 
