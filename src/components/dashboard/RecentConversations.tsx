@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -107,7 +108,7 @@ export function RecentConversations() {
     <div>
       <h2 className="text-lg font-medium mb-4">Últimas conversaciones</h2>
       
-      <div className="flex items-center gap-4 mb-4">
+      <div className="flex items-center justify-between gap-4 mb-4">
         <div className="relative w-1/2">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -115,7 +116,7 @@ export function RecentConversations() {
             className="pl-10 bg-card border-input"
           />
         </div>
-        <Button variant="outline" asChild>
+        <Button variant="outline" asChild className="ml-auto">
           <Link to="/conversaciones" className="flex items-center gap-2">
             <MessageSquare className="h-4 w-4" />
             Ver todas las conversaciones
@@ -132,3 +133,4 @@ export function RecentConversations() {
     </div>
   );
 }
+
