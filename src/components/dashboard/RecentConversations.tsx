@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -122,8 +123,8 @@ export function RecentConversations() {
     .sort((a, b) => b.date.getTime() - a.date.getTime())
     .slice(0, 5);
 
-  const handleRowClick = (row: { original: Conversation }) => {
-    navigate(`/conversaciones/${row.original.id}`);
+  const handleRowClick = (rowData: { row: { original: Conversation } }) => {
+    navigate(`/conversaciones/${rowData.row.original.id}`);
   };
 
   return (
@@ -148,9 +149,9 @@ export function RecentConversations() {
 
       <DataTable
         columns={columns}
-        data={latestConversations.map(item => ({ original: item }))}
+        data={latestConversations.map(item => ({ row: { original: item } }))}
         selectedRows={[]}
-        getRowId={(rowData) => rowData.original.id}
+        getRowId={(rowData) => rowData.row.original.id}
         onRowClick={handleRowClick}
       />
     </div>

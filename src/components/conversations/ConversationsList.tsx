@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -166,7 +167,8 @@ export function ConversationsList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRows, setSelectedRows] = useState<Conversation[]>([]);
   
-  const handleRowSelect = (row: Conversation) => {
+  const handleRowSelect = (rowData: { row: { original: Conversation } }) => {
+    const row = rowData.row.original;
     if (selectedRows.some(r => r.id === row.id)) {
       setSelectedRows(selectedRows.filter(r => r.id !== row.id));
     } else {
@@ -174,8 +176,8 @@ export function ConversationsList() {
     }
   };
 
-  const handleRowClick = (row: Conversation) => {
-    navigate(`/conversaciones/${row.id}`);
+  const handleRowClick = (rowData: { row: { original: Conversation } }) => {
+    navigate(`/conversaciones/${rowData.row.original.id}`);
   };
   
   const filteredData = exampleData.filter(conversation => 
@@ -203,11 +205,11 @@ export function ConversationsList() {
       
       <DataTable
         columns={columns}
-        data={filteredData.map(item => ({ original: item }))}
-        selectedRows={selectedRows.map(item => ({ original: item }))}
+        data={filteredData.map(item => ({ row: { original: item } }))}
+        selectedRows={selectedRows.map(item => ({ row: { original: item } }))}
         onRowSelect={handleRowSelect}
         onRowClick={handleRowClick}
-        getRowId={(rowData) => rowData.original.id}
+        getRowId={(rowData) => rowData.row.original.id}
       />
       
       <div className="flex justify-between items-center">
