@@ -91,16 +91,6 @@ const columns = [
     ),
   },
   {
-    header: "Estado",
-    accessorKey: "status",
-    cell: ({ original }: { original: Conversation }) => (
-      <Badge variant={original.status === "done" ? "default" : "outline"} 
-             className={original.status === "done" ? "bg-green-100 text-green-800 hover:bg-green-200" : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"}>
-        {original.status === "done" ? "Completado" : "En progreso"}
-      </Badge>
-    ),
-  },
-  {
     header: "Fecha",
     accessorKey: "date",
     cell: ({ original }: { original: Conversation }) => (
@@ -145,3 +135,4 @@ export function RecentConversations() {
     </div>
   );
 }
+
