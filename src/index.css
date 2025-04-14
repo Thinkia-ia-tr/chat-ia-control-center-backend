@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -27,8 +28,8 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; // Pure white background
-    --foreground: 240 10% 3.9%; // Dark text for contrast
+    --background: 0 0% 100%; /* Pure white background */
+    --foreground: 240 10% 3.9%; /* Dark text for contrast */
 
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -36,34 +37,34 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    --primary: 184 85% 45%; // Turquoise/Cyan primary color
-    --primary-foreground: 240 5.9% 10%; // Dark text on primary
+    --primary: 184 85% 45%; /* Turquoise/Cyan primary color */
+    --primary-foreground: 240 5.9% 10%; /* Dark text on primary */
 
-    --secondary: 184 85% 95%; // Light turquoise secondary
-    --secondary-foreground: 184 85% 35%; // Darker turquoise for text
+    --secondary: 184 85% 95%; /* Light turquoise secondary */
+    --secondary-foreground: 184 85% 35%; /* Darker turquoise for text */
 
-    --muted: 240 4.8% 95.9%; // Very light gray
-    --muted-foreground: 240 3.8% 46.1%; // Muted text color
+    --muted: 240 4.8% 95.9%; /* Very light gray */
+    --muted-foreground: 240 3.8% 46.1%; /* Muted text color */
 
-    --accent: 25 95% 53%; // Orange accent
-    --accent-foreground: 0 0% 100%; // White text on accent
+    --accent: 25 95% 53%; /* Orange accent */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
 
-    --destructive: 0 84.2% 60.2%; // Red for destructive actions
+    --destructive: 0 84.2% 60.2%; /* Red for destructive actions */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5.9% 90%; // Light border
+    --border: 240 5.9% 90%; /* Light border */
     --input: 240 5.9% 90%;
-    --ring: 184 85% 45%; // Turquoise ring color
+    --ring: 184 85% 45%; /* Turquoise ring color */
 
     --radius: 0.5rem;
 
-    --chart-primary: 184 85% 45%; // Turquoise primary chart color
-    --chart-secondary: 25 95% 53%; // Orange secondary chart color
-    --chart-tertiary: 184 85% 35%; // Darker turquoise
-    --chart-quaternary: 184 85% 25%; // Even darker turquoise
+    --chart-primary: 184 85% 45%; /* Turquoise primary chart color */
+    --chart-secondary: 25 95% 53%; /* Orange secondary chart color */
+    --chart-tertiary: 184 85% 35%; /* Darker turquoise */
+    --chart-quaternary: 184 85% 25%; /* Even darker turquoise */
   }
 
-  :root {
+  .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
