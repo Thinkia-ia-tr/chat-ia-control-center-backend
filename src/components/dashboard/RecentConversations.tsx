@@ -44,7 +44,8 @@ const recentConversations: Conversation[] = [
     user: "carlos@empresa.com",
     channel: "Web",
     messages: 5,
-    date: new Date("2024-04-13T15:45:00")
+    date: new Date("2024-04-13T15:45:00"),
+    status: "in-progress"
   },
   {
     id: "4",
@@ -53,7 +54,7 @@ const recentConversations: Conversation[] = [
     channel: "Web",
     messages: 15,
     date: new Date("2024-04-13T14:20:00"),
-    status: "in-progress"
+    status: "done"
   },
   {
     id: "5",
@@ -61,7 +62,8 @@ const recentConversations: Conversation[] = [
     user: "+34655443322",
     channel: "Whatsapp",
     messages: 7,
-    date: new Date("2024-04-13T11:10:00")
+    date: new Date("2024-04-13T11:10:00"),
+    status: "in-progress"
   }
 ];
 
@@ -86,6 +88,15 @@ const columns = [
     accessorKey: "messages",
     cell: ({ original }: { original: Conversation }) => (
       <span className="text-right block w-16">{original.messages}</span>
+    ),
+  },
+  {
+    header: "Estado",
+    accessorKey: "status",
+    cell: ({ original }: { original: Conversation }) => (
+      <Badge variant={original.status === "done" ? "success" : "warning"}>
+        {original.status === "done" ? "Completado" : "En progreso"}
+      </Badge>
     ),
   },
   {
