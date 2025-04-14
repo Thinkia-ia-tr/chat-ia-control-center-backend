@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './styles/globals.css';
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted)) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted));
+    border-radius: 9999px;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -117,5 +140,3 @@
     @apply bg-background text-foreground scrollbar-thin;
   }
 }
-
-@import './styles/globals.css';
