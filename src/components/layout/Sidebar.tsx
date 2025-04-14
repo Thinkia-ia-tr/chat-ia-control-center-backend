@@ -30,7 +30,7 @@ export function Sidebar() {
           <SidebarGroupLabel>Chatbot con IA</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarNavItem icon={<Bot size={20} />} label="IA chat sobre los datos" to="/ia-chat" />
+              <SidebarNavItem icon={<LayoutDashboard size={20} />} label="Dashboard" to="/" />
               <SidebarNavItem icon={<MessageSquare size={20} />} label="Conversaciones" to="/conversaciones" />
             </SidebarMenu>
           </SidebarGroupContent>
@@ -40,9 +40,9 @@ export function Sidebar() {
           <SidebarGroupLabel>Panel de inteligencia</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarNavItem icon={<LayoutDashboard size={20} />} label="Dashboard" to="/" />
               <SidebarNavItem icon={<GitCompareArrows size={20} />} label="Derivaciones" to="/derivaciones" />
               <SidebarNavItem icon={<LineChart size={20} />} label="Insights de Productos" to="/insights" />
+              <SidebarNavItem icon={<Bot size={20} />} label="IA chat sobre los datos" to="/ia-chat" />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
