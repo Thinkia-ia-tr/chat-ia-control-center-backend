@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -28,22 +27,22 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* Pure white background */
-    --foreground: 222 47% 11%; /* Dark blue-gray text */
+    --background: 225 20% 98%; /* Softer white, more blue-tinted */
+    --foreground: 222 47% 11%; /* Dark blue-gray text, maintained */
 
-    --card: 0 0% 100%;
+    --card: 225 20% 98%; /* Blue-tinted white card background */
     --card-foreground: 222 47% 11%;
 
-    --popover: 0 0% 100%;
+    --popover: 225 20% 98%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 184 85% 45%; /* Turquoise/Cyan primary color */
-    --primary-foreground: 0 0% 100%; /* White text on primary */
+    --primary: 198 85% 45%; /* More blue-leaning turquoise */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96%; /* Light blue-gray secondary */
+    --secondary: 210 40% 96%; /* Maintained light blue-gray */
     --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 40% 96%;
+    --muted: 212 40% 94%; /* Slightly more blue-gray */
     --muted-foreground: 215 25% 27%;
 
     --accent: 210 40% 96%;
@@ -52,17 +51,17 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214 32% 91%; /* Light gray border */
-    --input: 214 32% 91%;
-    --ring: 184 85% 45%; /* Turquoise ring color */
+    --border: 214 32% 88%; /* Lighter, more blue-tinted border */
+    --input: 214 32% 88%;
+    --ring: 198 85% 45%; /* Matching primary color */
 
     --radius: 0.5rem;
 
-    /* Chart colors matching the design */
-    --chart-primary: 184 85% 45%; /* Turquoise primary chart color */
-    --chart-secondary: 25 95% 53%; /* Orange secondary chart color */
-    --chart-tertiary: 184 85% 35%; /* Darker turquoise */
-    --chart-quaternary: 184 85% 25%; /* Even darker turquoise */
+    /* Enhanced chart colors with more blue variation */
+    --chart-primary: 198 85% 45%; /* More blue primary */
+    --chart-secondary: 210 85% 45%; /* Blue secondary */
+    --chart-tertiary: 198 85% 35%; /* Darker blue */
+    --chart-quaternary: 210 85% 25%; /* Deep blue */
   }
 
   .dark {
@@ -75,13 +74,13 @@
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 184 85% 45%;
+    --primary: 198 85% 45%;
     --primary-foreground: 222 47% 11%;
 
     --secondary: 217 32% 17%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217 32% 17%;
+    --muted: 216 32% 16%; /* More blue-leaning dark muted */
     --muted-foreground: 215 20% 65%;
 
     --accent: 217 32% 17%;
@@ -92,13 +91,13 @@
 
     --border: 217 32% 17%;
     --input: 217 32% 17%;
-    --ring: 184 85% 45%;
+    --ring: 198 85% 45%;
 
-    /* Chart colors in dark mode */
-    --chart-primary: 184 85% 45%;
-    --chart-secondary: 25 95% 53%;
-    --chart-tertiary: 184 85% 35%;
-    --chart-quaternary: 184 85% 25%;
+    /* Dark mode chart colors with blue emphasis */
+    --chart-primary: 198 85% 45%;
+    --chart-secondary: 210 85% 45%;
+    --chart-tertiary: 198 85% 35%;
+    --chart-quaternary: 210 85% 25%;
   }
 }
 
