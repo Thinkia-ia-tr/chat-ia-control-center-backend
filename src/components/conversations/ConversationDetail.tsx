@@ -80,6 +80,18 @@ npm error   npm error  A complete log of this run can be found in: C:\\Users\\ta
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="flex justify-end">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleBackToList}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Volver a conversaciones
+        </Button>
+      </div>
+
       <div className="flex items-center justify-between border-b border-border pb-4">
         <div>
           <h2 className="text-xl font-bold mb-1">{title}</h2>
