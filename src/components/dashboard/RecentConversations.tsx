@@ -83,7 +83,7 @@ const columns = [
     header: "Mensajes",
     accessorKey: "messages",
     cell: ({ original }: { original: Conversation }) => (
-      <span className="text-right block">{original.messages}</span>
+      <span className="text-right block w-16">{original.messages}</span>
     ),
   },
   {
@@ -107,10 +107,10 @@ export function RecentConversations() {
       <h2 className="text-lg font-medium mb-4">Últimas conversaciones</h2>
       
       <div className="flex items-center gap-4 mb-4">
-        <div className="relative flex-1">
+        <div className="relative w-1/2">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Filtrar conversaciones..."
+            placeholder="Buscar conversaciones"
             className="pl-10 bg-card border-input"
           />
         </div>
