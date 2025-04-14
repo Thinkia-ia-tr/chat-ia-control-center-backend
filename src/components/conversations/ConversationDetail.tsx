@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -79,8 +80,7 @@ npm error   npm error  A complete log of this run can be found in: C:\\Users\\ta
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Conversación</h1>
+      <div className="flex justify-end">
         <Button 
           variant="outline" 
           size="sm" 
@@ -144,6 +144,18 @@ npm error   npm error  A complete log of this run can be found in: C:\\Users\\ta
             </Card>
           </div>
         ))}
+      </div>
+
+      <div className="flex justify-end pt-4">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleBackToList}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Volver a conversaciones
+        </Button>
       </div>
     </div>
   );
