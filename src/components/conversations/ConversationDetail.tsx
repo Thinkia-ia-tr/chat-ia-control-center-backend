@@ -1,11 +1,12 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-// Tipos para los mensajes
 interface Message {
   id: string;
   sender: "user" | "agent" | "system";
@@ -14,7 +15,6 @@ interface Message {
   senderName?: string;
 }
 
-// Props para el componente
 interface ConversationDetailProps {
   title: string;
   date: string;
@@ -71,12 +71,29 @@ npm error   npm error  A complete log of this run can be found in: C:\\Users\\ta
     }
   ]
 }: ConversationDetailProps) {
+  const navigate = useNavigate();
+
+  const handleBackToList = () => {
+    navigate("/conversaciones");
+  };
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex justify-between items-center border-b border-border pb-4">
-        <div>
-          <h2 className="text-xl font-bold mb-1">{title}</h2>
-          <div className="text-sm text-muted-foreground">{date}</div>
+      <div className="flex items-center justify-between border-b border-border pb-4">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleBackToList}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Volver a conversaciones
+          </Button>
+          <div>
+            <h2 className="text-xl font-bold mb-1">{title}</h2>
+            <div className="text-sm text-muted-foreground">{date}</div>
+          </div>
         </div>
         <div className="flex gap-4">
           <div className="flex flex-col items-center">
