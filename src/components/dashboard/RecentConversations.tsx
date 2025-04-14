@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { DataTable } from "@/components/ui/data-table";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface Conversation {
   id: string;
@@ -117,9 +117,14 @@ const columns = [
 ];
 
 export function RecentConversations() {
+  const navigate = useNavigate();
   const latestConversations = recentConversations
     .sort((a, b) => b.date.getTime() - a.date.getTime())
     .slice(0, 5);
+
+  const handleRowClick = (row: { original: Conversation }) => {
+    navigate(`/conversaciones/${row.original.id}`);
+  };
 
   return (
     <div>
@@ -146,6 +151,7 @@ export function RecentConversations() {
         data={latestConversations.map(item => ({ original: item }))}
         selectedRows={[]}
         getRowId={(rowData) => rowData.original.id}
+        onRowClick={handleRowClick}
       />
     </div>
   );
