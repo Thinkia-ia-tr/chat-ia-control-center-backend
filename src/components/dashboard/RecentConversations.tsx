@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -99,7 +98,7 @@ const columns = [
     header: "Mensajes",
     accessorKey: "messages",
     cell: ({ original }: { original: Conversation }) => (
-      <span className="text-right block w-[5%]">{original.messages}</span>
+      <span className="text-center block w-[5%]">{original.messages}</span>
     ),
   },
   {
