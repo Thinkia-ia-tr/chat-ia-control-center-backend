@@ -4,23 +4,23 @@ import { StatCard } from "@/components/ui/stat-card";
 import { LineChart } from "@/components/ui/line-chart";
 
 const conversationData = [
-  { value: 12 },
-  { value: 17 },
-  { value: 15 },
-  { value: 14 },
-  { value: 13 },
-  { value: 15 },
-  { value: 25 },
+  { date: '2024-04-08', value: 12 },
+  { date: '2024-04-09', value: 17 },
+  { date: '2024-04-10', value: 15 },
+  { date: '2024-04-11', value: 14 },
+  { date: '2024-04-12', value: 13 },
+  { date: '2024-04-13', value: 15 },
+  { date: '2024-04-14', value: 25 },
 ];
 
 const messageData = [
-  { value: 25 },
-  { value: 32 },
-  { value: 28 },
-  { value: 25 },
-  { value: 30 },
-  { value: 35 },
-  { value: 40 },
+  { date: '2024-04-08', value: 25 },
+  { date: '2024-04-09', value: 32 },
+  { date: '2024-04-10', value: 28 },
+  { date: '2024-04-11', value: 25 },
+  { date: '2024-04-12', value: 30 },
+  { date: '2024-04-13', value: 35 },
+  { date: '2024-04-14', value: 40 },
 ];
 
 export function Stats() {
@@ -44,4 +44,3 @@ export function Stats() {
     </div>
   );
 }
-
