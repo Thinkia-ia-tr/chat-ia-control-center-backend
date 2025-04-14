@@ -141,7 +141,7 @@ export function ConversationsList() {
               placeholder="Buscar conversaciones"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 w-[128px] bg-card border-input"
+              className="pl-10 w-[384px] bg-card border-input"
             />
           </div>
         </div>
