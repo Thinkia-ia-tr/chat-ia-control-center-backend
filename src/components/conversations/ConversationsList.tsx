@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -143,10 +143,6 @@ export function ConversationsList() {
               className="pl-10 w-64 bg-card border-input"
             />
           </div>
-          <Button variant="outline" size="sm">
-            <SlidersHorizontal className="h-4 w-4 mr-2" />
-            <span>Columns</span>
-          </Button>
         </div>
         <div className="text-sm text-muted-foreground">
           {selectedRows.length} of {exampleData.length} row(s) selected.
