@@ -28,16 +28,16 @@ export function Stats() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <StatCard 
         title="Conversaciones Totales" 
-        value="$15,231.89" 
-        change="+20.1% from last month"
+        value="15.231" 
+        change="+20,1% desde el mes pasado"
       >
         <LineChart data={conversationData} />
       </StatCard>
 
       <StatCard 
         title="Mensajes Totales" 
-        value="$15,231.89" 
-        change="+20.1% from last month"
+        value="15.231" 
+        change="+20,1% desde el mes pasado"
       >
         <LineChart data={messageData} />
       </StatCard>
