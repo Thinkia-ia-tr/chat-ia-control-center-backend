@@ -72,7 +72,7 @@ const columns = [
     accessorKey: "title",
     cell: ({ original }: { original: Conversation }) => (
       <div className="w-[35%]">
-        <span className="block truncate">{original.title}</span>
+        <span className="block truncate max-w-[30ch]">{original.title}</span>
       </div>
     ),
   },
