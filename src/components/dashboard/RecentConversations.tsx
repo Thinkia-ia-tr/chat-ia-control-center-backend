@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -7,17 +6,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { DataTable } from "@/components/ui/data-table";
 
-interface Conversation {
-  id: string;
-  title: string;
-  user: string;
-  channel: "Web" | "Whatsapp";
-  messages: number;
-  date: Date;
-  status?: 'done' | 'in-progress';
-}
-
-const recentConversations: Conversation[] = [
+const recentConversations = [
   {
     id: "1",
     title: "Estado del pedido #45672 - Entrega retrasada",
