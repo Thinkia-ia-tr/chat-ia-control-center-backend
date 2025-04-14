@@ -5,6 +5,7 @@ import {
   SidebarHeader,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
@@ -26,13 +27,22 @@ export function Sidebar() {
       
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Chatbot con IA</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarNavItem icon={<Bot size={20} />} label="IA chat sobre los datos" to="/ia-chat" />
+              <SidebarNavItem icon={<MessageSquare size={20} />} label="Conversaciones" to="/conversaciones" />
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Panel de inteligencia</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarNavItem icon={<LayoutDashboard size={20} />} label="Dashboard" to="/" />
-              <SidebarNavItem icon={<MessageSquare size={20} />} label="Conversaciones" to="/conversaciones" />
               <SidebarNavItem icon={<GitCompareArrows size={20} />} label="Derivaciones" to="/derivaciones" />
               <SidebarNavItem icon={<LineChart size={20} />} label="Insights de Productos" to="/insights" />
-              <SidebarNavItem icon={<Bot size={20} />} label="IA chat sobre los datos" to="/ia-chat" />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -61,3 +71,4 @@ function SidebarNavItem({ icon, label, to }: SidebarNavItemProps) {
 }
 
 export default Sidebar;
+
