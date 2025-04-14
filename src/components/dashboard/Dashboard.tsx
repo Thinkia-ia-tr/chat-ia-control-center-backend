@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Search, ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 const conversationData = [
   { value: 12 },
@@ -53,7 +55,7 @@ interface Conversation {
 const recentConversations: Conversation[] = [
   {
     id: "1",
-    title: "Cliente consulta estado de pedido #45672 realizado ayer",
+    title: "Estado del pedido #45672 - Entrega retrasada",
     user: "maria@gmail.com",
     channel: "Web",
     messages: 8,
@@ -62,7 +64,7 @@ const recentConversations: Conversation[] = [
   },
   {
     id: "2",
-    title: "Problema con entrega en dirección incorrecta pedido",
+    title: "Problema con talla incorrecta en pedido #34567",
     user: "+34611223344",
     channel: "Whatsapp",
     messages: 12,
@@ -71,16 +73,16 @@ const recentConversations: Conversation[] = [
   },
   {
     id: "3",
-    title: "Consulta sobre disponibilidad tallas producto deportivo",
-    user: "Anónimo",
+    title: "Consulta disponibilidad producto en otras tiendas",
+    user: "carlos@empresa.com",
     channel: "Web",
     messages: 5,
     date: new Date("2024-04-13T15:45:00")
   },
   {
     id: "4",
-    title: "Seguimiento envío retrasado pedido #89012 urgente",
-    user: "carlos@empresa.com",
+    title: "Devolución producto dañado pedido #89012",
+    user: "laura@tienda.com",
     channel: "Web",
     messages: 15,
     date: new Date("2024-04-13T14:20:00"),
@@ -88,7 +90,7 @@ const recentConversations: Conversation[] = [
   },
   {
     id: "5",
-    title: "Duda sobre características producto nuevo modelo",
+    title: "Información envío express pedido #67890",
     user: "+34655443322",
     channel: "Whatsapp",
     messages: 7,
@@ -145,7 +147,7 @@ export function Dashboard() {
         </div>
 
         <div className="bg-card border border-border rounded-lg overflow-hidden">
-          <div className="grid grid-cols-[auto_1fr_auto_auto] p-4 border-b border-border">
+          <div className="grid grid-cols-[auto_2fr_1fr_auto_auto_auto] p-4 border-b border-border">
             <div className="w-8"></div>
             <div className="flex items-center">
               <span className="font-medium">Conversación</span>
@@ -153,14 +155,16 @@ export function Dashboard() {
                 <ArrowUpDown className="h-4 w-4" />
               </Button>
             </div>
-            <div className="hidden md:block text-right font-medium">Usuario</div>
-            <div className="w-8"></div>
+            <div className="text-right font-medium">Usuario</div>
+            <div className="text-right font-medium">Canal</div>
+            <div className="text-right font-medium">Mensajes</div>
+            <div className="text-right font-medium">Fecha</div>
           </div>
 
           {recentConversations.map((conversation) => (
             <div 
               key={conversation.id} 
-              className="grid grid-cols-[auto_1fr_auto_auto] p-4 border-b last:border-b-0 border-border hover:bg-muted/50 cursor-pointer"
+              className="grid grid-cols-[auto_2fr_1fr_auto_auto_auto] p-4 border-b last:border-b-0 border-border hover:bg-muted/50 cursor-pointer"
             >
               <div className="mr-4">
                 <span 
@@ -176,10 +180,6 @@ export function Dashboard() {
 
               <div className="flex flex-col gap-1">
                 <span className="font-medium">{conversation.title}</span>
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary">{conversation.channel}</Badge>
-                  <span className="text-sm text-muted-foreground">{conversation.messages} mensajes</span>
-                </div>
               </div>
 
               <div className="text-right">
@@ -187,21 +187,17 @@ export function Dashboard() {
               </div>
 
               <div className="flex justify-end">
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <svg 
-                    width="15" 
-                    height="3" 
-                    viewBox="0 0 15 3" 
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="fill-current"
-                  >
-                    <path d="M1.5 3C2.32843 3 3 2.32843 3 1.5C3 0.671573 2.32843 0 1.5 0C0.671573 0 0 0.671573 0 1.5C0 2.32843 0.671573 3 1.5 3Z" />
-                    <path d="M7.5 3C8.32843 3 9 2.32843 9 1.5C9 0.671573 8.32843 0 7.5 0C6.67157 0 6 0.671573 6 1.5C6 2.32843 6.67157 3 7.5 3Z" />
-                    <path d="M13.5 3C14.3284 3 15 2.32843 15 1.5C15 0.671573 14.3284 0 13.5 0C12.6716 0 12 0.671573 12 1.5C12 2.32843 12.6716 3 13.5 3Z" />
-                  </svg>
-                </Button>
+                <Badge variant="secondary">{conversation.channel}</Badge>
+              </div>
+
+              <div className="text-right">
+                <span className="text-sm">{conversation.messages}</span>
+              </div>
+
+              <div className="text-right">
+                <span className="text-sm text-muted-foreground">
+                  {format(conversation.date, "dd MMM HH:mm", { locale: es })}
+                </span>
               </div>
             </div>
           ))}
