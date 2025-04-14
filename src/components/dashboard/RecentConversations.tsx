@@ -71,30 +71,38 @@ const columns = [
   {
     header: "Conversación",
     accessorKey: "title",
+    cell: ({ original }: { original: Conversation }) => (
+      <span className="block w-[37.5%]">{original.title}</span>
+    ),
   },
   {
     header: "Usuario",
     accessorKey: "user",
+    cell: ({ original }: { original: Conversation }) => (
+      <span className="block w-[37.5%]">{original.user}</span>
+    ),
   },
   {
     header: "Canal",
     accessorKey: "channel",
     cell: ({ original }: { original: Conversation }) => (
-      <Badge variant="secondary">{original.channel}</Badge>
+      <div className="w-[10%]">
+        <Badge variant="secondary">{original.channel}</Badge>
+      </div>
     ),
   },
   {
     header: "Mensajes",
     accessorKey: "messages",
     cell: ({ original }: { original: Conversation }) => (
-      <span className="text-right block w-16">{original.messages}</span>
+      <span className="text-right block w-[5%]">{original.messages}</span>
     ),
   },
   {
     header: "Fecha",
     accessorKey: "date",
     cell: ({ original }: { original: Conversation }) => (
-      <span className="text-right block">
+      <span className="text-right block w-[10%]">
         {format(original.date, "dd MMM yyyy HH:mm", { locale: es })}
       </span>
     ),
