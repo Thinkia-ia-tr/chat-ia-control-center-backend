@@ -1,13 +1,13 @@
-
 import React from "react";
-import { Search } from "lucide-react";
+import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { DataTable } from "@/components/ui/data-table";
+import { Link } from "react-router-dom";
 
-// Define the Conversation interface
 interface Conversation {
   id: string;
   title: string;
@@ -115,6 +115,12 @@ export function RecentConversations() {
             className="pl-10 bg-card border-input"
           />
         </div>
+        <Button variant="outline" asChild>
+          <Link to="/conversaciones" className="flex items-center gap-2">
+            <MessageSquare className="h-4 w-4" />
+            Ver todas las conversaciones
+          </Link>
+        </Button>
       </div>
 
       <DataTable
