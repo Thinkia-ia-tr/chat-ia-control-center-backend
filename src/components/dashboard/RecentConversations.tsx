@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -105,8 +106,8 @@ const columns = [
     header: "Fecha",
     accessorKey: "date",
     cell: ({ original }: { original: Conversation }) => (
-      <div className="w-[15%]">
-        <span className="block text-right">
+      <div className="w-[20%]">
+        <span className="block text-right whitespace-nowrap">
           {format(original.date, "dd MMM yyyy HH:mm", { locale: es })}
         </span>
       </div>
