@@ -98,7 +98,7 @@ const columns = [
     header: "Mensajes",
     accessorKey: "messages",
     cell: ({ original }: { original: Conversation }) => (
-      <div className="w-[5%] text-center">{original.messages}</div>
+      <div className="w-[5%] flex items-center justify-center">{original.messages}</div>
     ),
   },
   {
