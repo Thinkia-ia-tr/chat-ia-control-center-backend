@@ -1,11 +1,10 @@
-
 import React from "react";
-import { Search, ArrowUpDown } from "lucide-react";
+import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { DataTable } from "@/components/ui/data-table";
 
 interface Conversation {
   id: string;
@@ -63,75 +62,65 @@ const recentConversations: Conversation[] = [
   }
 ];
 
+const columns = [
+  {
+    header: "Conversación",
+    accessorKey: "title",
+  },
+  {
+    header: "Usuario",
+    accessorKey: "user",
+  },
+  {
+    header: "Canal",
+    accessorKey: "channel",
+    cell: (row: { original: Conversation }) => (
+      <Badge variant="secondary">{row.original.channel}</Badge>
+    ),
+  },
+  {
+    header: "Mensajes",
+    accessorKey: "messages",
+    cell: (row: { original: Conversation }) => (
+      <span className="text-right block">{row.original.messages}</span>
+    ),
+  },
+  {
+    header: "Fecha",
+    accessorKey: "date",
+    cell: (row: { original: Conversation }) => (
+      <span className="text-right block">
+        {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
+      </span>
+    ),
+  }
+];
+
 export function RecentConversations() {
+  const latestConversations = recentConversations
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+    .slice(0, 5);
+
   return (
-    <div className="mt-8">
+    <div>
       <h2 className="text-lg font-medium mb-4">Últimas conversaciones</h2>
       
-      <div className="mb-4">
-        <div className="relative">
+      <div className="flex items-center gap-4 mb-4">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Filtrar conversaciones..." className="pl-10 bg-card border-input" />
+          <Input
+            placeholder="Filtrar conversaciones..."
+            className="pl-10 bg-card border-input"
+          />
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
-        <div className="grid grid-cols-[auto_2fr_1fr_auto_auto_auto] p-4 border-b border-border">
-          <div className="w-8"></div>
-          <div className="flex items-center">
-            <span className="font-medium">Conversación</span>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 ml-1">
-              <ArrowUpDown className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="text-right font-medium">Usuario</div>
-          <div className="text-right font-medium">Canal</div>
-          <div className="text-right font-medium">Mensajes</div>
-          <div className="text-right font-medium">Fecha</div>
-        </div>
-
-        {recentConversations.map((conversation) => (
-          <div 
-            key={conversation.id} 
-            className="grid grid-cols-[auto_2fr_1fr_auto_auto_auto] p-4 border-b last:border-b-0 border-border hover:bg-muted/50 cursor-pointer"
-          >
-            <div className="mr-4">
-              <span 
-                className={`flex h-5 w-5 rounded-full border ${
-                  conversation.status === 'done' 
-                    ? 'border-success bg-success' 
-                    : conversation.status === 'in-progress' 
-                      ? 'border-warning bg-warning'
-                      : 'border-muted bg-muted'
-                }`}
-              />
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <span className="font-medium">{conversation.title}</span>
-            </div>
-
-            <div className="text-right">
-              <span className="text-sm font-medium">{conversation.user}</span>
-            </div>
-
-            <div className="flex justify-end">
-              <Badge variant="secondary">{conversation.channel}</Badge>
-            </div>
-
-            <div className="text-right">
-              <span className="text-sm">{conversation.messages}</span>
-            </div>
-
-            <div className="text-right">
-              <span className="text-sm text-muted-foreground">
-                {format(conversation.date, "dd MMM HH:mm", { locale: es })}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
+      <DataTable
+        columns={columns}
+        data={latestConversations.map(item => ({ row: { original: item } }))}
+        selectedRows={[]}
+        getRowId={(rowData) => rowData.row.original.id}
+      />
     </div>
   );
 }
-
