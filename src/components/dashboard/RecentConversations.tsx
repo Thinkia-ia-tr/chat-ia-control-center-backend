@@ -72,14 +72,18 @@ const columns = [
     header: "Conversación",
     accessorKey: "title",
     cell: ({ original }: { original: Conversation }) => (
-      <span className="block w-[35%] truncate">{original.title}</span>
+      <div className="w-[35%]">
+        <span className="block truncate">{original.title}</span>
+      </div>
     ),
   },
   {
     header: "Usuario",
     accessorKey: "user",
     cell: ({ original }: { original: Conversation }) => (
-      <span className="block w-[35%] truncate">{original.user}</span>
+      <div className="w-[35%]">
+        <span className="block truncate">{original.user}</span>
+      </div>
     ),
   },
   {
@@ -102,9 +106,11 @@ const columns = [
     header: "Fecha",
     accessorKey: "date",
     cell: ({ original }: { original: Conversation }) => (
-      <span className="text-right block w-[15%] truncate">
-        {format(original.date, "dd MMM yyyy HH:mm", { locale: es })}
-      </span>
+      <div className="w-[15%]">
+        <span className="block text-right truncate">
+          {format(original.date, "dd MMM yyyy HH:mm", { locale: es })}
+        </span>
+      </div>
     ),
   }
 ];
