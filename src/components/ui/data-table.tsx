@@ -2,13 +2,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { MoreHorizontal } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface DataTableProps<T> {
   columns: {
@@ -19,6 +12,7 @@ interface DataTableProps<T> {
   data: T[];
   selectedRows?: T[];
   onRowSelect?: (row: T) => void;
+  onRowClick?: (row: T) => void;
   getRowId?: (row: T) => string | number;
   className?: string;
 }
@@ -28,6 +22,7 @@ export function DataTable<T>({
   data,
   selectedRows = [],
   onRowSelect,
+  onRowClick,
   getRowId = () => Math.random(),
   className,
 }: DataTableProps<T>) {
@@ -43,7 +38,6 @@ export function DataTable<T>({
                   {column.header}
                 </TableHead>
               ))}
-              <TableHead className="w-10"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -51,9 +45,16 @@ export function DataTable<T>({
               const rowId = getRowId(row);
               const isSelected = selectedRows.some((selectedRow) => getRowId(selectedRow) === rowId);
               return (
-                <TableRow key={rowId} className={isSelected ? "bg-muted" : ""}>
+                <TableRow 
+                  key={rowId} 
+                  className={cn(
+                    isSelected ? "bg-muted" : "",
+                    onRowClick && "cursor-pointer hover:bg-muted/50"
+                  )}
+                  onClick={() => onRowClick?.(row)}
+                >
                   {onRowSelect && (
-                    <TableCell className="p-3">
+                    <TableCell className="p-3" onClick={(e) => e.stopPropagation()}>
                       <span
                         className={cn(
                           "flex h-5 w-5 rounded-full border items-center justify-center",
@@ -72,18 +73,6 @@ export function DataTable<T>({
                       }
                     </TableCell>
                   ))}
-                  <TableCell className="p-2">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-muted">
-                        <MoreHorizontal size={16} />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Ver detalles</DropdownMenuItem>
-                        <DropdownMenuItem>Editar</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">Eliminar</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
                 </TableRow>
               );
             })}

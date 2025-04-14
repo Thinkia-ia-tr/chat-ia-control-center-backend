@@ -1,5 +1,5 @@
-
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
@@ -110,6 +110,7 @@ const columns = [
 ];
 
 export function ConversationsList() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRows, setSelectedRows] = useState<Conversation[]>([]);
   
@@ -119,6 +120,10 @@ export function ConversationsList() {
     } else {
       setSelectedRows([...selectedRows, row]);
     }
+  };
+
+  const handleRowClick = (row: Conversation) => {
+    navigate(`/conversaciones/${row.id}`);
   };
   
   const filteredData = exampleData.filter(conversation => 
@@ -153,6 +158,7 @@ export function ConversationsList() {
         data={filteredData}
         selectedRows={selectedRows}
         onRowSelect={handleRowSelect}
+        onRowClick={handleRowClick}
         getRowId={(row) => row.id}
       />
       
