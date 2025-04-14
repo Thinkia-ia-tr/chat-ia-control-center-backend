@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { StatCard } from "@/components/ui/stat-card";
 import { LineChart } from "@/components/ui/line-chart";
@@ -8,7 +7,6 @@ import { Search, ArrowUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-// Datos de ejemplo para los gráficos
 const conversationData = [
   { value: 12 },
   { value: 17 },
@@ -40,6 +38,62 @@ const transactionData: Transaction[] = [
   { status: 'Success', email: 'abe45@example.com', amount: '$242.00' },
   { status: 'Processing', email: 'monserrat44@example.com', amount: '$837.00' },
   { status: 'Failed', email: 'carmella@example.com', amount: '$721.00' },
+];
+
+interface Conversation {
+  id: string;
+  title: string;
+  user: string;
+  channel: "Web" | "Whatsapp";
+  messages: number;
+  date: Date;
+  status?: 'done' | 'in-progress';
+}
+
+const recentConversations: Conversation[] = [
+  {
+    id: "1",
+    title: "Cliente consulta estado de pedido #45672 realizado ayer",
+    user: "maria@gmail.com",
+    channel: "Web",
+    messages: 8,
+    date: new Date("2024-04-14T10:30:00"),
+    status: "in-progress"
+  },
+  {
+    id: "2",
+    title: "Problema con entrega en dirección incorrecta pedido",
+    user: "+34611223344",
+    channel: "Whatsapp",
+    messages: 12,
+    date: new Date("2024-04-14T09:15:00"),
+    status: "done"
+  },
+  {
+    id: "3",
+    title: "Consulta sobre disponibilidad tallas producto deportivo",
+    user: "Anónimo",
+    channel: "Web",
+    messages: 5,
+    date: new Date("2024-04-13T15:45:00")
+  },
+  {
+    id: "4",
+    title: "Seguimiento envío retrasado pedido #89012 urgente",
+    user: "carlos@empresa.com",
+    channel: "Web",
+    messages: 15,
+    date: new Date("2024-04-13T14:20:00"),
+    status: "in-progress"
+  },
+  {
+    id: "5",
+    title: "Duda sobre características producto nuevo modelo",
+    user: "+34655443322",
+    channel: "Whatsapp",
+    messages: 7,
+    date: new Date("2024-04-13T11:10:00")
+  }
 ];
 
 export function Dashboard() {
@@ -86,46 +140,51 @@ export function Dashboard() {
         <div className="mb-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Filter emails..." className="pl-10 bg-card border-input" />
+            <Input placeholder="Filtrar conversaciones..." className="pl-10 bg-card border-input" />
           </div>
         </div>
 
         <div className="bg-card border border-border rounded-lg overflow-hidden">
-          <div className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_auto_auto] p-4 border-b border-border">
+          <div className="grid grid-cols-[auto_1fr_auto_auto] p-4 border-b border-border">
             <div className="w-8"></div>
             <div className="flex items-center">
-              <span className="font-medium">Email</span>
+              <span className="font-medium">Conversación</span>
               <Button variant="ghost" size="sm" className="h-8 w-8 p-0 ml-1">
                 <ArrowUpDown className="h-4 w-4" />
               </Button>
             </div>
-            <div className="hidden md:block text-right font-medium">Amount</div>
+            <div className="hidden md:block text-right font-medium">Usuario</div>
             <div className="w-8"></div>
           </div>
 
-          {transactionData.map((transaction, index) => (
+          {recentConversations.map((conversation) => (
             <div 
-              key={index} 
-              className="grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1fr_auto_auto] p-4 border-b last:border-b-0 border-border"
+              key={conversation.id} 
+              className="grid grid-cols-[auto_1fr_auto_auto] p-4 border-b last:border-b-0 border-border hover:bg-muted/50 cursor-pointer"
             >
               <div className="mr-4">
                 <span 
                   className={`flex h-5 w-5 rounded-full border ${
-                    transaction.status === 'Success' 
+                    conversation.status === 'done' 
                       ? 'border-success bg-success' 
-                      : transaction.status === 'Processing' 
+                      : conversation.status === 'in-progress' 
                         ? 'border-warning bg-warning'
-                        : 'border-destructive bg-destructive'
+                        : 'border-muted bg-muted'
                   }`}
                 />
               </div>
 
-              <div className="flex items-center gap-2">
-                <Badge variant="outline">{transaction.status}</Badge>
-                <span>{transaction.email}</span>
+              <div className="flex flex-col gap-1">
+                <span className="font-medium">{conversation.title}</span>
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary">{conversation.channel}</Badge>
+                  <span className="text-sm text-muted-foreground">{conversation.messages} mensajes</span>
+                </div>
               </div>
 
-              <div className="text-right font-medium">{transaction.amount}</div>
+              <div className="text-right">
+                <span className="text-sm font-medium">{conversation.user}</span>
+              </div>
 
               <div className="flex justify-end">
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
@@ -146,18 +205,6 @@ export function Dashboard() {
               </div>
             </div>
           ))}
-
-          <div className="flex items-center justify-between p-4">
-            <div className="text-sm text-muted-foreground">0 of 4 row(s) selected.</div>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">
-                Previous
-              </Button>
-              <Button variant="outline" size="sm">
-                Next
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
