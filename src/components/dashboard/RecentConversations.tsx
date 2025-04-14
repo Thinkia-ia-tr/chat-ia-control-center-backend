@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -74,23 +75,23 @@ const columns = [
   {
     header: "Canal",
     accessorKey: "channel",
-    cell: (row: { original: Conversation }) => (
-      <Badge variant="secondary">{row.original.channel}</Badge>
+    cell: ({ original }: { original: Conversation }) => (
+      <Badge variant="secondary">{original.channel}</Badge>
     ),
   },
   {
     header: "Mensajes",
     accessorKey: "messages",
-    cell: (row: { original: Conversation }) => (
-      <span className="text-right block">{row.original.messages}</span>
+    cell: ({ original }: { original: Conversation }) => (
+      <span className="text-right block">{original.messages}</span>
     ),
   },
   {
     header: "Fecha",
     accessorKey: "date",
-    cell: (row: { original: Conversation }) => (
+    cell: ({ original }: { original: Conversation }) => (
       <span className="text-right block">
-        {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
+        {format(original.date, "dd MMM yyyy HH:mm", { locale: es })}
       </span>
     ),
   }
@@ -117,9 +118,9 @@ export function RecentConversations() {
 
       <DataTable
         columns={columns}
-        data={latestConversations.map(item => ({ row: { original: item } }))}
+        data={latestConversations.map(item => ({ original: item }))}
         selectedRows={[]}
-        getRowId={(rowData) => rowData.row.original.id}
+        getRowId={(rowData) => rowData.original.id}
       />
     </div>
   );
