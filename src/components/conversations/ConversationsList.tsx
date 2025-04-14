@@ -1,9 +1,11 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/ui/data-table";
 import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -85,7 +87,8 @@ export function ConversationsList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRows, setSelectedRows] = useState<Conversation[]>([]);
   
-  const handleRowSelect = (row: Conversation) => {
+  const handleRowSelect = (rowData: { row: { original: Conversation } }) => {
+    const row = rowData.row.original;
     if (selectedRows.some(r => r.id === row.id)) {
       setSelectedRows(selectedRows.filter(r => r.id !== row.id));
     } else {
@@ -93,8 +96,8 @@ export function ConversationsList() {
     }
   };
 
-  const handleRowClick = (row: Conversation) => {
-    navigate(`/conversaciones/${row.id}`);
+  const handleRowClick = (rowData: { row: { original: Conversation } }) => {
+    navigate(`/conversaciones/${rowData.row.original.id}`);
   };
   
   const filteredData = exampleData.filter(conversation => 
@@ -122,11 +125,11 @@ export function ConversationsList() {
       
       <DataTable
         columns={columns}
-        data={filteredData}
-        selectedRows={selectedRows}
+        data={filteredData.map(item => ({ row: { original: item } }))}
+        selectedRows={selectedRows.map(item => ({ row: { original: item } }))}
         onRowSelect={handleRowSelect}
         onRowClick={handleRowClick}
-        getRowId={(row) => row.id}
+        getRowId={(rowData) => rowData.row.original.id}
       />
       
       <div className="flex justify-between items-center">
