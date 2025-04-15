@@ -2,13 +2,11 @@
 import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { ReferralStats } from "@/components/referrals/ReferralStats";
-import { RecentReferrals } from "@/components/referrals/RecentReferrals";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 
 export default function ReferralsPage() {
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
-  const [selectedType, setSelectedType] = useState<string>();
 
   const handleDateRangeChange = (start: Date, end: Date) => {
     setStartDate(start);
@@ -28,7 +26,6 @@ export default function ReferralsPage() {
         </div>
         
         <ReferralStats />
-        <RecentReferrals selectedType={selectedType} />
       </div>
     </Layout>
   );
