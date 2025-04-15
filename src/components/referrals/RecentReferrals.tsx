@@ -74,12 +74,17 @@ export function RecentReferrals({ selectedType }: RecentReferralsProps) {
     ? mockReferrals.filter(ref => ref.type === selectedType)
     : mockReferrals;
 
+  // Format the data to match what the DataTable component expects
+  const formattedData = filteredReferrals.map(item => ({
+    row: { original: item }
+  }));
+
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Últimas Derivaciones</h2>
       <DataTable
         columns={columns}
-        data={filteredReferrals}
+        data={formattedData}
       />
     </div>
   );
