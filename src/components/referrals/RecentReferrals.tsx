@@ -2,8 +2,17 @@
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 import { es } from "date-fns/locale";
+
+// Define the type for referral data
+interface ReferralData {
+  id: number;
+  type: string;
+  client: string;
+  status: string;
+  date: string;
+}
 
 // Ejemplo de datos para la tabla
 const generateMockReferrals = () => {
@@ -29,14 +38,14 @@ const columns = [
   {
     header: "Tipo",
     accessorKey: "type",
-    cell: ({ row }: { row: { original: { type: string } } }) => (
+    cell: ({ row }: { row: { original: ReferralData } }) => (
       <span className="font-medium">{row.original.type}</span>
     ),
   },
   {
     header: "Estado",
     accessorKey: "status",
-    cell: ({ row }: { row: { original: { status: string } } }) => {
+    cell: ({ row }: { row: { original: ReferralData } }) => {
       const status = row.original.status;
       let color = "bg-yellow-500";
       if (status === "Completada") color = "bg-green-500";
@@ -70,7 +79,7 @@ export function RecentReferrals({ selectedType }: RecentReferralsProps) {
       <h2 className="text-lg font-semibold">Últimas Derivaciones</h2>
       <DataTable
         columns={columns}
-        data={filteredReferrals.map(item => ({ row: { original: item } }))}
+        data={filteredReferrals}
       />
     </div>
   );
