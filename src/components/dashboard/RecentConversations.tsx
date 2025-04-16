@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -66,7 +67,7 @@ export function RecentConversations() {
       cell: ({ row }: any) => (
         <div className="w-[20%]">
           <span className="block text-right whitespace-nowrap">
-            {format(new Date(row.original.date), "dd MMM yyyy HH:mm", { locale: es })}
+            {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
           </span>
         </div>
       ),
@@ -78,7 +79,7 @@ export function RecentConversations() {
   };
 
   const latestConversations = conversations
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
     .slice(0, 5);
 
   return (

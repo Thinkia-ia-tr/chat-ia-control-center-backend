@@ -20,7 +20,11 @@ export function useConversations(startDate?: Date, endDate?: Date) {
       
       if (error) throw error;
       
-      return data as Conversation[];
+      // Convert string dates to Date objects to match the Conversation type
+      return data.map(item => ({
+        ...item,
+        date: new Date(item.date)
+      })) as Conversation[];
     }
   });
 }
