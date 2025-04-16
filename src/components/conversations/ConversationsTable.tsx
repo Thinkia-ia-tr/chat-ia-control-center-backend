@@ -1,3 +1,4 @@
+
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -61,7 +62,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       accessorKey: "title",
       cell: ({ row }: { row: { original: Conversation } }) => (
         <div className="w-[45%]">
-          <span className="block whitespace-nowrap">{row.original.title}</span>
+          <span className="block truncate whitespace-nowrap overflow-hidden text-ellipsis">{row.original.title}</span>
         </div>
       )
     },
@@ -77,8 +78,8 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
             : formatPhoneNumber(client.value);
         
         return (
-          <div className="w-[35%] whitespace-nowrap overflow-hidden text-ellipsis">
-            <span className="block">{value}</span>
+          <div className="w-[35%]">
+            <span className="block truncate whitespace-nowrap overflow-hidden text-ellipsis">{value}</span>
           </div>
         );
       }
@@ -106,7 +107,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       accessorKey: "date",
       cell: ({ row }: { row: { original: Conversation } }) => (
         <div className="w-[20%]">
-          <span className="block text-right whitespace-nowrap">
+          <span className="block text-right truncate whitespace-nowrap overflow-hidden text-ellipsis">
             {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
           </span>
         </div>

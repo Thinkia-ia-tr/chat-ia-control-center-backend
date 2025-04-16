@@ -46,7 +46,7 @@ export function RecentConversations() {
       accessorKey: "title",
       cell: ({ row }: any) => (
         <div className="w-[45%]">
-          <span className="block whitespace-nowrap">{row.original.title}</span>
+          <span className="block truncate whitespace-nowrap overflow-hidden text-ellipsis">{row.original.title}</span>
         </div>
       )
     },
@@ -61,7 +61,7 @@ export function RecentConversations() {
         
         return (
           <div className="w-[35%]">
-            <span className="block">{value}</span>
+            <span className="block truncate whitespace-nowrap overflow-hidden text-ellipsis">{value}</span>
           </div>
         );
       },
@@ -89,7 +89,7 @@ export function RecentConversations() {
       accessorKey: "date",
       cell: ({ row }: any) => (
         <div className="w-[20%]">
-          <span className="block text-right whitespace-nowrap">
+          <span className="block text-right whitespace-nowrap overflow-hidden text-ellipsis">
             {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
           </span>
         </div>
