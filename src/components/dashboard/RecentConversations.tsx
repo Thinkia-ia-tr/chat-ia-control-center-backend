@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -10,10 +11,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { useConversations } from "@/hooks/useConversations";
 import { useToast } from "@/components/ui/use-toast";
 
-// Función para validar email con regex más robusta
-const isValidEmail = (email: string) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+// Function to format phone numbers
+const formatPhoneNumber = (phone: string): string => {
+  // Remove all non-digit characters
+  const cleaned = phone.replace(/\D/g, '');
+  
+  // Format as +XX XXX XXX XXX
+  if (cleaned.length >= 9) {
+    const countryCode = cleaned.slice(0, 2);
+    const firstPart = cleaned.slice(2, 5);
+    const secondPart = cleaned.slice(5, 8);
+    const lastPart = cleaned.slice(8, 11);
+    return `+${countryCode} ${firstPart} ${secondPart} ${lastPart}`;
+  }
+  return phone;
 };
 
 export function RecentConversations() {
@@ -46,7 +57,7 @@ export function RecentConversations() {
         const client = row.original.client;
         const value = client.type === 'email' ? 
           client.value.includes('@') ? client.value : 'usuario@ejemplo.com' : 
-          client.value;
+          formatPhoneNumber(client.value);
         
         return (
           <div className="w-[35%]">
