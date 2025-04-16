@@ -22,9 +22,9 @@ export type Database = {
         Insert: {
           channel: string
           client: string
-          date: string
+          date?: string
           id?: string
-          messages: number
+          messages?: number
           status?: string | null
           title: string
         }

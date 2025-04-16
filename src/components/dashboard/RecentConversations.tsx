@@ -7,124 +7,79 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { DataTable } from "@/components/ui/data-table";
 import { Link, useNavigate } from "react-router-dom";
-
-interface Conversation {
-  id: string;
-  title: string;
-  client: string;
-  channel: "Web" | "Whatsapp";
-  messages: number;
-  date: Date;
-  status?: 'done' | 'in-progress';
-}
-
-const recentConversations: Conversation[] = [
-  {
-    id: "1",
-    title: "Estado del pedido #45672 - Entrega retrasada",
-    client: "maria@gmail.com",
-    channel: "Web",
-    messages: 8,
-    date: new Date("2024-04-14T10:30:00"),
-    status: "in-progress"
-  },
-  {
-    id: "2",
-    title: "Problema con talla incorrecta en pedido #34567",
-    client: "+34611223344",
-    channel: "Whatsapp",
-    messages: 12,
-    date: new Date("2024-04-14T09:15:00"),
-    status: "done"
-  },
-  {
-    id: "3",
-    title: "Consulta disponibilidad producto en otras tiendas",
-    client: "carlos@empresa.com",
-    channel: "Web",
-    messages: 5,
-    date: new Date("2024-04-13T15:45:00"),
-    status: "in-progress"
-  },
-  {
-    id: "4",
-    title: "Devolución producto dañado pedido #89012",
-    client: "laura@tienda.com",
-    channel: "Web",
-    messages: 15,
-    date: new Date("2024-04-13T14:20:00"),
-    status: "done"
-  },
-  {
-    id: "5",
-    title: "Información envío express pedido #67890",
-    client: "+34655443322",
-    channel: "Whatsapp",
-    messages: 7,
-    date: new Date("2024-04-13T11:10:00"),
-    status: "in-progress"
-  }
-];
-
-const columns = [
-  {
-    header: "Conversación",
-    accessorKey: "title",
-    cell: ({ row }: { row: { original: Conversation } }) => (
-      <div className="w-[45%]">
-        <span className="block whitespace-nowrap">{row.original.title}</span>
-      </div>
-    ),
-  },
-  {
-    header: "Cliente",
-    accessorKey: "client",
-    cell: ({ row }: { row: { original: Conversation } }) => (
-      <div className="w-[35%]">
-        <span className="block">{row.original.client}</span>
-      </div>
-    ),
-  },
-  {
-    header: "Canal",
-    accessorKey: "channel",
-    cell: ({ row }: { row: { original: Conversation } }) => (
-      <div className="w-[10%]">
-        <Badge variant="secondary">{row.original.channel}</Badge>
-      </div>
-    ),
-  },
-  {
-    header: "Mensajes",
-    accessorKey: "messages",
-    cell: ({ row }: { row: { original: Conversation } }) => (
-      <div className="w-[5%] flex items-center justify-center text-center">
-        {row.original.messages}
-      </div>
-    ),
-  },
-  {
-    header: "Fecha",
-    accessorKey: "date",
-    cell: ({ row }: { row: { original: Conversation } }) => (
-      <div className="w-[20%]">
-        <span className="block text-right whitespace-nowrap">
-          {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
-        </span>
-      </div>
-    ),
-  }
-];
+import { useConversations } from "@/hooks/useConversations";
+import { useToast } from "@/components/ui/use-toast";
 
 export function RecentConversations() {
   const navigate = useNavigate();
-  const latestConversations = recentConversations
-    .sort((a, b) => b.date.getTime() - a.date.getTime())
-    .slice(0, 5);
+  const { toast } = useToast();
+  const { data: conversations = [], isError } = useConversations();
 
-  const handleRowClick = (rowData: { row: { original: Conversation } }) => {
+  if (isError) {
+    toast({
+      title: "Error",
+      description: "No se pudieron cargar las conversaciones recientes",
+      variant: "destructive"
+    });
+  }
+
+  const columns = [
+    {
+      header: "Conversación",
+      accessorKey: "title",
+      cell: ({ row }: any) => (
+        <div className="w-[45%]">
+          <span className="block whitespace-nowrap">{row.original.title}</span>
+        </div>
+      )
+    },
+    {
+      header: "Cliente",
+      accessorKey: "client",
+      cell: ({ row }: any) => (
+        <div className="w-[35%]">
+          <span className="block">{row.original.client}</span>
+        </div>
+      ),
+    },
+    {
+      header: "Canal",
+      accessorKey: "channel",
+      cell: ({ row }: any) => (
+        <div className="w-[10%]">
+          <Badge variant="secondary">{row.original.channel}</Badge>
+        </div>
+      ),
+    },
+    {
+      header: "Mensajes",
+      accessorKey: "messages",
+      cell: ({ row }: any) => (
+        <div className="w-[5%] flex items-center justify-center text-center">
+          {row.original.messages}
+        </div>
+      ),
+    },
+    {
+      header: "Fecha",
+      accessorKey: "date",
+      cell: ({ row }: any) => (
+        <div className="w-[20%]">
+          <span className="block text-right whitespace-nowrap">
+            {format(new Date(row.original.date), "dd MMM yyyy HH:mm", { locale: es })}
+          </span>
+        </div>
+      ),
+    }
+  ];
+
+  const handleRowClick = (rowData: any) => {
     navigate(`/conversaciones/${rowData.row.original.id}`);
   };
+
+  const latestConversations = conversations
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 5);
 
   return (
     <div>
