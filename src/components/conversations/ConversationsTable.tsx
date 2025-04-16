@@ -1,3 +1,4 @@
+
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -5,10 +6,18 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
 
-// Función para validar email con regex más robusta
-const isValidEmail = (email: string) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+const generateEmailFromTitle = (title: string): string => {
+  // Extract potential name from conversation title
+  const nameMatch = title.match(/(?:con|para|de)\s+([A-Za-zÀ-ÿ\s]+?)(?:\s+sobre|\s*$)/i);
+  if (nameMatch && nameMatch[1]) {
+    const name = nameMatch[1].trim().toLowerCase();
+    // Remove accents and special characters
+    const normalizedName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    // Replace spaces with dots and remove special characters
+    const emailName = normalizedName.replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '');
+    return `${emailName}@ejemplo.com`;
+  }
+  return 'usuario@ejemplo.com';
 };
 
 interface ConversationsTableProps {
@@ -35,7 +44,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
         const value = client.type === 'email' ? 
-          client.value.includes('@') ? client.value : 'usuario@ejemplo.com' : 
+          generateEmailFromTitle(row.original.title) :
           client.value;
         
         return (
