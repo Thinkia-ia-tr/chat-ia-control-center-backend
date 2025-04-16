@@ -34,17 +34,13 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
-        if (client.type === 'email' && !isValidEmail(client.value)) {
-          console.warn(`Invalid email format for client: ${client.value}`);
-          return (
-            <div className="w-[35%]">
-              <span className="block text-destructive">Email inválido</span>
-            </div>
-          );
-        }
+        const value = client.type === 'email' ? 
+          client.value.includes('@') ? client.value : 'usuario@ejemplo.com' : 
+          client.value;
+        
         return (
           <div className="w-[35%]">
-            <span className="block">{client.value}</span>
+            <span className="block">{value}</span>
           </div>
         );
       }

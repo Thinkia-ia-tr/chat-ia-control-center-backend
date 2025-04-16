@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -45,16 +44,13 @@ export function RecentConversations() {
       accessorKey: "client",
       cell: ({ row }: any) => {
         const client = row.original.client;
-        if (client.type === 'email' && !isValidEmail(client.value)) {
-          return (
-            <div className="w-[35%]">
-              <span className="block text-destructive">Email inválido</span>
-            </div>
-          );
-        }
+        const value = client.type === 'email' ? 
+          client.value.includes('@') ? client.value : 'usuario@ejemplo.com' : 
+          client.value;
+        
         return (
           <div className="w-[35%]">
-            <span className="block">{client.value}</span>
+            <span className="block">{value}</span>
           </div>
         );
       },
