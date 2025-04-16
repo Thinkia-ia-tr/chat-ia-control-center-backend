@@ -62,7 +62,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
             : client.value;
         
         return (
-          <div className="w-[35%] whitespace-nowrap overflow-hidden text-ellipsis">
+          <div className="w-[35%]">
             <span className="block">{value}</span>
           </div>
         );
@@ -110,5 +110,3 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
     />
   );
 }
-
-export default ConversationsTable;
