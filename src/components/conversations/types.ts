@@ -2,7 +2,10 @@
 export interface Conversation {
   id: string;
   title: string;
-  client: string;
+  client: string | { 
+    type: 'phone' | 'email' | 'id', 
+    value: string 
+  };
   channel: "Web" | "Whatsapp";
   messages: number;
   date: Date;

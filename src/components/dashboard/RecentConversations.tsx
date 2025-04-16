@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +38,11 @@ export function RecentConversations() {
       accessorKey: "client",
       cell: ({ row }: any) => (
         <div className="w-[35%]">
-          <span className="block">{row.original.client}</span>
+          <span className="block">
+            {typeof row.original.client === 'object' 
+              ? `${row.original.client.type}: ${row.original.client.value}` 
+              : row.original.client}
+          </span>
         </div>
       ),
     },
