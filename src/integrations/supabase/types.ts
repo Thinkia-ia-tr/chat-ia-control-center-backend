@@ -12,7 +12,7 @@ export type Database = {
       conversations: {
         Row: {
           channel: string
-          client: string
+          client: Json
           date: string
           id: string
           messages: number
@@ -21,7 +21,7 @@ export type Database = {
         }
         Insert: {
           channel: string
-          client: string
+          client: Json
           date?: string
           id?: string
           messages?: number
@@ -30,7 +30,7 @@ export type Database = {
         }
         Update: {
           channel?: string
-          client?: string
+          client?: Json
           date?: string
           id?: string
           messages?: number

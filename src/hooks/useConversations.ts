@@ -20,13 +20,9 @@ export function useConversations(startDate?: Date, endDate?: Date) {
       
       if (error) throw error;
       
-      // Convert string dates to Date objects and ensure client is in new format
       return data.map(item => ({
         ...item,
-        date: new Date(item.date),
-        client: typeof item.client === 'string' 
-          ? { type: 'email', value: item.client } 
-          : item.client
+        date: new Date(item.date)
       })) as Conversation[];
     }
   });

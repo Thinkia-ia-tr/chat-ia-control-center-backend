@@ -2,7 +2,7 @@
 export interface Conversation {
   id: string;
   title: string;
-  client: string | { 
+  client: { 
     type: 'phone' | 'email' | 'id', 
     value: string 
   };

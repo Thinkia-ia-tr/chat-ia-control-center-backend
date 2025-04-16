@@ -39,9 +39,7 @@ export function RecentConversations() {
       cell: ({ row }: any) => (
         <div className="w-[35%]">
           <span className="block">
-            {typeof row.original.client === 'object' 
-              ? `${row.original.client.type}: ${row.original.client.value}` 
-              : row.original.client}
+            {`${row.original.client.type}: ${row.original.client.value}`}
           </span>
         </div>
       ),
@@ -81,7 +79,6 @@ export function RecentConversations() {
     navigate(`/conversaciones/${rowData.row.original.id}`);
   };
 
-  // Show 5 most recent conversations, sorted by date
   const latestConversations = conversations
     .sort((a, b) => b.date.getTime() - a.date.getTime())
     .slice(0, 5);

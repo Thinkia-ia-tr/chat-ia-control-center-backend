@@ -29,9 +29,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       cell: ({ row }: { row: { original: Conversation } }) => (
         <div className="w-[35%]">
           <span className="block">
-            {typeof row.original.client === 'object' 
-              ? `${row.original.client.type}: ${row.original.client.value}` 
-              : row.original.client}
+            {`${row.original.client.type}: ${row.original.client.value}`}
           </span>
         </div>
       )
