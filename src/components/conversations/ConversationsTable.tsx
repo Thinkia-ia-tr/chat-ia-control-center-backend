@@ -1,4 +1,3 @@
-
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -6,43 +5,26 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
 
+const SURNAMES = ['garcia', 'rodriguez', 'lopez', 'martinez', 'sanchez', 'fernandez'];
+const NAMES = ['maria', 'juan', 'ana', 'carlos', 'sofia', 'miguel', 'laura', 'pedro'];
+
 const generateRandomName = (): string => {
-  const names = ['maria', 'juan', 'ana', 'carlos', 'sofia', 'miguel', 'laura', 'pedro'];
-  const surnames = ['garcia', 'rodriguez', 'lopez', 'martinez', 'sanchez', 'fernandez'];
-  const randomName = names[Math.floor(Math.random() * names.length)];
-  const randomSurname = surnames[Math.floor(Math.random() * surnames.length)];
+  const randomName = NAMES[Math.floor(Math.random() * NAMES.length)];
+  const randomSurname = SURNAMES[Math.floor(Math.random() * SURNAMES.length)];
   return `${randomName}.${randomSurname}`;
 };
 
-const generateEmailFromTitle = (title: string): string => {
-  // Extract potential name from conversation title with improved pattern matching
+const extractNameFromMessages = (title: string, messages: number): string => {
+  // Common name patterns in Spanish conversations
   const namePatterns = [
-    /(?:con|para|de)\s+([A-Za-zÀ-ÿ\s]+?)(?:\s+sobre|\s*$)/i,
-    /(?:cliente|usuario|señor|señora|sr\.|sra\.)\s+([A-Za-zÀ-ÿ\s]+?)(?:\s+[a-z]|\s*$)/i,
-    /([A-Za-zÀ-ÿ]{2,}\s+[A-Za-zÀ-ÿ]{2,})(?:\s+sobre|\s+solicita|\s+pregunta|\s*$)/i
+    /(?:soy|me llamo|nombre es)\s+([A-Za-zÀ-ÿ\s]+?)(?:[\.,]|\s+(?:y|e|pero|con|sobre)|\s*$)/i,
+    /(?:señor|señora|sr\.|sra\.)\s+([A-Za-zÀ-ÿ\s]+?)(?:\s+[a-z]|\s*$)/i,
+    /([A-Za-zÀ-ÿ]{2,}\s+[A-Za-zÀ-ÿ]{2,})(?:\s+(?:solicita|pregunta|dice|responde)|\s*$)/i
   ];
 
-  for (const pattern of namePatterns) {
-    const nameMatch = title.match(pattern);
-    if (nameMatch && nameMatch[1]) {
-      const fullName = nameMatch[1].trim().toLowerCase();
-      // Remove accents and special characters
-      const normalizedName = fullName.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      // Split into name parts and take first two parts if available
-      const nameParts = normalizedName.split(/\s+/);
-      if (nameParts.length >= 2) {
-        // Use first name and first surname
-        return `${nameParts[0]}.${nameParts[1]}@ejemplo.com`;
-      } else if (nameParts.length === 1) {
-        // If only one word, use random surname
-        const surname = surnames[Math.floor(Math.random() * surnames.length)];
-        return `${nameParts[0]}.${surname}@ejemplo.com`;
-      }
-    }
-  }
-  
-  // If no name found, generate random name
-  return `${generateRandomName()}@ejemplo.com`;
+  // TODO: In the future, when we have access to message content, 
+  // we'll search through actual messages. For now, generate random name
+  return generateRandomName();
 };
 
 interface ConversationsTableProps {
@@ -69,7 +51,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
         const value = client.type === 'email' ? 
-          generateEmailFromTitle(row.original.title) :
+          `${extractNameFromMessages(row.original.title, row.original.messages)}@ejemplo.com` :
           client.value;
         
         return (
