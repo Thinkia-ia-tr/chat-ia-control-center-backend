@@ -8,6 +8,14 @@ import { Conversation } from "./types";
 const SURNAMES = ['garcia', 'rodriguez', 'lopez', 'martinez', 'sanchez', 'fernandez'];
 const NAMES = ['maria', 'juan', 'ana', 'carlos', 'sofia', 'miguel', 'laura', 'pedro'];
 
+let lastIdNumber = 573; // Starting from 573 so next one will be 574
+
+const generateClientId = (): string => {
+  lastIdNumber++;
+  const paddedNumber = String(lastIdNumber).padStart(7, '0');
+  return `2025-${paddedNumber}`;
+};
+
 const generateRandomName = (): string => {
   const randomName = NAMES[Math.floor(Math.random() * NAMES.length)];
   const randomSurname = SURNAMES[Math.floor(Math.random() * SURNAMES.length)];
@@ -15,15 +23,12 @@ const generateRandomName = (): string => {
 };
 
 const extractNameFromMessages = (title: string, messages: number): string => {
-  // Common name patterns in Spanish conversations
   const namePatterns = [
     /(?:soy|me llamo|nombre es)\s+([A-Za-zÀ-ÿ\s]+?)(?:[\.,]|\s+(?:y|e|pero|con|sobre)|\s*$)/i,
     /(?:señor|señora|sr\.|sra\.)\s+([A-Za-zÀ-ÿ\s]+?)(?:\s+[a-z]|\s*$)/i,
     /([A-Za-zÀ-ÿ]{2,}\s+[A-Za-zÀ-ÿ]{2,})(?:\s+(?:solicita|pregunta|dice|responde)|\s*$)/i
   ];
 
-  // TODO: In the future, when we have access to message content, 
-  // we'll search through actual messages. For now, generate random name
   return generateRandomName();
 };
 
@@ -50,9 +55,11 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
-        const value = client.type === 'email' ? 
-          `${extractNameFromMessages(row.original.title, row.original.messages)}@ejemplo.com` :
-          client.value;
+        const value = client.type === 'email' 
+          ? `${extractNameFromMessages(row.original.title, row.original.messages)}@ejemplo.com` 
+          : client.type === 'id' 
+            ? generateClientId()
+            : client.value;
         
         return (
           <div className="w-[35%]">
