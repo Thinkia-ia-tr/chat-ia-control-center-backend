@@ -26,13 +26,22 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
     {
       header: "Cliente",
       accessorKey: "client",
-      cell: ({ row }: { row: { original: Conversation } }) => (
-        <div className="w-[35%]">
-          <span className="block">
-            {`${row.original.client.type}: ${row.original.client.value}`}
-          </span>
-        </div>
-      )
+      cell: ({ row }: { row: { original: Conversation } }) => {
+        const client = row.original.client;
+        if (client.type === 'email' && !client.value.includes('@')) {
+          console.warn(`Invalid email format for client: ${client.value}`);
+          return (
+            <div className="w-[35%]">
+              <span className="block text-destructive">Invalid email format</span>
+            </div>
+          );
+        }
+        return (
+          <div className="w-[35%]">
+            <span className="block">{client.value}</span>
+          </div>
+        );
+      }
     },
     {
       header: "Canal",
