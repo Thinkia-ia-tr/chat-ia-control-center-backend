@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,12 @@ import { DataTable } from "@/components/ui/data-table";
 import { Link, useNavigate } from "react-router-dom";
 import { useConversations } from "@/hooks/useConversations";
 import { useToast } from "@/components/ui/use-toast";
+
+// Función para validar email con regex más robusta
+const isValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 export function RecentConversations() {
   const navigate = useNavigate();
@@ -38,10 +45,10 @@ export function RecentConversations() {
       accessorKey: "client",
       cell: ({ row }: any) => {
         const client = row.original.client;
-        if (client.type === 'email' && !client.value.includes('@')) {
+        if (client.type === 'email' && !isValidEmail(client.value)) {
           return (
             <div className="w-[35%]">
-              <span className="block text-destructive">Invalid email format</span>
+              <span className="block text-destructive">Email inválido</span>
             </div>
           );
         }

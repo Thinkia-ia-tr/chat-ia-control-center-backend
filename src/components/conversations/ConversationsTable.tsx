@@ -5,6 +5,12 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
 
+// Función para validar email con regex más robusta
+const isValidEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
 interface ConversationsTableProps {
   data: Conversation[];
   selectedRows: Conversation[];
@@ -28,11 +34,11 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
-        if (client.type === 'email' && !client.value.includes('@')) {
+        if (client.type === 'email' && !isValidEmail(client.value)) {
           console.warn(`Invalid email format for client: ${client.value}`);
           return (
             <div className="w-[35%]">
-              <span className="block text-destructive">Invalid email format</span>
+              <span className="block text-destructive">Email inválido</span>
             </div>
           );
         }
