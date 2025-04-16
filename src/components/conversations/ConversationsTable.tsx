@@ -32,6 +32,21 @@ const extractNameFromMessages = (title: string, messages: number): string => {
   return generateRandomName();
 };
 
+const formatPhoneNumber = (phone: string): string => {
+  // Remove all non-digit characters
+  const cleaned = phone.replace(/\D/g, '');
+  
+  // Format as +XX XXX XXX XXX
+  if (cleaned.length >= 9) {
+    const countryCode = cleaned.slice(0, 2);
+    const firstPart = cleaned.slice(2, 5);
+    const secondPart = cleaned.slice(5, 8);
+    const lastPart = cleaned.slice(8, 11);
+    return `+${countryCode} ${firstPart} ${secondPart} ${lastPart}`;
+  }
+  return phone;
+};
+
 interface ConversationsTableProps {
   data: Conversation[];
   selectedRows: Conversation[];
@@ -59,7 +74,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
           ? `${extractNameFromMessages(row.original.title, row.original.messages)}@ejemplo.com` 
           : client.type === 'id' 
             ? generateClientId()
-            : client.value;
+            : formatPhoneNumber(client.value);
         
         return (
           <div className="w-[35%] whitespace-nowrap overflow-hidden text-ellipsis">
