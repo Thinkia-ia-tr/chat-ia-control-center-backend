@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 interface Conversation {
   id: string;
   title: string;
-  user: string;
+  client: string;
   channel: "Web" | "Whatsapp";
   messages: number;
   date: Date;
@@ -23,7 +22,7 @@ const recentConversations: Conversation[] = [
   {
     id: "1",
     title: "Estado del pedido #45672 - Entrega retrasada",
-    user: "maria@gmail.com",
+    client: "maria@gmail.com",
     channel: "Web",
     messages: 8,
     date: new Date("2024-04-14T10:30:00"),
@@ -32,7 +31,7 @@ const recentConversations: Conversation[] = [
   {
     id: "2",
     title: "Problema con talla incorrecta en pedido #34567",
-    user: "+34611223344",
+    client: "+34611223344",
     channel: "Whatsapp",
     messages: 12,
     date: new Date("2024-04-14T09:15:00"),
@@ -41,7 +40,7 @@ const recentConversations: Conversation[] = [
   {
     id: "3",
     title: "Consulta disponibilidad producto en otras tiendas",
-    user: "carlos@empresa.com",
+    client: "carlos@empresa.com",
     channel: "Web",
     messages: 5,
     date: new Date("2024-04-13T15:45:00"),
@@ -50,7 +49,7 @@ const recentConversations: Conversation[] = [
   {
     id: "4",
     title: "Devolución producto dañado pedido #89012",
-    user: "laura@tienda.com",
+    client: "laura@tienda.com",
     channel: "Web",
     messages: 15,
     date: new Date("2024-04-13T14:20:00"),
@@ -59,7 +58,7 @@ const recentConversations: Conversation[] = [
   {
     id: "5",
     title: "Información envío express pedido #67890",
-    user: "+34655443322",
+    client: "+34655443322",
     channel: "Whatsapp",
     messages: 7,
     date: new Date("2024-04-13T11:10:00"),
@@ -78,11 +77,11 @@ const columns = [
     ),
   },
   {
-    header: "Usuario",
-    accessorKey: "user",
+    header: "Cliente",
+    accessorKey: "client",
     cell: ({ row }: { row: { original: Conversation } }) => (
       <div className="w-[35%]">
-        <span className="block">{row.original.user}</span>
+        <span className="block">{row.original.client}</span>
       </div>
     ),
   },

@@ -2,7 +2,7 @@
 export interface Conversation {
   id: string;
   title: string;
-  user: string;
+  client: string;
   channel: "Web" | "Whatsapp";
   messages: number;
   date: Date;

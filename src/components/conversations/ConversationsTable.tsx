@@ -1,4 +1,3 @@
-
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -25,11 +24,11 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       )
     },
     {
-      header: "Usuario",
-      accessorKey: "user",
+      header: "Cliente",
+      accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => (
         <div className="w-[35%]">
-          <span className="block">{row.original.user}</span>
+          <span className="block">{row.original.client}</span>
         </div>
       )
     },
@@ -75,4 +74,3 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
     />
   );
 }
-

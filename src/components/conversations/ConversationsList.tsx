@@ -10,7 +10,7 @@ const exampleData: Conversation[] = [
   {
     id: "1",
     title: "Cliente consulta estado de pedido #45672 realizado ayer",
-    user: "maria@gmail.com",
+    client: "maria@gmail.com",
     channel: "Web",
     messages: 8,
     date: new Date("2024-04-14T10:30:00"),
@@ -19,7 +19,7 @@ const exampleData: Conversation[] = [
   {
     id: "2",
     title: "Problema con entrega en dirección incorrecta pedido",
-    user: "+34611223344",
+    client: "+34611223344",
     channel: "Whatsapp",
     messages: 12,
     date: new Date("2024-04-14T09:15:00"),
@@ -28,7 +28,7 @@ const exampleData: Conversation[] = [
   {
     id: "3",
     title: "Consulta sobre disponibilidad tallas producto deportivo",
-    user: "Anónimo",
+    client: "Anónimo",
     channel: "Web",
     messages: 5,
     date: new Date("2024-04-13T15:45:00")
@@ -36,7 +36,7 @@ const exampleData: Conversation[] = [
   {
     id: "4",
     title: "Seguimiento envío retrasado pedido #89012 urgente",
-    user: "carlos@empresa.com",
+    client: "carlos@empresa.com",
     channel: "Web",
     messages: 15,
     date: new Date("2024-04-13T14:20:00"),
@@ -45,7 +45,7 @@ const exampleData: Conversation[] = [
   {
     id: "5",
     title: "Duda sobre características producto nuevo modelo",
-    user: "+34655443322",
+    client: "+34655443322",
     channel: "Whatsapp",
     messages: 7,
     date: new Date("2024-04-13T11:10:00")
@@ -53,7 +53,7 @@ const exampleData: Conversation[] = [
   {
     id: "6",
     title: "Pedido #34567 dañado durante transporte reclamo",
-    user: "laura@tienda.com",
+    client: "laura@tienda.com",
     channel: "Web",
     messages: 18,
     date: new Date("2024-04-12T16:40:00"),
@@ -62,7 +62,7 @@ const exampleData: Conversation[] = [
   {
     id: "7",
     title: "Información sobre devolución producto defectuoso",
-    user: "Anónimo",
+    client: "Anónimo",
     channel: "Web",
     messages: 9,
     date: new Date("2024-04-12T13:25:00")
@@ -70,7 +70,7 @@ const exampleData: Conversation[] = [
   {
     id: "8",
     title: "Consulta disponibilidad envío express pedido #67890",
-    user: "+34699887766",
+    client: "+34699887766",
     channel: "Whatsapp",
     messages: 6,
     date: new Date("2024-04-12T10:55:00"),
@@ -79,7 +79,7 @@ const exampleData: Conversation[] = [
   {
     id: "9",
     title: "Pregunta sobre diferencias entre modelos productos",
-    user: "pedro@outlook.com",
+    client: "pedro@outlook.com",
     channel: "Web",
     messages: 11,
     date: new Date("2024-04-11T17:30:00")
@@ -87,7 +87,7 @@ const exampleData: Conversation[] = [
   {
     id: "10",
     title: "Reclamo pedido incompleto #56789 seguimiento",
-    user: "+34677889900",
+    client: "+34677889900",
     channel: "Whatsapp",
     messages: 14,
     date: new Date("2024-04-11T09:45:00"),
