@@ -6,18 +6,43 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
 
+const generateRandomName = (): string => {
+  const names = ['maria', 'juan', 'ana', 'carlos', 'sofia', 'miguel', 'laura', 'pedro'];
+  const surnames = ['garcia', 'rodriguez', 'lopez', 'martinez', 'sanchez', 'fernandez'];
+  const randomName = names[Math.floor(Math.random() * names.length)];
+  const randomSurname = surnames[Math.floor(Math.random() * surnames.length)];
+  return `${randomName}.${randomSurname}`;
+};
+
 const generateEmailFromTitle = (title: string): string => {
-  // Extract potential name from conversation title
-  const nameMatch = title.match(/(?:con|para|de)\s+([A-Za-zÀ-ÿ\s]+?)(?:\s+sobre|\s*$)/i);
-  if (nameMatch && nameMatch[1]) {
-    const name = nameMatch[1].trim().toLowerCase();
-    // Remove accents and special characters
-    const normalizedName = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    // Replace spaces with dots and remove special characters
-    const emailName = normalizedName.replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '');
-    return `${emailName}@ejemplo.com`;
+  // Extract potential name from conversation title with improved pattern matching
+  const namePatterns = [
+    /(?:con|para|de)\s+([A-Za-zÀ-ÿ\s]+?)(?:\s+sobre|\s*$)/i,
+    /(?:cliente|usuario|señor|señora|sr\.|sra\.)\s+([A-Za-zÀ-ÿ\s]+?)(?:\s+[a-z]|\s*$)/i,
+    /([A-Za-zÀ-ÿ]{2,}\s+[A-Za-zÀ-ÿ]{2,})(?:\s+sobre|\s+solicita|\s+pregunta|\s*$)/i
+  ];
+
+  for (const pattern of namePatterns) {
+    const nameMatch = title.match(pattern);
+    if (nameMatch && nameMatch[1]) {
+      const fullName = nameMatch[1].trim().toLowerCase();
+      // Remove accents and special characters
+      const normalizedName = fullName.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      // Split into name parts and take first two parts if available
+      const nameParts = normalizedName.split(/\s+/);
+      if (nameParts.length >= 2) {
+        // Use first name and first surname
+        return `${nameParts[0]}.${nameParts[1]}@ejemplo.com`;
+      } else if (nameParts.length === 1) {
+        // If only one word, use random surname
+        const surname = surnames[Math.floor(Math.random() * surnames.length)];
+        return `${nameParts[0]}.${surname}@ejemplo.com`;
+      }
+    }
   }
-  return 'usuario@ejemplo.com';
+  
+  // If no name found, generate random name
+  return `${generateRandomName()}@ejemplo.com`;
 };
 
 interface ConversationsTableProps {
