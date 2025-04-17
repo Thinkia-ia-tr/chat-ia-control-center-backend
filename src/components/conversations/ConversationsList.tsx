@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SearchFilter } from "./SearchFilter";
@@ -12,6 +13,8 @@ export function ConversationsList() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRows, setSelectedRows] = useState<Conversation[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   
   const { data: conversations = [], isError } = useConversations();
 
@@ -39,17 +42,29 @@ export function ConversationsList() {
   const filteredData = conversations.filter(conversation => 
     conversation.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const startIndex = page * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const paginatedData = filteredData.slice(startIndex, endIndex);
 
   const handlePreviousPage = () => {
-    console.log('Previous page');
+    setPage(prev => Math.max(0, prev - 1));
   };
 
   const handleNextPage = () => {
-    console.log('Next page');
+    setPage(prev => {
+      if ((prev + 1) * rowsPerPage < filteredData.length) {
+        return prev + 1;
+      }
+      return prev;
+    });
   };
 
   const handleRowsPerPageChange = (value: number) => {
-    console.log('Rows per page changed to:', value);
+    setRowsPerPage(value);
+    setPage(0); // Reset to first page when changing rows per page
   };
   
   return (
@@ -62,7 +77,7 @@ export function ConversationsList() {
       />
       
       <ConversationsTable
-        data={filteredData}
+        data={paginatedData}
         selectedRows={selectedRows}
         onRowSelect={handleRowSelect}
         onRowClick={handleRowClick}
@@ -72,6 +87,11 @@ export function ConversationsList() {
         onPreviousPage={handlePreviousPage}
         onNextPage={handleNextPage}
         onRowsPerPageChange={handleRowsPerPageChange}
+        disablePrevious={page === 0}
+        disableNext={(page + 1) * rowsPerPage >= filteredData.length}
+        currentPage={page + 1}
+        totalPages={totalPages}
+        rowsPerPage={rowsPerPage}
       />
     </div>
   );

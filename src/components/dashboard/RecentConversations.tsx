@@ -121,13 +121,14 @@ export function RecentConversations() {
   };
 
   const handleRowsPerPageChange = (value: number) => {
-    // Not implementing this for the dashboard view as it's fixed at 5
+    // Not implementing for the dashboard as rows per page is fixed
   };
 
   // Paginate conversations
   const start = page * rowsPerPage;
   const paginatedConversations = sortedConversations.slice(start, start + rowsPerPage);
   
+  const totalPages = Math.ceil(sortedConversations.length / rowsPerPage);
   const hasNextPage = (page + 1) * rowsPerPage < sortedConversations.length;
   const hasPreviousPage = page > 0;
 
@@ -167,7 +168,8 @@ export function RecentConversations() {
           disablePrevious={!hasPreviousPage}
           disableNext={!hasNextPage}
           currentPage={page + 1}
-          totalPages={Math.ceil(sortedConversations.length / rowsPerPage)}
+          totalPages={totalPages}
+          showRowsPerPageSelect={false}
         />
       </div>
     </div>
