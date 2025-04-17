@@ -6,48 +6,6 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
 
-const SURNAMES = ['garcia', 'rodriguez', 'lopez', 'martinez', 'sanchez', 'fernandez'];
-const NAMES = ['maria', 'juan', 'ana', 'carlos', 'sofia', 'miguel', 'laura', 'pedro'];
-
-let lastIdNumber = 573; // Starting from 573 so next one will be 574
-
-const generateClientId = (): string => {
-  lastIdNumber++;
-  const paddedNumber = String(lastIdNumber).padStart(7, '0');
-  return `2025-${paddedNumber}`;
-};
-
-const generateRandomName = (): string => {
-  const randomName = NAMES[Math.floor(Math.random() * NAMES.length)];
-  const randomSurname = SURNAMES[Math.floor(Math.random() * SURNAMES.length)];
-  return `${randomName}.${randomSurname}`;
-};
-
-const extractNameFromMessages = (title: string, messages: number): string => {
-  const namePatterns = [
-    /(?:soy|me llamo|nombre es)\s+([A-Za-zÀ-ÿ\s]+?)(?:[\.,]|\s+(?:y|e|pero|con|sobre)|\s*$)/i,
-    /(?:señor|señora|sr\.|sra\.)\s+([A-Za-zÀ-ÿ\s]+?)(?:\s+[a-z]|\s*$)/i,
-    /([A-Za-zÀ-ÿ]{2,}\s+[A-Za-zÀ-ÿ]{2,})(?:\s+(?:solicita|pregunta|dice|responde)|\s*$)/i
-  ];
-
-  return generateRandomName();
-};
-
-const formatPhoneNumber = (phone: string): string => {
-  // Remove all non-digit characters
-  const cleaned = phone.replace(/\D/g, '');
-  
-  // Format as +XX XXX XXX XXX
-  if (cleaned.length >= 9) {
-    const countryCode = cleaned.slice(0, 2);
-    const firstPart = cleaned.slice(2, 5);
-    const secondPart = cleaned.slice(5, 8);
-    const lastPart = cleaned.slice(8, 11);
-    return `+${countryCode} ${firstPart} ${secondPart} ${lastPart}`;
-  }
-  return phone;
-};
-
 interface ConversationsTableProps {
   data: Conversation[];
   selectedRows: Conversation[];
@@ -71,11 +29,29 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
-        const value = client.type === 'email' 
-          ? `${extractNameFromMessages(row.original.title, row.original.messages)}@ejemplo.com` 
-          : client.type === 'id' 
-            ? generateClientId()
-            : formatPhoneNumber(client.value);
+        let value = '';
+        
+        if (client && typeof client === 'object') {
+          if (client.type === 'email') {
+            value = client.value || 'usuario@ejemplo.com';
+          } else if (client.type === 'phone') {
+            // Format phone if needed
+            const cleaned = (client.value || '').replace(/\D/g, '');
+            if (cleaned.length >= 9) {
+              const countryCode = cleaned.slice(0, 2);
+              const firstPart = cleaned.slice(2, 5);
+              const secondPart = cleaned.slice(5, 8);
+              const lastPart = cleaned.slice(8, 11);
+              value = `+${countryCode} ${firstPart} ${secondPart} ${lastPart}`;
+            } else {
+              value = client.value || '';
+            }
+          } else if (client.type === 'id') {
+            value = client.value || '';
+          }
+        } else {
+          value = 'Cliente sin información';
+        }
         
         return (
           <div className="w-full">

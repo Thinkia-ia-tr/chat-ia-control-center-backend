@@ -8,7 +8,12 @@ import type { Conversation } from "./types";
 import { useConversations } from "@/hooks/useConversations";
 import { useToast } from "@/components/ui/use-toast";
 
-export function ConversationsList() {
+interface ConversationsListProps {
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export function ConversationsList({ startDate, endDate }: ConversationsListProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,7 +21,7 @@ export function ConversationsList() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   
-  const { data: conversations = [], isError } = useConversations();
+  const { data: conversations = [], isError } = useConversations(startDate, endDate);
 
   if (isError) {
     toast({

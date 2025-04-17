@@ -28,7 +28,7 @@ export default function ConversationsPage() {
             onChange={handleDateRangeChange}
           />
         </div>
-        <ConversationsList />
+        <ConversationsList startDate={startDate} endDate={endDate} />
       </div>
     </Layout>
   );

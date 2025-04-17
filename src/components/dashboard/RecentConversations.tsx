@@ -12,22 +12,6 @@ import { useConversations } from "@/hooks/useConversations";
 import { useToast } from "@/components/ui/use-toast";
 import { TablePagination } from "@/components/conversations/TablePagination";
 
-// Function to format phone numbers
-const formatPhoneNumber = (phone: string): string => {
-  // Remove all non-digit characters
-  const cleaned = phone.replace(/\D/g, '');
-  
-  // Format as +XX XXX XXX XXX
-  if (cleaned.length >= 9) {
-    const countryCode = cleaned.slice(0, 2);
-    const firstPart = cleaned.slice(2, 5);
-    const secondPart = cleaned.slice(5, 8);
-    const lastPart = cleaned.slice(8, 11);
-    return `+${countryCode} ${firstPart} ${secondPart} ${lastPart}`;
-  }
-  return phone;
-};
-
 export function RecentConversations() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -58,9 +42,29 @@ export function RecentConversations() {
       accessorKey: "client",
       cell: ({ row }: any) => {
         const client = row.original.client;
-        const value = client.type === 'email' ? 
-          client.value.includes('@') ? client.value : 'usuario@ejemplo.com' : 
-          formatPhoneNumber(client.value);
+        let value = '';
+        
+        if (client && typeof client === 'object') {
+          if (client.type === 'email') {
+            value = client.value || 'usuario@ejemplo.com';
+          } else if (client.type === 'phone') {
+            // Format phone if needed
+            const cleaned = (client.value || '').replace(/\D/g, '');
+            if (cleaned.length >= 9) {
+              const countryCode = cleaned.slice(0, 2);
+              const firstPart = cleaned.slice(2, 5);
+              const secondPart = cleaned.slice(5, 8);
+              const lastPart = cleaned.slice(8, 11);
+              value = `+${countryCode} ${firstPart} ${secondPart} ${lastPart}`;
+            } else {
+              value = client.value || '';
+            }
+          } else if (client.type === 'id') {
+            value = client.value || '';
+          }
+        } else {
+          value = 'Cliente sin información';
+        }
         
         return (
           <div className="w-full">
