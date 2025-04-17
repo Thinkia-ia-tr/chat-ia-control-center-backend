@@ -1,4 +1,3 @@
-
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -28,24 +27,19 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       header: "Cliente",
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
-        // Format client as AAMM-XXXXXX
         const client = row.original.client;
         const date = new Date();
-        const yearPrefix = date.getFullYear().toString().slice(2); // Last 2 digits of the year
-        const monthPrefix = (date.getMonth() + 1).toString().padStart(2, '0'); // Month padded with zero
+        const yearPrefix = date.getFullYear().toString().slice(2);
+        const monthPrefix = (date.getMonth() + 1).toString().padStart(2, '0');
         
-        // Generate a consistent 6-digit number from the client data
         let sixDigitNumber = '000000';
         
         if (client && typeof client === 'object' && client.value) {
-          // Use client value to create a consistent 6-digit number
           const valueString = client.value.toString();
-          // Take the last 6 chars of the string, or pad with zeros
           sixDigitNumber = valueString.length >= 6 
             ? valueString.slice(-6) 
             : valueString.padStart(6, '0');
             
-          // Ensure it's 6 digits by replacing non-digits with '0'
           sixDigitNumber = sixDigitNumber.replace(/\D/g, '0').slice(0, 6);
         }
         
@@ -63,7 +57,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       accessorKey: "channel",
       cell: ({ row }: { row: { original: Conversation } }) => (
         <div className="w-full">
-          <Badge variant="secondary">{row.original.channel}</Badge>
+          <Badge variant="default" className="bg-primary hover:bg-primary/80">{row.original.channel}</Badge>
         </div>
       )
     },
