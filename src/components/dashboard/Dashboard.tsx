@@ -29,7 +29,7 @@ export function Dashboard() {
       </div>
 
       <Stats startDate={startDate} endDate={endDate} />
-      <RecentConversations />
+      <RecentConversations startDate={startDate} endDate={endDate} />
     </div>
   );
 }

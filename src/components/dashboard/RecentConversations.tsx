@@ -1,3 +1,4 @@
+
 import React from "react";
 import { MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -9,10 +10,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { useConversations } from "@/hooks/useConversations";
 import { useToast } from "@/components/ui/use-toast";
 
-export function RecentConversations() {
+interface RecentConversationsProps {
+  startDate: Date;
+  endDate: Date;
+}
+
+export function RecentConversations({ startDate, endDate }: RecentConversationsProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { data: conversations = [], isError } = useConversations();
+  const { data: conversations = [], isError } = useConversations(startDate, endDate);
   
   if (isError) {
     toast({
@@ -86,6 +92,7 @@ export function RecentConversations() {
   
   const sortedConversations = [...conversations].sort((a, b) => b.date.getTime() - a.date.getTime());
   
+  // Mostrar solo las 5 más recientes del rango seleccionado
   const recentConversations = sortedConversations.slice(0, 5);
 
   return (
