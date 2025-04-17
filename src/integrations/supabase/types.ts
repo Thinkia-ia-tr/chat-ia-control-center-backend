@@ -71,15 +71,89 @@ export type Database = {
           },
         ]
       }
+      referral_types: {
+        Row: {
+          contact_info: Json
+          created_at: string
+          description: string | null
+          id: string
+          name: Database["public"]["Enums"]["referral_type"]
+        }
+        Insert: {
+          contact_info?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: Database["public"]["Enums"]["referral_type"]
+        }
+        Update: {
+          contact_info?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: Database["public"]["Enums"]["referral_type"]
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          referral_type_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          referral_type_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          referral_type_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referral_type_id_fkey"
+            columns: ["referral_type_id"]
+            isOneToOne: false
+            referencedRelation: "referral_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_referral_stats: {
+        Args: { start_date: string; end_date: string }
+        Returns: {
+          referral_type: string
+          count: number
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      referral_type:
+        | "Asesor Comercial"
+        | "Atención al Cliente"
+        | "Soporte Técnico"
+        | "Presupuestos"
+        | "Colaboraciones"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -194,6 +268,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      referral_type: [
+        "Asesor Comercial",
+        "Atención al Cliente",
+        "Soporte Técnico",
+        "Presupuestos",
+        "Colaboraciones",
+      ],
+    },
   },
 } as const
