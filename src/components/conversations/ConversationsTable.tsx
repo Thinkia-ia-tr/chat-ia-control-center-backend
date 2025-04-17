@@ -28,34 +28,32 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       header: "Cliente",
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
+        // Format client as AAMM-XXXXXX
         const client = row.original.client;
-        let value = '';
+        const date = new Date();
+        const yearPrefix = date.getFullYear().toString().slice(2); // Last 2 digits of the year
+        const monthPrefix = (date.getMonth() + 1).toString().padStart(2, '0'); // Month padded with zero
         
-        if (client && typeof client === 'object') {
-          if (client.type === 'email') {
-            value = client.value || 'usuario@ejemplo.com';
-          } else if (client.type === 'phone') {
-            // Format phone if needed
-            const cleaned = (client.value || '').replace(/\D/g, '');
-            if (cleaned.length >= 9) {
-              const countryCode = cleaned.slice(0, 2);
-              const firstPart = cleaned.slice(2, 5);
-              const secondPart = cleaned.slice(5, 8);
-              const lastPart = cleaned.slice(8, 11);
-              value = `+${countryCode} ${firstPart} ${secondPart} ${lastPart}`;
-            } else {
-              value = client.value || '';
-            }
-          } else if (client.type === 'id') {
-            value = client.value || '';
-          }
-        } else {
-          value = 'Cliente sin información';
+        // Generate a consistent 6-digit number from the client data
+        let sixDigitNumber = '000000';
+        
+        if (client && typeof client === 'object' && client.value) {
+          // Use client value to create a consistent 6-digit number
+          const valueString = client.value.toString();
+          // Take the last 6 chars of the string, or pad with zeros
+          sixDigitNumber = valueString.length >= 6 
+            ? valueString.slice(-6) 
+            : valueString.padStart(6, '0');
+            
+          // Ensure it's 6 digits by replacing non-digits with '0'
+          sixDigitNumber = sixDigitNumber.replace(/\D/g, '0').slice(0, 6);
         }
+        
+        const formattedId = `${yearPrefix}${monthPrefix}-${sixDigitNumber}`;
         
         return (
           <div className="w-full">
-            <span className="block">{value}</span>
+            <span className="block">{formattedId}</span>
           </div>
         );
       }

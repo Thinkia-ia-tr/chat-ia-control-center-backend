@@ -10,7 +10,6 @@ import { DataTable } from "@/components/ui/data-table";
 import { Link, useNavigate } from "react-router-dom";
 import { useConversations } from "@/hooks/useConversations";
 import { useToast } from "@/components/ui/use-toast";
-import { TablePagination } from "@/components/conversations/TablePagination";
 
 export function RecentConversations() {
   const navigate = useNavigate();
@@ -43,34 +42,36 @@ export function RecentConversations() {
       header: "Cliente",
       accessorKey: "client",
       cell: ({ row }: any) => {
-        const client = row.original.client;
-        let value = '';
+        // Format client as AAMM-XXXXXX
+        // AA: first two letters of the current year
+        // MM: current month
+        // XXXXXX: random 6-digit number based on client id
         
-        if (client && typeof client === 'object') {
-          if (client.type === 'email') {
-            value = client.value || 'usuario@ejemplo.com';
-          } else if (client.type === 'phone') {
-            // Format phone if needed
-            const cleaned = (client.value || '').replace(/\D/g, '');
-            if (cleaned.length >= 9) {
-              const countryCode = cleaned.slice(0, 2);
-              const firstPart = cleaned.slice(2, 5);
-              const secondPart = cleaned.slice(5, 8);
-              const lastPart = cleaned.slice(8, 11);
-              value = `+${countryCode} ${firstPart} ${secondPart} ${lastPart}`;
-            } else {
-              value = client.value || '';
-            }
-          } else if (client.type === 'id') {
-            value = client.value || '';
-          }
-        } else {
-          value = 'Cliente sin información';
+        const client = row.original.client;
+        const date = new Date();
+        const yearPrefix = date.getFullYear().toString().slice(2); // Last 2 digits of the year
+        const monthPrefix = (date.getMonth() + 1).toString().padStart(2, '0'); // Month padded with zero
+        
+        // Generate a consistent 6-digit number from the client data
+        let sixDigitNumber = '000000';
+        
+        if (client && typeof client === 'object' && client.value) {
+          // Use client value to create a consistent 6-digit number
+          const valueString = client.value.toString();
+          // Take the last 6 chars of the string, or pad with zeros
+          sixDigitNumber = valueString.length >= 6 
+            ? valueString.slice(-6) 
+            : valueString.padStart(6, '0');
+            
+          // Ensure it's 6 digits by replacing non-digits with '0'
+          sixDigitNumber = sixDigitNumber.replace(/\D/g, '0').slice(0, 6);
         }
+        
+        const formattedId = `${yearPrefix}${monthPrefix}-${sixDigitNumber}`;
         
         return (
           <div className="w-full">
-            <span className="block">{value}</span>
+            <span className="block">{formattedId}</span>
           </div>
         );
       },
