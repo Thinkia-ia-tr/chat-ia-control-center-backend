@@ -17,6 +17,5 @@ export interface Message {
   conversation_id: string;
   content: string;
   sender: "user" | "agent" | "system";
-  sender_name?: string | null;
   timestamp: string;
 }

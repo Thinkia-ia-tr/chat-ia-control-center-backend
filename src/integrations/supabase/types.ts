@@ -45,7 +45,6 @@ export type Database = {
           conversation_id: string
           id: string
           sender: string
-          sender_name: string | null
           timestamp: string
         }
         Insert: {
@@ -53,7 +52,6 @@ export type Database = {
           conversation_id: string
           id?: string
           sender: string
-          sender_name?: string | null
           timestamp?: string
         }
         Update: {
@@ -61,7 +59,6 @@ export type Database = {
           conversation_id?: string
           id?: string
           sender?: string
-          sender_name?: string | null
           timestamp?: string
         }
         Relationships: [

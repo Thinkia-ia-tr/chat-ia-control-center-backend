@@ -35,7 +35,7 @@ export function ConversationDetail({
       if (conversation?.client?.value) {
         return conversation.client.value.toString();
       }
-      return message.sender_name || "Usuario";
+      return "Usuario";
     }
     // For agent or system messages
     return message.sender === "agent" ? "Agent" : "Sistema";
