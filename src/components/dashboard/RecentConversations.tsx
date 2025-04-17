@@ -1,3 +1,4 @@
+
 import React from "react";
 import { MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -115,7 +116,6 @@ export function RecentConversations() {
       <DataTable
         columns={columns}
         data={recentConversations.map(item => ({ row: { original: item } }))}
-        selectedRows={[]}
         getRowId={(rowData) => rowData.row.original.id}
         onRowClick={handleRowClick}
       />

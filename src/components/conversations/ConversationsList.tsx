@@ -26,7 +26,6 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
-  const [selectedRows, setSelectedRows] = useState<Conversation[]>([]);
   const [page, setPage] = useState(1); // Changed from 0 to 1 for 1-based pagination
   const [rowsPerPage, setRowsPerPage] = useState(10);
   
@@ -44,15 +43,6 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
       variant: "destructive"
     });
   }
-  
-  const handleRowSelect = (rowData: { row: { original: Conversation } }) => {
-    const row = rowData.row.original;
-    if (selectedRows.some(r => r.id === row.id)) {
-      setSelectedRows(selectedRows.filter(r => r.id !== row.id));
-    } else {
-      setSelectedRows([...selectedRows, row]);
-    }
-  };
 
   const handleRowClick = (rowData: { row: { original: Conversation } }) => {
     navigate(`/conversaciones/${rowData.row.original.id}`);
@@ -104,13 +94,10 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         totalRows={filteredData.length}
-        selectedCount={selectedRows.length}
       />
       
       <ConversationsTable
         data={paginatedData}
-        selectedRows={selectedRows}
-        onRowSelect={handleRowSelect}
         onRowClick={handleRowClick}
       />
       

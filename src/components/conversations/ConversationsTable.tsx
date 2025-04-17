@@ -1,3 +1,4 @@
+
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -7,12 +8,10 @@ import { Conversation } from "./types";
 
 interface ConversationsTableProps {
   data: Conversation[];
-  selectedRows: Conversation[];
-  onRowSelect: (row: { row: { original: Conversation } }) => void;
   onRowClick: (row: { row: { original: Conversation } }) => void;
 }
 
-export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick }: ConversationsTableProps) {
+export function ConversationsTable({ data, onRowClick }: ConversationsTableProps) {
   const columns = [
     {
       header: "Conversación",
@@ -87,8 +86,6 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
     <DataTable
       columns={columns}
       data={data.map(item => ({ row: { original: item } }))}
-      selectedRows={selectedRows.map(item => ({ row: { original: item } }))}
-      onRowSelect={onRowSelect}
       onRowClick={onRowClick}
       getRowId={(rowData) => rowData.row.original.id}
     />

@@ -10,8 +10,6 @@ interface DataTableProps<T> {
     cell?: (item: { row: { original: T } }) => React.ReactNode;
   }[];
   data: { row: { original: T } }[];
-  selectedRows?: { row: { original: T } }[];
-  onRowSelect?: (row: { row: { original: T } }) => void;
   onRowClick?: (row: { row: { original: T } }) => void;
   getRowId?: (row: { row: { original: T } }) => string | number;
   className?: string;
@@ -20,8 +18,6 @@ interface DataTableProps<T> {
 export function DataTable<T>({
   columns,
   data,
-  selectedRows = [],
-  onRowSelect,
   onRowClick,
   getRowId = () => Math.random(),
   className,
@@ -32,7 +28,6 @@ export function DataTable<T>({
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>
-              {onRowSelect && <TableHead className="w-10"></TableHead>}
               {columns.map((column) => (
                 <TableHead key={column.accessorKey} className="text-left">
                   {column.header}
@@ -43,27 +38,14 @@ export function DataTable<T>({
           <TableBody>
             {data.map((row) => {
               const rowId = getRowId(row);
-              const isSelected = selectedRows.some((selectedRow) => getRowId(selectedRow) === rowId);
               return (
                 <TableRow 
                   key={rowId} 
                   className={cn(
-                    isSelected ? "bg-muted" : "",
                     onRowClick && "cursor-pointer hover:bg-muted/50"
                   )}
                   onClick={() => onRowClick?.(row)}
                 >
-                  {onRowSelect && (
-                    <TableCell className="p-3" onClick={(e) => e.stopPropagation()}>
-                      <span
-                        className={cn(
-                          "flex h-5 w-5 rounded-full border items-center justify-center",
-                          isSelected ? "border-primary bg-primary" : ""
-                        )}
-                        onClick={() => onRowSelect(row)}
-                      ></span>
-                    </TableCell>
-                  )}
                   {columns.map((column) => (
                     <TableCell key={column.accessorKey}>
                       {column.cell
