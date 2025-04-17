@@ -3,10 +3,17 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SearchFilter } from "./SearchFilter";
 import { ConversationsTable } from "./ConversationsTable";
-import { TablePagination } from "./TablePagination";
+import { ConversationsPagination } from "./ConversationsPagination";
 import type { Conversation } from "./types";
 import { useConversations } from "@/hooks/useConversations";
 import { useToast } from "@/components/ui/use-toast";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
 interface ConversationsListProps {
   startDate?: Date;
@@ -18,7 +25,7 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRows, setSelectedRows] = useState<Conversation[]>([]);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1); // Changed from 0 to 1 for 1-based pagination
   const [rowsPerPage, setRowsPerPage] = useState(10);
   
   const { data: conversations = [], isError } = useConversations(startDate, endDate);
@@ -49,27 +56,18 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
   );
   
   // Calculate pagination
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-  const startIndex = page * rowsPerPage;
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / rowsPerPage));
+  const startIndex = (page - 1) * rowsPerPage; // Adjusted for 1-based pagination
   const endIndex = startIndex + rowsPerPage;
   const paginatedData = filteredData.slice(startIndex, endIndex);
 
-  const handlePreviousPage = () => {
-    setPage(prev => Math.max(0, prev - 1));
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
   };
 
-  const handleNextPage = () => {
-    setPage(prev => {
-      if ((prev + 1) * rowsPerPage < filteredData.length) {
-        return prev + 1;
-      }
-      return prev;
-    });
-  };
-
-  const handleRowsPerPageChange = (value: number) => {
-    setRowsPerPage(value);
-    setPage(0); // Reset to first page when changing rows per page
+  const handleRowsPerPageChange = (value: string) => {
+    setRowsPerPage(parseInt(value));
+    setPage(1); // Reset to first page when changing rows per page
   };
   
   return (
@@ -88,16 +86,33 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
         onRowClick={handleRowClick}
       />
       
-      <TablePagination
-        onPreviousPage={handlePreviousPage}
-        onNextPage={handleNextPage}
-        onRowsPerPageChange={handleRowsPerPageChange}
-        disablePrevious={page === 0}
-        disableNext={(page + 1) * rowsPerPage >= filteredData.length}
-        currentPage={page + 1}
-        totalPages={totalPages}
-        rowsPerPage={rowsPerPage}
-      />
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Mostrar</span>
+          <Select
+            value={rowsPerPage.toString()}
+            onValueChange={handleRowsPerPageChange}
+          >
+            <SelectTrigger className="w-[70px]">
+              <SelectValue placeholder={rowsPerPage} />
+            </SelectTrigger>
+            <SelectContent>
+              {[5, 10, 25, 50].map((option) => (
+                <SelectItem key={option} value={option.toString()}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <span className="text-sm text-muted-foreground">por página</span>
+        </div>
+        
+        <ConversationsPagination 
+          currentPage={page} 
+          totalPages={totalPages} 
+          onPageChange={handlePageChange} 
+        />
+      </div>
     </div>
   );
 }
