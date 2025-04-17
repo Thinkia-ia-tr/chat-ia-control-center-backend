@@ -1,9 +1,9 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, addMonths } from "date-fns";
 import { es } from "date-fns/locale";
 import {
   Popover,
@@ -34,6 +34,8 @@ export function DateRangePicker({
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
   const [tempStartDate, setTempStartDate] = React.useState<Date>(startDate);
   const [tempEndDate, setTempEndDate] = React.useState<Date>(endDate);
+  const [leftMonth, setLeftMonth] = React.useState<Date>(new Date(tempStartDate));
+  const [rightMonth, setRightMonth] = React.useState<Date>(addMonths(new Date(tempStartDate), 1));
   
   const formattedStartDate = format(startDate, "d LLL yyyy", { locale: es });
   const formattedEndDate = format(endDate, "d LLL yyyy", { locale: es });
@@ -46,7 +48,44 @@ export function DateRangePicker({
   const handleCalendarOpen = () => {
     setTempStartDate(startDate);
     setTempEndDate(endDate);
+    setLeftMonth(new Date(startDate));
+    setRightMonth(addMonths(new Date(startDate), 1));
     setIsCalendarOpen(true);
+  };
+
+  const handlePreviousMonths = () => {
+    setLeftMonth(prevMonth => {
+      const newLeftMonth = addMonths(prevMonth, -1);
+      setRightMonth(addMonths(newLeftMonth, 1));
+      return newLeftMonth;
+    });
+  };
+
+  const handleNextMonths = () => {
+    setLeftMonth(prevMonth => {
+      const newLeftMonth = addMonths(prevMonth, 1);
+      setRightMonth(addMonths(newLeftMonth, 1));
+      return newLeftMonth;
+    });
+  };
+
+  const handleSelectDate = (date: Date | undefined) => {
+    if (!date) return;
+
+    // If no start date selected yet or if selecting a date before current start date
+    if (!tempStartDate || (tempStartDate && tempEndDate && date < tempStartDate)) {
+      setTempStartDate(date);
+      setTempEndDate(undefined);
+    }
+    // If start date is selected but no end date, or selecting a new range
+    else if (tempStartDate && (!tempEndDate || date < tempStartDate)) {
+      setTempEndDate(tempStartDate);
+      setTempStartDate(date);
+    }
+    // If start date is selected and selecting end date
+    else if (tempStartDate && date >= tempStartDate) {
+      setTempEndDate(date);
+    }
   };
 
   return (
@@ -121,35 +160,94 @@ export function DateRangePicker({
       </Popover>
       
       <Sheet open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-        <SheetContent className="sm:max-w-md overflow-y-auto">
+        <SheetContent className="sm:max-w-3xl overflow-y-auto">
           <SheetHeader>
             <SheetTitle>Seleccionar rango de fechas</SheetTitle>
           </SheetHeader>
           <div className="grid gap-6 py-6">
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            {/* Calendar Navigation */}
+            <div className="flex items-center justify-between">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handlePreviousMonths}
+                className="hover:text-primary"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+              <div className="flex-1 text-center">
+                <div className="font-medium text-sm">
+                  {format(leftMonth, "MMMM yyyy", { locale: es })} - {format(rightMonth, "MMMM yyyy", { locale: es })}
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleNextMonths}
+                className="hover:text-primary"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </Button>
+            </div>
+
+            {/* Two calendars side by side */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <div className="font-medium text-sm">Fecha de inicio</div>
                 <Calendar
-                  mode="single"
-                  selected={tempStartDate}
-                  onSelect={(date) => date && setTempStartDate(date)}
+                  mode="range"
+                  selected={{
+                    from: tempStartDate,
+                    to: tempEndDate
+                  }}
+                  onSelect={(range) => {
+                    if (!range) return;
+                    if (range.from) setTempStartDate(range.from);
+                    if (range.to) setTempEndDate(range.to);
+                  }}
+                  month={leftMonth}
+                  onMonthChange={setLeftMonth}
+                  numberOfMonths={1}
+                  disabled={(date) => date > new Date()}
                   initialFocus
-                  className={cn("p-3 pointer-events-auto border rounded-md")}
-                  disabled={(date) => date > tempEndDate || date > new Date()}
+                  className={cn("border rounded-md")}
                 />
               </div>
               <div className="space-y-2">
-                <div className="font-medium text-sm">Fecha de fin</div>
                 <Calendar
-                  mode="single"
-                  selected={tempEndDate}
-                  onSelect={(date) => date && setTempEndDate(date)}
+                  mode="range"
+                  selected={{
+                    from: tempStartDate,
+                    to: tempEndDate
+                  }}
+                  onSelect={(range) => {
+                    if (!range) return;
+                    if (range.from) setTempStartDate(range.from);
+                    if (range.to) setTempEndDate(range.to);
+                  }}
+                  month={rightMonth}
+                  onMonthChange={setRightMonth}
+                  numberOfMonths={1}
+                  disabled={(date) => date > new Date()}
                   initialFocus
-                  className={cn("p-3 pointer-events-auto border rounded-md")}
-                  disabled={(date) => date < tempStartDate || date > new Date()}
+                  className={cn("border rounded-md")}
                 />
               </div>
             </div>
+
+            <div className="flex items-center justify-between">
+              <div className="text-sm">
+                {tempStartDate && tempEndDate ? (
+                  <span>
+                    {format(tempStartDate, "d MMM yyyy", { locale: es })} - {format(tempEndDate, "d MMM yyyy", { locale: es })}
+                  </span>
+                ) : tempStartDate ? (
+                  <span>{format(tempStartDate, "d MMM yyyy", { locale: es })}</span>
+                ) : (
+                  <span>Selecciona un rango de fechas</span>
+                )}
+              </div>
+            </div>
+            
             <Button onClick={handleCalendarApply} className="w-full">
               Aplicar
             </Button>
