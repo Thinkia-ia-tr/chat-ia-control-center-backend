@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
@@ -111,19 +110,6 @@ export function DateRangePicker({
                   }}
                 >
                   Último mes
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    const end = new Date();
-                    const start = new Date();
-                    start.setDate(start.getDate() - 90);
-                    onChange(start, end);
-                    setIsCalendarOpen(false);
-                  }}
-                >
-                  Últimos 3 meses
                 </Button>
                 <Button
                   size="sm"
