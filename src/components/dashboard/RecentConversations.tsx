@@ -66,7 +66,7 @@ export function RecentConversations() {
       accessorKey: "channel",
       cell: ({ row }: any) => (
         <div className="w-full">
-          <Badge variant="default" className="bg-primary hover:bg-primary/80">{row.original.channel}</Badge>
+          <Badge variant="default" className="bg-primary/50 hover:bg-primary/70">{row.original.channel}</Badge>
         </div>
       ),
     },
