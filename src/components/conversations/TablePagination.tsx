@@ -6,27 +6,46 @@ interface TablePaginationProps {
   onPreviousPage: () => void;
   onNextPage: () => void;
   onRowsPerPageChange: (value: number) => void;
+  disablePrevious?: boolean;
+  disableNext?: boolean;
+  currentPage?: number;
+  totalPages?: number;
 }
 
-export function TablePagination({ onPreviousPage, onNextPage, onRowsPerPageChange }: TablePaginationProps) {
+export function TablePagination({ 
+  onPreviousPage, 
+  onNextPage, 
+  onRowsPerPageChange,
+  disablePrevious = false,
+  disableNext = false,
+  currentPage,
+  totalPages
+}: TablePaginationProps) {
   return (
     <div className="flex justify-between items-center">
       <div className="text-sm text-muted-foreground">
-        Rows per page: 
-        <select 
-          className="ml-2 bg-transparent border-none text-sm text-muted-foreground"
-          onChange={(e) => onRowsPerPageChange(Number(e.target.value))}
-        >
-          <option>10</option>
-          <option>20</option>
-          <option>50</option>
-        </select>
+        {currentPage && totalPages && (
+          <span>Página {currentPage} de {totalPages}</span>
+        )}
       </div>
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={onPreviousPage}>Anterior</Button>
-        <Button variant="outline" size="sm" onClick={onNextPage}>Siguiente</Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onPreviousPage}
+          disabled={disablePrevious}
+        >
+          Anterior
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onNextPage}
+          disabled={disableNext}
+        >
+          Siguiente
+        </Button>
       </div>
     </div>
   );
 }
-

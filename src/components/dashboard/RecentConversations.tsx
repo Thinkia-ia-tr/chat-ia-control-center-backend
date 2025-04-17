@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Search, MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Link, useNavigate } from "react-router-dom";
 import { useConversations } from "@/hooks/useConversations";
 import { useToast } from "@/components/ui/use-toast";
+import { TablePagination } from "@/components/conversations/TablePagination";
 
 // Function to format phone numbers
 const formatPhoneNumber = (phone: string): string => {
@@ -31,6 +32,8 @@ export function RecentConversations() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { data: conversations = [], isError } = useConversations();
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 5;
 
   if (isError) {
     toast({
@@ -45,8 +48,8 @@ export function RecentConversations() {
       header: "Conversación",
       accessorKey: "title",
       cell: ({ row }: any) => (
-        <div className="w-[45%]">
-          <span className="block whitespace-nowrap">{row.original.title}</span>
+        <div className="w-full">
+          <span className="block">{row.original.title}</span>
         </div>
       )
     },
@@ -60,7 +63,7 @@ export function RecentConversations() {
           formatPhoneNumber(client.value);
         
         return (
-          <div className="w-[35%]">
+          <div className="w-full">
             <span className="block">{value}</span>
           </div>
         );
@@ -70,7 +73,7 @@ export function RecentConversations() {
       header: "Canal",
       accessorKey: "channel",
       cell: ({ row }: any) => (
-        <div className="w-[10%]">
+        <div className="w-full">
           <Badge variant="secondary">{row.original.channel}</Badge>
         </div>
       ),
@@ -79,7 +82,7 @@ export function RecentConversations() {
       header: "Mensajes",
       accessorKey: "messages",
       cell: ({ row }: any) => (
-        <div className="w-[5%] flex items-center justify-center text-center">
+        <div className="w-full flex items-center justify-center text-center">
           {row.original.messages}
         </div>
       ),
@@ -88,8 +91,8 @@ export function RecentConversations() {
       header: "Fecha",
       accessorKey: "date",
       cell: ({ row }: any) => (
-        <div className="w-[20%]">
-          <span className="block text-right whitespace-nowrap">
+        <div className="w-full">
+          <span className="block text-right">
             {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
           </span>
         </div>
@@ -101,9 +104,32 @@ export function RecentConversations() {
     navigate(`/conversaciones/${rowData.row.original.id}`);
   };
 
-  const latestConversations = conversations
-    .sort((a, b) => b.date.getTime() - a.date.getTime())
-    .slice(0, 5);
+  // Sort all conversations by date (newest first)
+  const sortedConversations = [...conversations].sort((a, b) => b.date.getTime() - a.date.getTime());
+  
+  const handlePrevious = () => {
+    setPage((prevPage) => Math.max(0, prevPage - 1));
+  };
+
+  const handleNext = () => {
+    setPage((prevPage) => {
+      if ((prevPage + 1) * rowsPerPage < sortedConversations.length) {
+        return prevPage + 1;
+      }
+      return prevPage;
+    });
+  };
+
+  const handleRowsPerPageChange = (value: number) => {
+    // Not implementing this for the dashboard view as it's fixed at 5
+  };
+
+  // Paginate conversations
+  const start = page * rowsPerPage;
+  const paginatedConversations = sortedConversations.slice(start, start + rowsPerPage);
+  
+  const hasNextPage = (page + 1) * rowsPerPage < sortedConversations.length;
+  const hasPreviousPage = page > 0;
 
   return (
     <div>
@@ -127,11 +153,23 @@ export function RecentConversations() {
 
       <DataTable
         columns={columns}
-        data={latestConversations.map(item => ({ row: { original: item } }))}
+        data={paginatedConversations.map(item => ({ row: { original: item } }))}
         selectedRows={[]}
         getRowId={(rowData) => rowData.row.original.id}
         onRowClick={handleRowClick}
       />
+
+      <div className="mt-4">
+        <TablePagination
+          onPreviousPage={handlePrevious}
+          onNextPage={handleNext}
+          onRowsPerPageChange={handleRowsPerPageChange}
+          disablePrevious={!hasPreviousPage}
+          disableNext={!hasNextPage}
+          currentPage={page + 1}
+          totalPages={Math.ceil(sortedConversations.length / rowsPerPage)}
+        />
+      </div>
     </div>
   );
 }
