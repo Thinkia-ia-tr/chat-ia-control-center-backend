@@ -11,11 +11,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Calendar } from "@/components/ui/calendar";
 
 interface DateRangePickerProps {
@@ -31,22 +31,22 @@ export function DateRangePicker({
   onChange,
   className,
 }: DateRangePickerProps) {
-  const [isCustomDialogOpen, setIsCustomDialogOpen] = React.useState(false);
+  const [isCalendarOpen, setIsCalendarOpen] = React.useState(false);
   const [tempStartDate, setTempStartDate] = React.useState<Date>(startDate);
   const [tempEndDate, setTempEndDate] = React.useState<Date>(endDate);
   
   const formattedStartDate = format(startDate, "d LLL yyyy", { locale: es });
   const formattedEndDate = format(endDate, "d LLL yyyy", { locale: es });
 
-  const handleCustomRangeApply = () => {
+  const handleCalendarApply = () => {
     onChange(tempStartDate, tempEndDate);
-    setIsCustomDialogOpen(false);
+    setIsCalendarOpen(false);
   };
 
-  const handleCustomDialogOpen = () => {
+  const handleCalendarOpen = () => {
     setTempStartDate(startDate);
     setTempEndDate(endDate);
-    setIsCustomDialogOpen(true);
+    setIsCalendarOpen(true);
   };
 
   return (
@@ -58,6 +58,7 @@ export function DateRangePicker({
             className={cn(
               "w-full justify-between bg-card border-input text-left font-normal"
             )}
+            onClick={handleCalendarOpen}
           >
             <div className="flex items-center gap-2">
               <CalendarIcon className="h-4 w-4" />
@@ -110,7 +111,7 @@ export function DateRangePicker({
               <Button
                 size="sm"
                 variant="outline"
-                onClick={handleCustomDialogOpen}
+                onClick={handleCalendarOpen}
               >
                 Personalizado
               </Button>
@@ -119,13 +120,13 @@ export function DateRangePicker({
         </PopoverContent>
       </Popover>
       
-      <Dialog open={isCustomDialogOpen} onOpenChange={setIsCustomDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Seleccionar rango personalizado</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
+      <Sheet open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
+        <SheetContent className="sm:max-w-md overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Seleccionar rango de fechas</SheetTitle>
+          </SheetHeader>
+          <div className="grid gap-6 py-6">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <div className="space-y-2">
                 <div className="font-medium text-sm">Fecha de inicio</div>
                 <Calendar
@@ -149,12 +150,12 @@ export function DateRangePicker({
                 />
               </div>
             </div>
-            <Button onClick={handleCustomRangeApply} className="w-full">
+            <Button onClick={handleCalendarApply} className="w-full">
               Aplicar
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
