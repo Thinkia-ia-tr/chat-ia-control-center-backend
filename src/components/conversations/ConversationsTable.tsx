@@ -1,4 +1,3 @@
-
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +32,7 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
             <span className="block">
               {client && typeof client === 'object' && client.value 
                 ? client.value.toString() 
-                : "Anonymous"}
+                : "Sin cliente"}
             </span>
           </div>
         );

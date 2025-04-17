@@ -30,15 +30,15 @@ export function ConversationDetail({
 
   // Function to get the appropriate sender name
   const getSenderName = (message: Message) => {
-    if (message.sender === "user") {
-      // If sender is user, use client value from conversation if available
+    if (message.sender === "client") {
+      // If sender is client, use client value from conversation if available
       if (conversation?.client?.value) {
         return conversation.client.value.toString();
       }
-      return "Usuario";
+      return "Cliente";
     }
     // For agent or system messages
-    return message.sender === "agent" ? "Agent" : "Sistema";
+    return message.sender === "agent" ? "Agente" : "Sistema";
   };
 
   return (
@@ -88,12 +88,12 @@ export function ConversationDetail({
           >
             <Avatar className="rounded-full h-8 w-8">
               <AvatarFallback>
-                {message.sender === "user" ? "U" : "A"}
+                {message.sender === "client" ? "C" : "A"}
               </AvatarFallback>
             </Avatar>
             <Card className={cn("max-w-[85%]", 
               message.sender === "agent" && "bg-muted",
-              message.sender === "user" && "bg-card"
+              message.sender === "client" && "bg-card"
             )}>
               <CardContent className="px-4 py-3">
                 <div className="flex items-center mb-2">
