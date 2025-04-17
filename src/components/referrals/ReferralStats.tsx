@@ -54,14 +54,16 @@ export function ReferralStats({ startDate, endDate }: ReferralStatsProps) {
           const color = typeInfo?.color || "hsl(var(--primary))";
           
           // Obtener los datos de serie de tiempo para este tipo de derivación
-          const typeTimeSeries = timeSeriesData?.timeSeriesByType?.[stat.referral_type] || [];
+          const typeSeries = timeSeriesData && 'timeSeriesByType' in timeSeriesData 
+            ? timeSeriesData.timeSeriesByType[stat.referral_type] || []
+            : [];
           
           // Calcular el cambio porcentual (comparando la segunda mitad con la primera mitad del período)
           let changePercent = 0;
-          if (typeTimeSeries.length > 0) {
-            const midPoint = Math.floor(typeTimeSeries.length / 2);
-            const firstHalfSum = typeTimeSeries.slice(0, midPoint).reduce((sum, item) => sum + item.value, 0);
-            const secondHalfSum = typeTimeSeries.slice(midPoint).reduce((sum, item) => sum + item.value, 0);
+          if (typeSeries.length > 0) {
+            const midPoint = Math.floor(typeSeries.length / 2);
+            const firstHalfSum = typeSeries.slice(0, midPoint).reduce((sum, item) => sum + item.value, 0);
+            const secondHalfSum = typeSeries.slice(midPoint).reduce((sum, item) => sum + item.value, 0);
             
             if (firstHalfSum > 0) {
               changePercent = Math.round(((secondHalfSum - firstHalfSum) / firstHalfSum) * 100);
@@ -82,7 +84,7 @@ export function ReferralStats({ startDate, endDate }: ReferralStatsProps) {
             >
               <Icon className="absolute top-4 right-4 text-muted-foreground/20 h-6 w-6" />
               <LineChart 
-                data={typeTimeSeries}
+                data={typeSeries}
                 color={color}
                 className="h-full w-full"
               />

@@ -6,6 +6,7 @@ export interface Referral {
   id: string;
   conversation_id: string;
   conversation_title: string;
+  conversation_date: string; // Fecha de la conversación
   client_type: string;
   client_value: string;
   referral_type: string;
@@ -40,7 +41,7 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
           notes,
           conversation_id,
           referral_types (name),
-          conversations (title, client)
+          conversations (title, client, date)
         `)
         .gte('created_at', startDate.toISOString())
         .lte('created_at', adjustedEndDate.toISOString())
@@ -56,6 +57,7 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
           id: item.id,
           conversation_id: item.conversation_id,
           conversation_title: item.conversations?.title || 'Sin título',
+          conversation_date: item.conversations?.date || item.created_at, // Usamos la fecha de la conversación
           client_type: client.type || '',
           client_value: client.value || '',
           referral_type: item.referral_types?.name || 'Desconocido',

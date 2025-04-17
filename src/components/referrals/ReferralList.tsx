@@ -77,11 +77,11 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
     },
     {
       header: "Fecha",
-      accessorKey: "created_at",
+      accessorKey: "conversation_date", // Cambiado de created_at a conversation_date
       cell: ({ row }: any) => (
         <div className="w-full">
           <span className="block text-right">
-            {format(new Date(row.original.created_at), "dd MMM yyyy HH:mm", {
+            {format(new Date(row.original.conversation_date), "dd MMM yyyy HH:mm", {
               locale: es,
             })}
           </span>

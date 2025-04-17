@@ -2,8 +2,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatISO, eachDayOfInterval, format } from "date-fns";
+import { Database } from "@/integrations/supabase/types";
 
-export function useReferralTimeSeries(startDate?: Date, endDate?: Date, referralType?: string) {
+type ReferralType = Database['public']['Enums']['referral_type'];
+
+export function useReferralTimeSeries(startDate?: Date, endDate?: Date, referralType?: ReferralType) {
   return useQuery({
     queryKey: ['referral-timeseries', startDate, endDate, referralType],
     queryFn: async () => {
@@ -81,7 +84,7 @@ export function useReferralTimeSeries(startDate?: Date, endDate?: Date, referral
       }
       
       // Construir series temporales por tipo de derivación
-      const referralTypes = ['Asesor Comercial', 'Atención al Cliente', 'Soporte Técnico', 'Presupuestos', 'Colaboraciones'];
+      const referralTypes: ReferralType[] = ['Asesor Comercial', 'Atención al Cliente', 'Soporte Técnico', 'Presupuestos', 'Colaboraciones'];
       const timeSeriesByType: Record<string, {date: string, value: number}[]> = {};
       
       referralTypes.forEach(type => {
