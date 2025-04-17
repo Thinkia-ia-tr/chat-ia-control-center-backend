@@ -15,9 +15,10 @@ import { TablePagination } from "@/components/conversations/TablePagination";
 export function RecentConversations() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
   const { data: conversations = [], isError } = useConversations();
   const [page, setPage] = useState(0);
-  const rowsPerPage = 5;
+  const rowsPerPage = 10; // Increased from 5 to show more conversations
 
   if (isError) {
     toast({
@@ -107,9 +108,14 @@ export function RecentConversations() {
   const handleRowClick = (rowData: any) => {
     navigate(`/conversaciones/${rowData.row.original.id}`);
   };
+  
+  // Filter conversations based on search query
+  const filteredConversations = conversations.filter(conversation => 
+    conversation.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Sort all conversations by date (newest first)
-  const sortedConversations = [...conversations].sort((a, b) => b.date.getTime() - a.date.getTime());
+  const sortedConversations = [...filteredConversations].sort((a, b) => b.date.getTime() - a.date.getTime());
   
   const handlePrevious = () => {
     setPage((prevPage) => Math.max(0, prevPage - 1));
@@ -124,8 +130,13 @@ export function RecentConversations() {
     });
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    setPage(0); // Reset to first page when searching
+  };
+
   const handleRowsPerPageChange = (value: number) => {
-    // Not implementing for the dashboard as rows per page is fixed
+    // Not implementing dynamic rows per page for the dashboard view
   };
 
   // Paginate conversations
@@ -138,7 +149,7 @@ export function RecentConversations() {
 
   return (
     <div>
-      <h2 className="text-lg font-medium mb-4">Últimas conversaciones</h2>
+      <h2 className="text-lg font-medium mb-4">Conversaciones</h2>
       
       <div className="flex items-center justify-between gap-4 mb-4">
         <div className="relative w-1/2">
@@ -146,6 +157,8 @@ export function RecentConversations() {
           <Input
             placeholder="Buscar conversaciones"
             className="pl-10 bg-card border-input"
+            value={searchQuery}
+            onChange={handleSearchChange}
           />
         </div>
         <Button variant="outline" asChild className="ml-auto">
