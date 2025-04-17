@@ -1,21 +1,9 @@
 
-export interface Conversation {
+export type Conversation = {
   id: string;
-  title: string;
-  client: { 
-    type: 'phone' | 'email' | 'id', 
-    value: string 
-  };
-  channel: "Web" | "Whatsapp";
+  client: { type: string; value: string };
   messages: number;
   date: Date;
-  status?: 'done' | 'in-progress';
-}
-
-export interface Message {
-  id: string;
-  conversation_id: string;
-  content: string;
-  sender: "client" | "agent" | "system";
-  timestamp: string;
+  channel: string;
+  title: string;
 }

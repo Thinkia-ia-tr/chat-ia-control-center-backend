@@ -16,7 +16,6 @@ export type Database = {
           date: string
           id: string
           messages: number
-          status: string | null
           title: string
         }
         Insert: {
@@ -25,7 +24,6 @@ export type Database = {
           date?: string
           id?: string
           messages?: number
-          status?: string | null
           title: string
         }
         Update: {
@@ -34,7 +32,6 @@ export type Database = {
           date?: string
           id?: string
           messages?: number
-          status?: string | null
           title?: string
         }
         Relationships: []
