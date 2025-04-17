@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useReferrals } from "@/hooks/useReferrals";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,14 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import { ConversationsPagination } from "@/components/conversations/ConversationsPagination";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
 interface ReferralListProps {
   startDate?: Date;
@@ -15,6 +23,8 @@ interface ReferralListProps {
 
 export function ReferralList({ startDate, endDate }: ReferralListProps) {
   const { toast } = useToast();
+  const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const { data: referrals, isLoading, error } = useReferrals(startDate, endDate);
 
   if (error) {
@@ -80,16 +90,60 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
     }
   ];
 
+  // Calculate pagination
+  const totalPages = Math.max(1, Math.ceil((referrals?.length || 0) / rowsPerPage));
+  const startIndex = (page - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const paginatedData = referrals ? referrals.slice(startIndex, endIndex) : [];
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (value: string) => {
+    setRowsPerPage(parseInt(value));
+    setPage(1); // Reset to first page when changing rows per page
+  };
+
   return (
-    <div className="w-full">
+    <div className="w-full space-y-4">
       <DataTable
         columns={columns}
-        data={referrals?.map(item => ({ row: { original: item } })) || []}
+        data={paginatedData.map(item => ({ row: { original: item } })) || []}
         getRowId={(rowData) => rowData.row.original.id}
       />
-      {(!referrals || referrals.length === 0) && (
+      
+      {(!referrals || referrals.length === 0) ? (
         <div className="text-center py-6 text-muted-foreground">
           No se encontraron derivaciones en el período seleccionado
+        </div>
+      ) : (
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <span className="text-sm text-muted-foreground">Mostrar</span>
+            <Select
+              value={rowsPerPage.toString()}
+              onValueChange={handleRowsPerPageChange}
+            >
+              <SelectTrigger className="w-[70px]">
+                <SelectValue placeholder={rowsPerPage} />
+              </SelectTrigger>
+              <SelectContent>
+                {[5, 10, 25, 50].map((option) => (
+                  <SelectItem key={option} value={option.toString()}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-sm text-muted-foreground">por página</span>
+          </div>
+          
+          <ConversationsPagination 
+            currentPage={page} 
+            totalPages={totalPages} 
+            onPageChange={handlePageChange} 
+          />
         </div>
       )}
     </div>
