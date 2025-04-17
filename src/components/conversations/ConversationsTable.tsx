@@ -61,8 +61,8 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       header: "Conversación",
       accessorKey: "title",
       cell: ({ row }: { row: { original: Conversation } }) => (
-        <div className="w-[45%] truncate">
-          <span className="block whitespace-nowrap">{row.original.title}</span>
+        <div className="w-full">
+          <span className="block">{row.original.title}</span>
         </div>
       )
     },
@@ -78,8 +78,8 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
             : formatPhoneNumber(client.value);
         
         return (
-          <div className="w-[35%] overflow-visible">
-            <span className="block break-all">{value}</span>
+          <div className="w-full">
+            <span className="block">{value}</span>
           </div>
         );
       }
@@ -88,7 +88,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       header: "Canal",
       accessorKey: "channel",
       cell: ({ row }: { row: { original: Conversation } }) => (
-        <div className="w-[10%]">
+        <div className="w-full">
           <Badge variant="secondary">{row.original.channel}</Badge>
         </div>
       )
@@ -97,7 +97,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       header: "Mensajes",
       accessorKey: "messages",
       cell: ({ row }: { row: { original: Conversation } }) => (
-        <div className="w-[5%] flex items-center justify-center text-center">
+        <div className="w-full flex items-center justify-center text-center">
           {row.original.messages}
         </div>
       )
@@ -106,8 +106,8 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       header: "Fecha",
       accessorKey: "date",
       cell: ({ row }: { row: { original: Conversation } }) => (
-        <div className="w-[20%]">
-          <span className="block text-right whitespace-nowrap">
+        <div className="w-full">
+          <span className="block text-right">
             {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
           </span>
         </div>
