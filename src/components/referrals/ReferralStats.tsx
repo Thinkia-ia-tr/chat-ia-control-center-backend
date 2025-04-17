@@ -32,14 +32,13 @@ export function ReferralStats({ startDate, endDate }: ReferralStatsProps) {
     "Colaboraciones": { icon: UsersIcon, color: "#6E59A5" }
   };
 
-  // Generar datos simulados para los gráficos
   const generateMonthData = (count: number) => {
     const data = [];
-    const baseValue = Math.max(1, count / 30); // Valor base proporcional al count total
+    const baseValue = Math.max(1, count / 30);
     for (let i = 30; i >= 0; i--) {
       data.push({
         date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        value: Math.max(0, Math.floor(baseValue + Math.random() * baseValue * 2)) // Valores basados en count
+        value: Math.max(0, Math.floor(baseValue + Math.random() * baseValue * 2))
       });
     }
     return data;
@@ -63,7 +62,6 @@ export function ReferralStats({ startDate, endDate }: ReferralStatsProps) {
           const Icon = typeInfo?.icon || BriefcaseIcon;
           const color = typeInfo?.color || "hsl(var(--primary))";
           
-          // Calcular cambio porcentual (simulado)
           const changePercent = Math.floor(Math.random() * 20) - 5;
           const change = `${changePercent > 0 ? '+' : ''}${changePercent}%`;
           
