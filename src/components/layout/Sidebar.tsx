@@ -10,12 +10,14 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
+  const location = useLocation();
+
   return (
     <SidebarComponent>
       <SidebarHeader className="p-4 flex items-center">
@@ -30,8 +32,18 @@ export function Sidebar() {
           <SidebarGroupLabel>Chatbot con IA</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarNavItem icon={<LayoutDashboard size={20} />} label="Dashboard" to="/" />
-              <SidebarNavItem icon={<MessageSquare size={20} />} label="Conversaciones" to="/conversaciones" />
+              <SidebarNavItem 
+                icon={<LayoutDashboard size={20} />} 
+                label="Dashboard" 
+                to="/" 
+                isActive={location.pathname === '/'} 
+              />
+              <SidebarNavItem 
+                icon={<MessageSquare size={20} />} 
+                label="Conversaciones" 
+                to="/conversaciones" 
+                isActive={location.pathname === '/conversaciones'} 
+              />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -40,9 +52,24 @@ export function Sidebar() {
           <SidebarGroupLabel>Panel de inteligencia</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarNavItem icon={<GitCompareArrows size={20} />} label="Derivaciones" to="/derivaciones" />
-              <SidebarNavItem icon={<LineChart size={20} />} label="Insights de Productos" to="/insights" />
-              <SidebarNavItem icon={<Bot size={20} />} label="IA chat sobre los datos" to="/ia-chat" />
+              <SidebarNavItem 
+                icon={<GitCompareArrows size={20} />} 
+                label="Derivaciones" 
+                to="/derivaciones" 
+                isActive={location.pathname === '/derivaciones'} 
+              />
+              <SidebarNavItem 
+                icon={<LineChart size={20} />} 
+                label="Insights de Productos" 
+                to="/insights" 
+                isActive={location.pathname === '/insights'} 
+              />
+              <SidebarNavItem 
+                icon={<Bot size={20} />} 
+                label="IA chat sobre los datos" 
+                to="/ia-chat" 
+                isActive={location.pathname === '/ia-chat'} 
+              />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -55,13 +82,21 @@ interface SidebarNavItemProps {
   icon: React.ReactNode;
   label: string;
   to: string;
+  isActive?: boolean;
 }
 
-function SidebarNavItem({ icon, label, to }: SidebarNavItemProps) {
+function SidebarNavItem({ icon, label, to, isActive }: SidebarNavItemProps) {
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton asChild className="flex items-center gap-3 w-full px-3 py-2">
-        <Link to={to} className={cn("hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md flex items-center gap-3 w-full")}>
+      <SidebarMenuButton 
+        asChild 
+        isActive={isActive}
+        className={cn(
+          "flex items-center gap-3 w-full px-3 py-2",
+          isActive && "bg-primary text-primary-foreground font-bold"
+        )}
+      >
+        <Link to={to} className={cn("flex items-center gap-3 w-full")}>
           {icon}
           <span>{label}</span>
         </Link>
@@ -71,4 +106,3 @@ function SidebarNavItem({ icon, label, to }: SidebarNavItemProps) {
 }
 
 export default Sidebar;
-
