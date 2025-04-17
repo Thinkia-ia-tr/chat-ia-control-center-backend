@@ -52,7 +52,7 @@ export function ConversationsPagination({
   };
 
   return (
-    <Pagination className="mt-4">
+    <Pagination className="mt-4 pl-[30%] flex justify-end">
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
