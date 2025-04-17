@@ -10,12 +10,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
 import { Calendar } from "@/components/ui/calendar";
 
 interface DateRangePickerProps {
@@ -50,7 +44,6 @@ export function DateRangePicker({
     setTempEndDate(endDate);
     setLeftMonth(new Date(startDate));
     setRightMonth(addMonths(new Date(startDate), 1));
-    setIsCalendarOpen(true);
   };
 
   const handlePreviousMonths = () => {
@@ -69,28 +62,9 @@ export function DateRangePicker({
     });
   };
 
-  const handleSelectDate = (date: Date | undefined) => {
-    if (!date) return;
-
-    // If no start date selected yet or if selecting a date before current start date
-    if (!tempStartDate || (tempStartDate && tempEndDate && date < tempStartDate)) {
-      setTempStartDate(date);
-      setTempEndDate(undefined);
-    }
-    // If start date is selected but no end date, or selecting a new range
-    else if (tempStartDate && (!tempEndDate || date < tempStartDate)) {
-      setTempEndDate(tempStartDate);
-      setTempStartDate(date);
-    }
-    // If start date is selected and selecting end date
-    else if (tempStartDate && date >= tempStartDate) {
-      setTempEndDate(date);
-    }
-  };
-
   return (
     <div className={cn("grid gap-2", className)}>
-      <Popover>
+      <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -107,153 +81,152 @@ export function DateRangePicker({
             </div>
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 pointer-events-auto" align="end">
-          <div className="p-3">
-            <div className="text-sm font-medium">Seleccionar intervalo</div>
-            <div className="grid gap-2 mt-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setDate(start.getDate() - 7);
-                  onChange(start, end);
-                }}
-              >
-                Última semana
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setDate(start.getDate() - 30);
-                  onChange(start, end);
-                }}
-              >
-                Último mes
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  const end = new Date();
-                  const start = new Date();
-                  start.setDate(start.getDate() - 90);
-                  onChange(start, end);
-                }}
-              >
-                Últimos 3 meses
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleCalendarOpen}
-              >
-                Personalizado
+        <PopoverContent className="w-auto p-3" align="end">
+          <div className="space-y-4">
+            <div className="grid gap-2">
+              <div className="text-sm font-medium">Seleccionar intervalo</div>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setDate(start.getDate() - 7);
+                    onChange(start, end);
+                    setIsCalendarOpen(false);
+                  }}
+                >
+                  Última semana
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setDate(start.getDate() - 30);
+                    onChange(start, end);
+                    setIsCalendarOpen(false);
+                  }}
+                >
+                  Último mes
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setDate(start.getDate() - 90);
+                    onChange(start, end);
+                    setIsCalendarOpen(false);
+                  }}
+                >
+                  Últimos 3 meses
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="col-span-2"
+                >
+                  Personalizado
+                </Button>
+              </div>
+            </div>
+            
+            {/* Calendar Section */}
+            <div className="pt-4 border-t">
+              {/* Calendar Navigation */}
+              <div className="flex items-center justify-between mb-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handlePreviousMonths}
+                  className="hover:text-primary"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+                <div className="flex-1 text-center">
+                  <div className="font-medium text-sm">
+                    {format(leftMonth, "MMMM yyyy", { locale: es })} - {format(rightMonth, "MMMM yyyy", { locale: es })}
+                  </div>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleNextMonths}
+                  className="hover:text-primary"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </Button>
+              </div>
+
+              {/* Two calendars side by side */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Calendar
+                    mode="range"
+                    selected={{
+                      from: tempStartDate,
+                      to: tempEndDate
+                    }}
+                    onSelect={(range) => {
+                      if (!range) return;
+                      if (range.from) setTempStartDate(range.from);
+                      if (range.to) setTempEndDate(range.to);
+                    }}
+                    month={leftMonth}
+                    onMonthChange={setLeftMonth}
+                    numberOfMonths={1}
+                    disabled={(date) => date > new Date()}
+                    initialFocus
+                    className="border rounded-md"
+                  />
+                </div>
+                <div className="space-y-2 hidden md:block">
+                  <Calendar
+                    mode="range"
+                    selected={{
+                      from: tempStartDate,
+                      to: tempEndDate
+                    }}
+                    onSelect={(range) => {
+                      if (!range) return;
+                      if (range.from) setTempStartDate(range.from);
+                      if (range.to) setTempEndDate(range.to);
+                    }}
+                    month={rightMonth}
+                    onMonthChange={setRightMonth}
+                    numberOfMonths={1}
+                    disabled={(date) => date > new Date()}
+                    initialFocus
+                    className="border rounded-md"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-4">
+                <div className="text-sm">
+                  {tempStartDate && tempEndDate ? (
+                    <span>
+                      {format(tempStartDate, "d MMM yyyy", { locale: es })} - {format(tempEndDate, "d MMM yyyy", { locale: es })}
+                    </span>
+                  ) : tempStartDate ? (
+                    <span>{format(tempStartDate, "d MMM yyyy", { locale: es })}</span>
+                  ) : (
+                    <span>Selecciona un rango de fechas</span>
+                  )}
+                </div>
+              </div>
+              
+              <Button onClick={handleCalendarApply} className="w-full mt-2">
+                Aplicar
               </Button>
             </div>
           </div>
         </PopoverContent>
       </Popover>
-      
-      <Sheet open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
-        <SheetContent className="sm:max-w-3xl overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>Seleccionar rango de fechas</SheetTitle>
-          </SheetHeader>
-          <div className="grid gap-6 py-6">
-            {/* Calendar Navigation */}
-            <div className="flex items-center justify-between">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={handlePreviousMonths}
-                className="hover:text-primary"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </Button>
-              <div className="flex-1 text-center">
-                <div className="font-medium text-sm">
-                  {format(leftMonth, "MMMM yyyy", { locale: es })} - {format(rightMonth, "MMMM yyyy", { locale: es })}
-                </div>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={handleNextMonths}
-                className="hover:text-primary"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </Button>
-            </div>
-
-            {/* Two calendars side by side */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Calendar
-                  mode="range"
-                  selected={{
-                    from: tempStartDate,
-                    to: tempEndDate
-                  }}
-                  onSelect={(range) => {
-                    if (!range) return;
-                    if (range.from) setTempStartDate(range.from);
-                    if (range.to) setTempEndDate(range.to);
-                  }}
-                  month={leftMonth}
-                  onMonthChange={setLeftMonth}
-                  numberOfMonths={1}
-                  disabled={(date) => date > new Date()}
-                  initialFocus
-                  className={cn("border rounded-md")}
-                />
-              </div>
-              <div className="space-y-2">
-                <Calendar
-                  mode="range"
-                  selected={{
-                    from: tempStartDate,
-                    to: tempEndDate
-                  }}
-                  onSelect={(range) => {
-                    if (!range) return;
-                    if (range.from) setTempStartDate(range.from);
-                    if (range.to) setTempEndDate(range.to);
-                  }}
-                  month={rightMonth}
-                  onMonthChange={setRightMonth}
-                  numberOfMonths={1}
-                  disabled={(date) => date > new Date()}
-                  initialFocus
-                  className={cn("border rounded-md")}
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                {tempStartDate && tempEndDate ? (
-                  <span>
-                    {format(tempStartDate, "d MMM yyyy", { locale: es })} - {format(tempEndDate, "d MMM yyyy", { locale: es })}
-                  </span>
-                ) : tempStartDate ? (
-                  <span>{format(tempStartDate, "d MMM yyyy", { locale: es })}</span>
-                ) : (
-                  <span>Selecciona un rango de fechas</span>
-                )}
-              </div>
-            </div>
-            
-            <Button onClick={handleCalendarApply} className="w-full">
-              Aplicar
-            </Button>
-          </div>
-        </SheetContent>
-      </Sheet>
     </div>
   );
 }
