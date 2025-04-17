@@ -12,8 +12,12 @@ export function useConversations(startDate?: Date, endDate?: Date) {
         .select('*');
       
       if (startDate && endDate) {
+        // Aseguramos que las fechas de fin incluyan todo el día
+        const adjustedEndDate = new Date(endDate);
+        adjustedEndDate.setHours(23, 59, 59, 999);
+        
         query = query.gte('date', startDate.toISOString())
-                    .lte('date', endDate.toISOString());
+                    .lte('date', adjustedEndDate.toISOString());
       }
       
       const { data, error } = await query.order('date', { ascending: false });
