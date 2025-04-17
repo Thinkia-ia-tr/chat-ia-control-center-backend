@@ -1,3 +1,4 @@
+
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -60,7 +61,7 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
       header: "Conversación",
       accessorKey: "title",
       cell: ({ row }: { row: { original: Conversation } }) => (
-        <div className="w-[45%]">
+        <div className="w-[45%] truncate">
           <span className="block whitespace-nowrap">{row.original.title}</span>
         </div>
       )
@@ -77,8 +78,8 @@ export function ConversationsTable({ data, selectedRows, onRowSelect, onRowClick
             : formatPhoneNumber(client.value);
         
         return (
-          <div className="w-[35%] whitespace-nowrap overflow-hidden text-ellipsis">
-            <span className="block">{value}</span>
+          <div className="w-[35%] overflow-visible">
+            <span className="block break-all">{value}</span>
           </div>
         );
       }
