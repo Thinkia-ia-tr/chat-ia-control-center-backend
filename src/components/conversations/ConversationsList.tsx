@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SearchFilter } from "./SearchFilter";
 import { ConversationsTable } from "./ConversationsTable";
@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface ConversationsListProps {
   startDate?: Date;
@@ -24,11 +25,17 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [selectedRows, setSelectedRows] = useState<Conversation[]>([]);
   const [page, setPage] = useState(1); // Changed from 0 to 1 for 1-based pagination
   const [rowsPerPage, setRowsPerPage] = useState(10);
   
   const { data: conversations = [], isError } = useConversations(startDate, endDate);
+
+  // Reset pagination when search query changes
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearchQuery]);
 
   if (isError) {
     toast({
@@ -51,9 +58,30 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
     navigate(`/conversaciones/${rowData.row.original.id}`);
   };
   
-  const filteredData = conversations.filter(conversation => 
-    conversation.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Apply search filter to data
+  const filteredData = conversations.filter(conversation => {
+    if (!debouncedSearchQuery) return true;
+    
+    // Case-insensitive search on title
+    if (conversation.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase())) {
+      return true;
+    }
+    
+    // Search on client ID if available
+    if (conversation.client && typeof conversation.client === 'object' && conversation.client.value) {
+      const clientValue = conversation.client.value.toString().toLowerCase();
+      if (clientValue.includes(debouncedSearchQuery.toLowerCase())) {
+        return true;
+      }
+    }
+    
+    // Search on channel
+    if (conversation.channel.toLowerCase().includes(debouncedSearchQuery.toLowerCase())) {
+      return true;
+    }
+    
+    return false;
+  });
   
   // Calculate pagination
   const totalPages = Math.max(1, Math.ceil(filteredData.length / rowsPerPage));
@@ -75,7 +103,7 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
       <SearchFilter
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
-        totalRows={conversations.length}
+        totalRows={filteredData.length}
         selectedCount={selectedRows.length}
       />
       
