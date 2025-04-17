@@ -17,8 +17,9 @@ export function RecentConversations() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const { data: conversations = [], isError } = useConversations();
-  const [page, setPage] = useState(0);
-  const rowsPerPage = 10; // Increased from 5 to show more conversations
+  
+  // We're no longer using pagination for the dashboard view
+  // as we'll only show the 5 most recent conversations
 
   if (isError) {
     toast({
@@ -117,39 +118,16 @@ export function RecentConversations() {
   // Sort all conversations by date (newest first)
   const sortedConversations = [...filteredConversations].sort((a, b) => b.date.getTime() - a.date.getTime());
   
-  const handlePrevious = () => {
-    setPage((prevPage) => Math.max(0, prevPage - 1));
-  };
-
-  const handleNext = () => {
-    setPage((prevPage) => {
-      if ((prevPage + 1) * rowsPerPage < sortedConversations.length) {
-        return prevPage + 1;
-      }
-      return prevPage;
-    });
-  };
+  // Only show the 5 most recent conversations
+  const recentConversations = sortedConversations.slice(0, 5);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-    setPage(0); // Reset to first page when searching
   };
-
-  const handleRowsPerPageChange = (value: number) => {
-    // Not implementing dynamic rows per page for the dashboard view
-  };
-
-  // Paginate conversations
-  const start = page * rowsPerPage;
-  const paginatedConversations = sortedConversations.slice(start, start + rowsPerPage);
-  
-  const totalPages = Math.ceil(sortedConversations.length / rowsPerPage);
-  const hasNextPage = (page + 1) * rowsPerPage < sortedConversations.length;
-  const hasPreviousPage = page > 0;
 
   return (
     <div>
-      <h2 className="text-lg font-medium mb-4">Conversaciones</h2>
+      <h2 className="text-lg font-medium mb-4">Últimas conversaciones</h2>
       
       <div className="flex items-center justify-between gap-4 mb-4">
         <div className="relative w-1/2">
@@ -171,24 +149,13 @@ export function RecentConversations() {
 
       <DataTable
         columns={columns}
-        data={paginatedConversations.map(item => ({ row: { original: item } }))}
+        data={recentConversations.map(item => ({ row: { original: item } }))}
         selectedRows={[]}
         getRowId={(rowData) => rowData.row.original.id}
         onRowClick={handleRowClick}
       />
 
-      <div className="mt-4">
-        <TablePagination
-          onPreviousPage={handlePrevious}
-          onNextPage={handleNext}
-          onRowsPerPageChange={handleRowsPerPageChange}
-          disablePrevious={!hasPreviousPage}
-          disableNext={!hasNextPage}
-          currentPage={page + 1}
-          totalPages={totalPages}
-          showRowsPerPageSelect={false}
-        />
-      </div>
+      {/* Removed pagination since we're only showing 5 conversations */}
     </div>
   );
 }
