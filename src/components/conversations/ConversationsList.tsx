@@ -86,7 +86,7 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
         onRowClick={handleRowClick}
       />
       
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Mostrar</span>
           <Select
