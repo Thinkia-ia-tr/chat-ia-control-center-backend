@@ -7,23 +7,38 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import type { Message } from "./types";
+import type { Message, Conversation } from "./types";
 
 interface ConversationDetailProps {
   title: string;
   date: string;
   messages: Message[];
+  conversation: Conversation;
 }
 
 export function ConversationDetail({
   title,
   date,
-  messages = []
+  messages = [],
+  conversation
 }: ConversationDetailProps) {
   const navigate = useNavigate();
 
   const handleBackToList = () => {
     navigate("/conversaciones");
+  };
+
+  // Function to get the appropriate sender name
+  const getSenderName = (message: Message) => {
+    if (message.sender === "user") {
+      // If sender is user, use client value from conversation if available
+      if (conversation?.client?.value) {
+        return conversation.client.value.toString();
+      }
+      return message.sender_name || "Usuario";
+    }
+    // For agent or system messages
+    return message.sender === "agent" ? "Agent" : "Sistema";
   };
 
   return (
@@ -48,7 +63,9 @@ export function ConversationDetail({
         <div className="flex gap-4">
           <div className="flex flex-col items-center">
             <span className="text-sm font-medium">Usuario</span>
-            <Badge variant="outline" className="mt-1">Anonymous</Badge>
+            <Badge variant="outline" className="mt-1">
+              {conversation?.client?.value ? conversation.client.value.toString() : "Anonymous"}
+            </Badge>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-sm font-medium">Mensajes</span>
@@ -56,7 +73,7 @@ export function ConversationDetail({
           </div>
           <div className="flex flex-col items-center">
             <span className="text-sm font-medium">Canal</span>
-            <Badge variant="outline" className="mt-1">Web</Badge>
+            <Badge variant="outline" className="mt-1">{conversation?.channel || "Web"}</Badge>
           </div>
         </div>
       </div>
@@ -81,7 +98,7 @@ export function ConversationDetail({
               <CardContent className="px-4 py-3">
                 <div className="flex items-center mb-2">
                   <span className="font-medium text-sm">
-                    {message.sender === "user" ? message.sender_name || "Usuario" : "Agent"}
+                    {getSenderName(message)}
                   </span>
                   <span className="text-xs ml-2 text-muted-foreground">{message.timestamp}</span>
                 </div>

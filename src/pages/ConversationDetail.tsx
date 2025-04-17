@@ -38,6 +38,7 @@ export default function ConversationDetailPage() {
           title={data.conversation.title}
           date={format(data.conversation.date, "EEE., d 'de' MMM. 'de' yyyy HH:mm", { locale: es })}
           messages={data.messages}
+          conversation={data.conversation}
         />
       </div>
     </Layout>
