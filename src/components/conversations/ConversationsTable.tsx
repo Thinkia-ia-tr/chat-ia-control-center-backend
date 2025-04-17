@@ -27,26 +27,14 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
-        const date = new Date();
-        const yearPrefix = date.getFullYear().toString().slice(2);
-        const monthPrefix = (date.getMonth() + 1).toString().padStart(2, '0');
-        
-        let sixDigitNumber = '000000';
-        
-        if (client && typeof client === 'object' && client.value) {
-          const valueString = client.value.toString();
-          sixDigitNumber = valueString.length >= 6 
-            ? valueString.slice(-6) 
-            : valueString.padStart(6, '0');
-            
-          sixDigitNumber = sixDigitNumber.replace(/\D/g, '0').slice(0, 6);
-        }
-        
-        const formattedId = `${yearPrefix}${monthPrefix}-${sixDigitNumber}`;
         
         return (
           <div className="w-full">
-            <span className="block">{formattedId}</span>
+            <span className="block">
+              {client && typeof client === 'object' && client.value 
+                ? client.value.toString() 
+                : "Anonymous"}
+            </span>
           </div>
         );
       }
