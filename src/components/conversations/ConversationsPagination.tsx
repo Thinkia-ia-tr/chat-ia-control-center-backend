@@ -52,7 +52,7 @@ export function ConversationsPagination({
   };
 
   return (
-    <Pagination className="mt-4">
+    <Pagination className="ml-auto scale-90 transform-origin-right">
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
