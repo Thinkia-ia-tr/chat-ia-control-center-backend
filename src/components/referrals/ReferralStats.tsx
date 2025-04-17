@@ -1,7 +1,9 @@
+
 import React from "react";
 import { StatCard } from "@/components/ui/stat-card";
 import { LineChart } from "@/components/ui/line-chart";
 import { useReferralStats } from "@/hooks/useReferralStats";
+import { useReferralTimeSeries } from "@/hooks/useReferralTimeSeries";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BriefcaseIcon, HeadphonesIcon, WrenchIcon, CalculatorIcon, UsersIcon } from "lucide-react";
@@ -14,9 +16,10 @@ interface ReferralStatsProps {
 
 export function ReferralStats({ startDate, endDate }: ReferralStatsProps) {
   const { toast } = useToast();
-  const { data, isLoading, error } = useReferralStats(startDate, endDate);
+  const { data: statsData, isLoading: isLoadingStats, error: statsError } = useReferralStats(startDate, endDate);
+  const { data: timeSeriesData, isLoading: isLoadingTimeSeries, error: timeSeriesError } = useReferralTimeSeries(startDate, endDate);
 
-  if (error) {
+  if (statsError || timeSeriesError) {
     toast({
       title: "Error",
       description: "No se pudieron cargar las estadísticas de derivaciones",
@@ -32,19 +35,7 @@ export function ReferralStats({ startDate, endDate }: ReferralStatsProps) {
     "Colaboraciones": { icon: UsersIcon, color: "#6E59A5" }
   };
 
-  const generateMonthData = (count: number) => {
-    const data = [];
-    const baseValue = Math.max(1, count / 30);
-    for (let i = 30; i >= 0; i--) {
-      data.push({
-        date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        value: Math.max(0, Math.floor(baseValue + Math.random() * baseValue * 2))
-      });
-    }
-    return data;
-  };
-
-  if (isLoading) {
+  if (isLoadingStats || isLoadingTimeSeries) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3, 4, 5].map((i) => (
@@ -57,12 +48,28 @@ export function ReferralStats({ startDate, endDate }: ReferralStatsProps) {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.stats.map((stat) => {
+        {statsData?.stats.map((stat) => {
           const typeInfo = referralTypeIcons[stat.referral_type as keyof typeof referralTypeIcons];
           const Icon = typeInfo?.icon || BriefcaseIcon;
           const color = typeInfo?.color || "hsl(var(--primary))";
           
-          const changePercent = Math.floor(Math.random() * 20) - 5;
+          // Obtener los datos de serie de tiempo para este tipo de derivación
+          const typeTimeSeries = timeSeriesData?.timeSeriesByType?.[stat.referral_type] || [];
+          
+          // Calcular el cambio porcentual (comparando la segunda mitad con la primera mitad del período)
+          let changePercent = 0;
+          if (typeTimeSeries.length > 0) {
+            const midPoint = Math.floor(typeTimeSeries.length / 2);
+            const firstHalfSum = typeTimeSeries.slice(0, midPoint).reduce((sum, item) => sum + item.value, 0);
+            const secondHalfSum = typeTimeSeries.slice(midPoint).reduce((sum, item) => sum + item.value, 0);
+            
+            if (firstHalfSum > 0) {
+              changePercent = Math.round(((secondHalfSum - firstHalfSum) / firstHalfSum) * 100);
+            } else if (secondHalfSum > 0) {
+              changePercent = 100; // Si no hay datos en la primera mitad pero sí en la segunda
+            }
+          }
+          
           const change = `${changePercent > 0 ? '+' : ''}${changePercent}%`;
           
           return (
@@ -75,7 +82,7 @@ export function ReferralStats({ startDate, endDate }: ReferralStatsProps) {
             >
               <Icon className="absolute top-4 right-4 text-muted-foreground/20 h-6 w-6" />
               <LineChart 
-                data={generateMonthData(stat.count)}
+                data={typeTimeSeries}
                 color={color}
                 className="h-full w-full"
               />

@@ -6,12 +6,12 @@ import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Card } from "@/components/ui/card";
 
 export default function ReferralsPage() {
-  const [startDate, setStartDate] = useState<Date>(() => {
-    const date = new Date();
-    date.setMonth(date.getMonth() - 1);
-    return date;
-  });
-  const [endDate, setEndDate] = useState<Date>(new Date());
+  const now = new Date();
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(now.getDate() - 7);
+  
+  const [startDate, setStartDate] = useState<Date>(oneWeekAgo);
+  const [endDate, setEndDate] = useState<Date>(now);
 
   const handleDateRangeChange = (start: Date, end: Date) => {
     setStartDate(start);
