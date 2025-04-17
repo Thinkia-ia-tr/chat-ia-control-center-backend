@@ -1,4 +1,3 @@
-
 import React from "react";
 import { StatCard } from "@/components/ui/stat-card";
 import { LineChart } from "@/components/ui/line-chart";
@@ -6,6 +5,7 @@ import { useReferralStats } from "@/hooks/useReferralStats";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BriefcaseIcon, HeadphonesIcon, WrenchIcon, CalculatorIcon, UsersIcon } from "lucide-react";
+import { ReferralList } from "./ReferralList";
 
 interface ReferralStatsProps {
   startDate?: Date;
@@ -56,33 +56,40 @@ export function ReferralStats({ startDate, endDate }: ReferralStatsProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {data?.stats.map((stat) => {
-        const typeInfo = referralTypeIcons[stat.referral_type as keyof typeof referralTypeIcons];
-        const Icon = typeInfo?.icon || BriefcaseIcon;
-        const color = typeInfo?.color || "hsl(var(--primary))";
-        
-        // Calcular cambio porcentual (simulado)
-        const changePercent = Math.floor(Math.random() * 20) - 5;
-        const change = `${changePercent > 0 ? '+' : ''}${changePercent}%`;
-        
-        return (
-          <StatCard 
-            key={stat.referral_type}
-            title={stat.referral_type}
-            value={stat.count.toString()}
-            change={change}
-            className="relative"
-          >
-            <Icon className="absolute top-4 right-4 text-muted-foreground/20 h-6 w-6" />
-            <LineChart 
-              data={generateMonthData(stat.count)}
-              color={color}
-              className="h-full w-full"
-            />
-          </StatCard>
-        );
-      })}
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {data?.stats.map((stat) => {
+          const typeInfo = referralTypeIcons[stat.referral_type as keyof typeof referralTypeIcons];
+          const Icon = typeInfo?.icon || BriefcaseIcon;
+          const color = typeInfo?.color || "hsl(var(--primary))";
+          
+          // Calcular cambio porcentual (simulado)
+          const changePercent = Math.floor(Math.random() * 20) - 5;
+          const change = `${changePercent > 0 ? '+' : ''}${changePercent}%`;
+          
+          return (
+            <StatCard 
+              key={stat.referral_type}
+              title={stat.referral_type}
+              value={stat.count.toString()}
+              change={change}
+              className="relative"
+            >
+              <Icon className="absolute top-4 right-4 text-muted-foreground/20 h-6 w-6" />
+              <LineChart 
+                data={generateMonthData(stat.count)}
+                color={color}
+                className="h-full w-full"
+              />
+            </StatCard>
+          );
+        })}
+      </div>
+
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-4">Listado de Derivaciones</h2>
+        <ReferralList startDate={startDate} endDate={endDate} />
+      </div>
     </div>
   );
 }

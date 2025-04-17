@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { ReferralStats } from "@/components/referrals/ReferralStats";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ReferralList } from "@/components/referrals/ReferralList";
 import { Card } from "@/components/ui/card";
 
 export default function ReferralsPage() {
@@ -32,22 +30,9 @@ export default function ReferralsPage() {
           />
         </div>
         
-        <Tabs defaultValue="stats" className="w-full">
-          <TabsList className="mb-4">
-            <TabsTrigger value="stats">Estadísticas</TabsTrigger>
-            <TabsTrigger value="list">Listado</TabsTrigger>
-          </TabsList>
-          <TabsContent value="stats">
-            <Card className="p-6">
-              <ReferralStats startDate={startDate} endDate={endDate} />
-            </Card>
-          </TabsContent>
-          <TabsContent value="list">
-            <Card className="p-6">
-              <ReferralList startDate={startDate} endDate={endDate} />
-            </Card>
-          </TabsContent>
-        </Tabs>
+        <Card className="p-6">
+          <ReferralStats startDate={startDate} endDate={endDate} />
+        </Card>
       </div>
     </Layout>
   );
