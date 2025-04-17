@@ -7,10 +7,10 @@ interface SearchFilterProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
   totalRows: number;
-  selectedCount: number;
+  selectedCount?: number; // Made this optional
 }
 
-export function SearchFilter({ searchQuery, onSearchChange, totalRows, selectedCount }: SearchFilterProps) {
+export function SearchFilter({ searchQuery, onSearchChange, totalRows, selectedCount = 0 }: SearchFilterProps) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -25,9 +25,8 @@ export function SearchFilter({ searchQuery, onSearchChange, totalRows, selectedC
         </div>
       </div>
       <div className="text-sm text-muted-foreground">
-        {selectedCount} of {totalRows} row(s) selected.
+        {totalRows} {totalRows === 1 ? "conversación" : "conversaciones"}
       </div>
     </div>
   );
 }
-
