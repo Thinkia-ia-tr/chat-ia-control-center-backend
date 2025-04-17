@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -6,14 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-interface Message {
-  id: string;
-  sender: "user" | "agent" | "system";
-  content: string;
-  timestamp: string;
-  senderName?: string;
-}
+import type { Message } from "./types";
 
 interface ConversationDetailProps {
   title: string;
@@ -22,36 +16,9 @@ interface ConversationDetailProps {
 }
 
 export function ConversationDetail({
-  title = "Consulta sobre banco de pesas",
-  date = "lun., 2 de sep. de 2024 10:15",
-  messages = [
-    {
-      id: "1",
-      sender: "user",
-      content: "Hola, estoy interesado en comprar un banco de pesas ajustable. ¿Qué características debería tener para hacer tanto press de banca como press inclinado?",
-      timestamp: "lun., 2 de sep. de 2024 10:16",
-      senderName: "Anonymous"
-    },
-    {
-      id: "2",
-      sender: "agent",
-      content: "¡Hola! Un buen banco de pesas ajustable debería tener múltiples posiciones de inclinación (plano, inclinado y declinado), capacidad de peso de al menos 300kg, acolchado resistente y soportes para barras seguros. ¿Tienes algún espacio o presupuesto específico en mente?",
-      timestamp: "lun., 2 de sep. de 2024 10:17"
-    },
-    {
-      id: "3",
-      sender: "user",
-      content: "Tengo un presupuesto de unos 200€ y un espacio de aproximadamente 1,5m x 2m. ¿Me recomendarías algún modelo específico que sea plegable para ahorrar espacio?",
-      timestamp: "lun., 2 de sep. de 2024 10:18",
-      senderName: "Anonymous"
-    },
-    {
-      id: "4",
-      sender: "agent",
-      content: "Para ese presupuesto y espacio, te recomendaría el modelo FitStrength Pro 500 que es plegable y tiene todas las posiciones de inclinación necesarias. Soporta hasta 320kg y viene con soportes para barra incluidos. Además, plegado ocupa solo 0,5m x 1,2m, ideal para espacios reducidos.",
-      timestamp: "lun., 2 de sep. de 2024 10:19"
-    }
-  ]
+  title,
+  date,
+  messages = []
 }: ConversationDetailProps) {
   const navigate = useNavigate();
 
@@ -114,7 +81,7 @@ export function ConversationDetail({
               <CardContent className="px-4 py-3">
                 <div className="flex items-center mb-2">
                   <span className="font-medium text-sm">
-                    {message.sender === "user" ? message.senderName || "Usuario" : "Agent"}
+                    {message.sender === "user" ? message.sender_name || "Usuario" : "Agent"}
                   </span>
                   <span className="text-xs ml-2 text-muted-foreground">{message.timestamp}</span>
                 </div>
