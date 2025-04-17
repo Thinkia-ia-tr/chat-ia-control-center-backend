@@ -87,7 +87,7 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
       />
       
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 scale-120 whitespace-nowrap">
           <span className="text-sm text-muted-foreground">Mostrar</span>
           <Select
             value={rowsPerPage.toString()}
