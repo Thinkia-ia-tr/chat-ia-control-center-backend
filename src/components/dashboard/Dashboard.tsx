@@ -28,7 +28,7 @@ export function Dashboard() {
         />
       </div>
 
-      <Stats />
+      <Stats startDate={startDate} endDate={endDate} />
       <RecentConversations />
     </div>
   );
