@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
@@ -61,6 +62,15 @@ export function DateRangePicker({
     });
   };
 
+  // Helper function to set presets for date ranges
+  const setLastMonthRange = () => {
+    const end = new Date();
+    const start = new Date();
+    start.setMonth(start.getMonth() - 1);
+    onChange(start, end);
+    setIsCalendarOpen(false);
+  };
+
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
@@ -101,13 +111,8 @@ export function DateRangePicker({
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => {
-                    const end = new Date();
-                    const start = new Date();
-                    start.setDate(start.getDate() - 30);
-                    onChange(start, end);
-                    setIsCalendarOpen(false);
-                  }}
+                  onClick={setLastMonthRange}
+                  className="bg-primary/10"
                 >
                   Último mes
                 </Button>
@@ -167,7 +172,7 @@ export function DateRangePicker({
                     numberOfMonths={1}
                     disabled={(date) => date > new Date()}
                     initialFocus
-                    className="border rounded-md"
+                    className="border rounded-md pointer-events-auto"
                   />
                 </div>
                 <div className="space-y-2 hidden md:block">
@@ -187,7 +192,7 @@ export function DateRangePicker({
                     numberOfMonths={1}
                     disabled={(date) => date > new Date()}
                     initialFocus
-                    className="border rounded-md"
+                    className="border rounded-md pointer-events-auto"
                   />
                 </div>
               </div>

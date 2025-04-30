@@ -7,10 +7,10 @@ import { Card } from "@/components/ui/card";
 
 export default function ReferralsPage() {
   const now = new Date();
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(now.getDate() - 7);
+  const oneMonthAgo = new Date(now);
+  oneMonthAgo.setMonth(now.getMonth() - 1); // Un mes por defecto
   
-  const [startDate, setStartDate] = useState<Date>(oneWeekAgo);
+  const [startDate, setStartDate] = useState<Date>(oneMonthAgo);
   const [endDate, setEndDate] = useState<Date>(now);
 
   const handleDateRangeChange = (start: Date, end: Date) => {
