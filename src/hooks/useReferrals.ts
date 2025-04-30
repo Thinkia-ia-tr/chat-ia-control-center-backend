@@ -32,6 +32,8 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
       const adjustedEndDate = new Date(endDate);
       adjustedEndDate.setHours(23, 59, 59, 999);
       
+      console.log("Fetching referrals with date range:", startDate.toISOString(), adjustedEndDate.toISOString());
+      
       // Obtener las derivaciones con información de conversaciones y tipos
       const { data, error } = await supabase
         .from('referrals')
@@ -47,11 +49,32 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
         .lte('created_at', adjustedEndDate.toISOString())
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching referrals:", error);
+        throw error;
+      }
+      
+      console.log("Raw referrals data:", data);
       
       // Transformar los datos para tener una estructura más fácil de usar
       const referrals: Referral[] = data.map((item: any) => {
-        const client = item.conversations?.client || {};
+        let client = { type: '', value: '' };
+        
+        // Asegurar que el cliente tenga una estructura válida
+        if (item.conversations?.client) {
+          // Si es un string, intentamos parsearlo como JSON
+          if (typeof item.conversations.client === 'string') {
+            try {
+              client = JSON.parse(item.conversations.client);
+            } catch (e) {
+              console.log("Error parsing client string:", e);
+              client = { type: 'unknown', value: item.conversations.client };
+            }
+          } else if (typeof item.conversations.client === 'object') {
+            // Si ya es un objeto, lo usamos directamente
+            client = item.conversations.client;
+          }
+        }
         
         return {
           id: item.id,
@@ -65,6 +88,8 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
           notes: item.notes
         };
       });
+      
+      console.log("Processed referrals:", referrals);
       
       return referrals;
     }

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useReferrals } from "@/hooks/useReferrals";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { es } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
@@ -77,16 +77,25 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
     },
     {
       header: "Fecha",
-      accessorKey: "conversation_date", // Cambiado de created_at a conversation_date
-      cell: ({ row }: any) => (
-        <div className="w-full">
-          <span className="block text-right">
-            {format(new Date(row.original.conversation_date), "dd MMM yyyy HH:mm", {
-              locale: es,
-            })}
-          </span>
-        </div>
-      )
+      accessorKey: "conversation_date",
+      cell: ({ row }: any) => {
+        // Validamos que la fecha sea válida antes de intentar formatearla
+        const dateValue = row.original.conversation_date;
+        let formattedDate = "Fecha no disponible";
+        
+        if (dateValue) {
+          const date = new Date(dateValue);
+          if (isValid(date)) {
+            formattedDate = format(date, "dd MMM yyyy HH:mm", { locale: es });
+          }
+        }
+        
+        return (
+          <div className="w-full">
+            <span className="block text-right">{formattedDate}</span>
+          </div>
+        );
+      }
     }
   ];
 
@@ -109,8 +118,8 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
     <div className="w-full space-y-4">
       <DataTable
         columns={columns}
-        data={paginatedData.map(item => ({ row: { original: item } })) || []}
-        getRowId={(rowData) => rowData.row.original.id}
+        data={paginatedData || []}
+        getRowId={(rowData) => rowData.id}
       />
       
       {(!referrals || referrals.length === 0) ? (

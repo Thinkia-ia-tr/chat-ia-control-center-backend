@@ -24,6 +24,9 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   console.log("DataTable rendering with data:", data);
 
+  // Asegurarnos de que data siempre sea un array, incluso si es undefined
+  const safeData = Array.isArray(data) ? data : [];
+
   return (
     <div className={cn("rounded-md bg-card text-card-foreground", className)}>
       <div className="relative w-full overflow-auto">
@@ -38,8 +41,8 @@ export function DataTable<T>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data && data.length > 0 ? (
-              data.map((row) => {
+            {safeData.length > 0 ? (
+              safeData.map((row) => {
                 const rowId = getRowId(row);
                 return (
                   <TableRow 
