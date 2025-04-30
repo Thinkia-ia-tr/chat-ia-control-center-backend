@@ -30,13 +30,13 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
         
-        // Ensure client is properly handled
+        // Handle all possible client data scenarios
         let displayValue = "Sin cliente";
         
         if (client) {
           if (typeof client === 'string') {
             displayValue = client;
-          } else if (typeof client === 'object') {
+          } else if (typeof client === 'object' && client !== null) {
             displayValue = client.value ? client.value.toString() : "Sin valor";
           }
         }
@@ -95,9 +95,9 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
   return (
     <DataTable
       columns={columns}
-      data={data.map(item => ({ row: { original: item } }))}
+      data={data}
       onRowClick={onRowClick}
-      getRowId={(rowData) => rowData.row.original.id || Math.random().toString()}
+      getRowId={(row) => row.id || Math.random().toString()}
     />
   );
 }

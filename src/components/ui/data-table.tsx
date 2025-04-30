@@ -9,9 +9,9 @@ interface DataTableProps<T> {
     accessorKey: string;
     cell?: (item: { row: { original: T } }) => React.ReactNode;
   }[];
-  data: { row: { original: T } }[];
+  data: T[];
   onRowClick?: (row: { row: { original: T } }) => void;
-  getRowId?: (row: { row: { original: T } }) => string | number;
+  getRowId?: (row: T) => string | number;
   className?: string;
 }
 
@@ -22,6 +22,8 @@ export function DataTable<T>({
   getRowId = () => Math.random(),
   className,
 }: DataTableProps<T>) {
+  console.log("DataTable rendering with data:", data);
+
   return (
     <div className={cn("rounded-md bg-card text-card-foreground", className)}>
       <div className="relative w-full overflow-auto">
@@ -36,28 +38,36 @@ export function DataTable<T>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((row) => {
-              const rowId = getRowId(row);
-              return (
-                <TableRow 
-                  key={rowId} 
-                  className={cn(
-                    onRowClick && "cursor-pointer hover:bg-muted/50"
-                  )}
-                  onClick={() => onRowClick?.(row)}
-                >
-                  {columns.map((column) => (
-                    <TableCell key={column.accessorKey}>
-                      {column.cell
-                        ? column.cell(row)
-                        // @ts-ignore - This is a simplification, in practice we'd want to create a proper type
-                        : row.row.original[column.accessorKey]
-                      }
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
+            {data && data.length > 0 ? (
+              data.map((row) => {
+                const rowId = getRowId(row);
+                return (
+                  <TableRow 
+                    key={rowId} 
+                    className={cn(
+                      onRowClick && "cursor-pointer hover:bg-muted/50"
+                    )}
+                    onClick={() => onRowClick?.({ row: { original: row } })}
+                  >
+                    {columns.map((column) => (
+                      <TableCell key={column.accessorKey}>
+                        {column.cell
+                          ? column.cell({ row: { original: row } })
+                          // @ts-ignore - This is a simplification, in practice we'd want to create a proper type
+                          : row[column.accessorKey]
+                        }
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No hay datos disponibles
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>

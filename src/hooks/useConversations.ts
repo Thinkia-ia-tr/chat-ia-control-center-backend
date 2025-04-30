@@ -42,27 +42,30 @@ export function useConversations(startDate?: Date, endDate?: Date) {
         
         console.log("Conversations raw data:", data);
         
+        // Return empty array if no data found
         if (!data || data.length === 0) {
           console.log("No conversations found");
           return [];
         }
         
-        // Transform date string to Date object and ensure client is properly formatted
+        // Transform and normalize the data
         const processedData = data.map(item => {
-          let client = item.client;
+          let clientData = item.client;
           
           // Ensure client is in the correct format
-          if (typeof client === 'string') {
+          if (typeof clientData === 'string') {
             try {
-              client = JSON.parse(client);
+              clientData = JSON.parse(clientData);
             } catch (e) {
-              client = { type: 'email', value: client };
+              clientData = { type: 'email', value: clientData };
             }
+          } else if (!clientData) {
+            clientData = { type: 'unknown', value: 'Sin cliente' };
           }
           
           return {
             ...item,
-            client,
+            client: clientData,
             date: new Date(item.date)
           };
         }) as Conversation[];
