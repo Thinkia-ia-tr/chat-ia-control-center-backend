@@ -1,8 +1,9 @@
 
 import React, { useState } from "react";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
-import { Stats } from "./Stats";
-import { RecentConversations } from "./RecentConversations";
+import { Stats } from "@/components/dashboard/Stats";
+import { RecentConversations } from "@/components/dashboard/RecentConversations";
+import Layout from "@/components/layout/Layout";
 
 export function Dashboard() {
   const now = new Date();
@@ -18,19 +19,21 @@ export function Dashboard() {
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Panel de Control</h1>
-        <DateRangePicker
-          startDate={startDate}
-          endDate={endDate}
-          onChange={handleDateRangeChange}
-        />
-      </div>
+    <Layout>
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Panel de Control</h1>
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            onChange={handleDateRangeChange}
+          />
+        </div>
 
-      <Stats startDate={startDate} endDate={endDate} />
-      <RecentConversations startDate={startDate} endDate={endDate} />
-    </div>
+        <Stats startDate={startDate} endDate={endDate} />
+        <RecentConversations startDate={startDate} endDate={endDate} />
+      </div>
+    </Layout>
   );
 }
 
