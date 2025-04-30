@@ -1,6 +1,6 @@
 
 import React from "react";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -18,7 +18,7 @@ interface RecentConversationsProps {
 export function RecentConversations({ startDate, endDate }: RecentConversationsProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { data: conversations = [], isError } = useConversations(startDate, endDate);
+  const { data: conversations = [], isLoading, isError } = useConversations(startDate, endDate);
   
   if (isError) {
     toast({
@@ -49,7 +49,7 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
             <span className="block">
               {client && typeof client === 'object' && client.value 
                 ? client.value.toString() 
-                : "Anonymous"}
+                : "Sin cliente"}
             </span>
           </div>
         );
@@ -107,12 +107,23 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
         </Button>
       </div>
 
-      <DataTable
-        columns={columns}
-        data={recentConversations.map(item => ({ row: { original: item } }))}
-        getRowId={(rowData) => rowData.row.original.id}
-        onRowClick={handleRowClick}
-      />
+      {isLoading ? (
+        <div className="flex items-center justify-center h-32">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <span className="ml-2">Cargando conversaciones...</span>
+        </div>
+      ) : recentConversations.length > 0 ? (
+        <DataTable
+          columns={columns}
+          data={recentConversations.map(item => ({ row: { original: item } }))}
+          getRowId={(rowData) => rowData.row.original.id}
+          onRowClick={handleRowClick}
+        />
+      ) : (
+        <div className="text-center p-4 border rounded-md bg-muted/20">
+          <p className="text-muted-foreground">No hay conversaciones recientes en el periodo seleccionado.</p>
+        </div>
+      )}
     </div>
   );
 }
