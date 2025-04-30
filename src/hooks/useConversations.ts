@@ -16,7 +16,7 @@ export function useConversations(startDate?: Date, endDate?: Date) {
           .select('*');
         
         if (startDate && endDate) {
-          // Aseguramos que las fechas de fin incluyan todo el día
+          // Make sure end dates include the full day
           const adjustedEndDate = new Date(endDate);
           adjustedEndDate.setHours(23, 59, 59, 999);
           
@@ -38,11 +38,21 @@ export function useConversations(startDate?: Date, endDate?: Date) {
         
         if (!data) return [];
         
-        // Transformar la fecha string a objeto Date
-        return data.map(item => ({
-          ...item,
-          date: new Date(item.date)
-        })) as Conversation[];
+        // Transform date string to Date object and ensure client is properly formatted
+        return data.map(item => {
+          let client = item.client;
+          
+          // Ensure client is in the correct format
+          if (typeof client === 'string') {
+            client = { type: 'email', value: client };
+          }
+          
+          return {
+            ...item,
+            client,
+            date: new Date(item.date)
+          };
+        }) as Conversation[];
       } catch (error) {
         console.error("Error in useConversations:", error);
         toast({

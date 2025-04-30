@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Loader2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ConversationsListProps {
   startDate?: Date;
@@ -53,21 +54,23 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
   const filteredData = conversations.filter(conversation => {
     if (!debouncedSearchQuery) return true;
     
+    const searchLower = debouncedSearchQuery.toLowerCase();
+    
     // Case-insensitive search on title
-    if (conversation.title.toLowerCase().includes(debouncedSearchQuery.toLowerCase())) {
+    if (conversation.title.toLowerCase().includes(searchLower)) {
       return true;
     }
     
     // Search on client ID if available
     if (conversation.client && typeof conversation.client === 'object' && conversation.client.value) {
       const clientValue = conversation.client.value.toString().toLowerCase();
-      if (clientValue.includes(debouncedSearchQuery.toLowerCase())) {
+      if (clientValue.includes(searchLower)) {
         return true;
       }
     }
     
     // Search on channel
-    if (conversation.channel.toLowerCase().includes(debouncedSearchQuery.toLowerCase())) {
+    if (conversation.channel.toLowerCase().includes(searchLower)) {
       return true;
     }
     
@@ -99,54 +102,59 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
   }
   
   return (
-    <div className="flex flex-col gap-6">
-      <SearchFilter
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        totalRows={filteredData.length}
-      />
-      
-      {filteredData.length > 0 ? (
-        <ConversationsTable
-          data={paginatedData}
-          onRowClick={handleRowClick}
+    <Card>
+      <CardHeader>
+        <CardTitle>Total: {filteredData.length} conversaciones</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-6">
+        <SearchFilter
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          totalRows={filteredData.length}
         />
-      ) : (
-        <div className="text-center p-8 border rounded-md bg-muted/20">
-          <p className="text-lg text-muted-foreground">No se encontraron conversaciones que coincidan con tu búsqueda.</p>
-        </div>
-      )}
-      
-      {filteredData.length > 0 && (
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 scale-120 whitespace-nowrap">
-            <span className="text-sm text-muted-foreground">Mostrar</span>
-            <Select
-              value={rowsPerPage.toString()}
-              onValueChange={handleRowsPerPageChange}
-            >
-              <SelectTrigger className="w-[70px]">
-                <SelectValue placeholder={rowsPerPage} />
-              </SelectTrigger>
-              <SelectContent>
-                {[5, 10, 25, 50].map((option) => (
-                  <SelectItem key={option} value={option.toString()}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <span className="text-sm text-muted-foreground">por página</span>
-          </div>
-          
-          <ConversationsPagination 
-            currentPage={page} 
-            totalPages={totalPages} 
-            onPageChange={handlePageChange} 
+        
+        {filteredData.length > 0 ? (
+          <ConversationsTable
+            data={paginatedData}
+            onRowClick={handleRowClick}
           />
-        </div>
-      )}
-    </div>
+        ) : (
+          <div className="text-center p-8 border rounded-md bg-muted/20">
+            <p className="text-lg text-muted-foreground">No se encontraron conversaciones que coincidan con tu búsqueda.</p>
+          </div>
+        )}
+        
+        {filteredData.length > 0 && (
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 whitespace-nowrap">
+              <span className="text-sm text-muted-foreground">Mostrar</span>
+              <Select
+                value={rowsPerPage.toString()}
+                onValueChange={handleRowsPerPageChange}
+              >
+                <SelectTrigger className="w-[70px]">
+                  <SelectValue placeholder={rowsPerPage} />
+                </SelectTrigger>
+                <SelectContent>
+                  {[5, 10, 15, 25, 50].map((option) => (
+                    <SelectItem key={option} value={option.toString()}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="text-sm text-muted-foreground">por página</span>
+            </div>
+            
+            <ConversationsPagination 
+              currentPage={page} 
+              totalPages={totalPages} 
+              onPageChange={handlePageChange} 
+            />
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
