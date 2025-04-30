@@ -3,7 +3,7 @@ import React from "react";
 import { MessageSquare, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 import { es } from "date-fns/locale";
 import { DataTable } from "@/components/ui/data-table";
 import { Link, useNavigate } from "react-router-dom";
@@ -76,13 +76,21 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
     {
       header: "Fecha",
       accessorKey: "date",
-      cell: ({ row }: any) => (
-        <div className="w-full">
-          <span className="block text-right">
-            {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
-          </span>
-        </div>
-      ),
+      cell: ({ row }: any) => {
+        // Check if date is valid before formatting
+        const date = row.original.date;
+        const isValidDate = date instanceof Date && !isNaN(date.getTime()) && isValid(date);
+        
+        return (
+          <div className="w-full">
+            <span className="block text-right">
+              {isValidDate 
+                ? format(date, "dd MMM yyyy HH:mm", { locale: es })
+                : "Fecha inválida"}
+            </span>
+          </div>
+        );
+      },
     }
   ];
 
@@ -90,7 +98,18 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
     navigate(`/conversaciones/${rowData.row.original.id}`);
   };
   
-  const sortedConversations = [...conversations].sort((a, b) => b.date.getTime() - a.date.getTime());
+  // Ensure we're working with valid data before sorting
+  const validConversations = Array.isArray(conversations) 
+    ? conversations.filter(conv => conv && conv.date instanceof Date && !isNaN(conv.date.getTime()))
+    : [];
+  
+  const sortedConversations = [...validConversations].sort((a, b) => {
+    // Ensure both dates are valid before comparing
+    if (!(a.date instanceof Date) || isNaN(a.date.getTime())) return 1;
+    if (!(b.date instanceof Date) || isNaN(b.date.getTime())) return -1;
+    
+    return b.date.getTime() - a.date.getTime();
+  });
   
   // Mostrar solo las 5 más recientes del rango seleccionado
   const recentConversations = sortedConversations.slice(0, 5);
@@ -115,8 +134,8 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
       ) : recentConversations.length > 0 ? (
         <DataTable
           columns={columns}
-          data={recentConversations.map(item => ({ row: { original: item } }))}
-          getRowId={(rowData) => rowData.row.original.id}
+          data={recentConversations}
+          getRowId={(row) => row.id}
           onRowClick={handleRowClick}
         />
       ) : (

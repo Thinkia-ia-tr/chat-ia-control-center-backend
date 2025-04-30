@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Conversation } from "@/components/conversations/types";
 import { useToast } from "@/components/ui/use-toast";
+import { isValid } from "date-fns";
 
 export function useConversations(startDate?: Date, endDate?: Date) {
   const { toast } = useToast();
@@ -63,10 +64,24 @@ export function useConversations(startDate?: Date, endDate?: Date) {
             clientData = { type: 'unknown', value: 'Sin cliente' };
           }
           
+          // Process the date properly
+          let dateObj;
+          try {
+            dateObj = new Date(item.date);
+            // Validate the date
+            if (!isValid(dateObj)) {
+              console.warn(`Invalid date found: ${item.date}, using current date instead`);
+              dateObj = new Date(); // Fallback to current date
+            }
+          } catch (e) {
+            console.error("Error parsing date:", e);
+            dateObj = new Date(); // Fallback to current date
+          }
+          
           return {
             ...item,
             client: clientData,
-            date: new Date(item.date)
+            date: dateObj
           };
         }) as Conversation[];
         

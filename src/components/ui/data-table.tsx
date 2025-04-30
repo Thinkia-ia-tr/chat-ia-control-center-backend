@@ -24,9 +24,9 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   console.log("DataTable rendering with data:", data);
 
-  // Asegurarnos de que data siempre sea un array, incluso si es undefined
+  // Ensure data is always an array and items are valid
   const safeData = Array.isArray(data) ? data : [];
-
+  
   return (
     <div className={cn("rounded-md bg-card text-card-foreground", className)}>
       <div className="relative w-full overflow-auto">
@@ -43,6 +43,9 @@ export function DataTable<T>({
           <TableBody>
             {safeData.length > 0 ? (
               safeData.map((row) => {
+                // Skip rendering if row is null or undefined
+                if (!row) return null;
+                
                 const rowId = getRowId(row);
                 return (
                   <TableRow 
