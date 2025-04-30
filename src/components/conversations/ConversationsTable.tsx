@@ -1,3 +1,4 @@
+
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -11,13 +12,15 @@ interface ConversationsTableProps {
 }
 
 export function ConversationsTable({ data, onRowClick }: ConversationsTableProps) {
+  console.log("ConversationsTable render with data:", data);
+
   const columns = [
     {
       header: "Conversación",
       accessorKey: "title",
       cell: ({ row }: { row: { original: Conversation } }) => (
         <div className="w-full">
-          <span className="block">{row.original.title}</span>
+          <span className="block">{row.original.title || "Sin título"}</span>
         </div>
       )
     },
@@ -27,13 +30,20 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
         
+        // Ensure client is properly handled
+        let displayValue = "Sin cliente";
+        
+        if (client) {
+          if (typeof client === 'string') {
+            displayValue = client;
+          } else if (typeof client === 'object') {
+            displayValue = client.value ? client.value.toString() : "Sin valor";
+          }
+        }
+        
         return (
           <div className="w-full">
-            <span className="block">
-              {client && typeof client === 'object' && client.value 
-                ? client.value.toString() 
-                : "Sin cliente"}
-            </span>
+            <span className="block">{displayValue}</span>
           </div>
         );
       }
@@ -43,7 +53,9 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       accessorKey: "channel",
       cell: ({ row }: { row: { original: Conversation } }) => (
         <div className="w-full">
-          <Badge variant="default" className="bg-primary/70 hover:bg-primary/90">{row.original.channel}</Badge>
+          <Badge variant="default" className="bg-primary/70 hover:bg-primary/90">
+            {row.original.channel || "Desconocido"}
+          </Badge>
         </div>
       )
     },
@@ -52,20 +64,31 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       accessorKey: "messages",
       cell: ({ row }: { row: { original: Conversation } }) => (
         <div className="w-full flex items-center justify-center text-center">
-          {row.original.messages}
+          {row.original.messages || 0}
         </div>
       )
     },
     {
       header: "Fecha",
       accessorKey: "date",
-      cell: ({ row }: { row: { original: Conversation } }) => (
-        <div className="w-full">
-          <span className="block text-right">
-            {format(row.original.date, "dd MMM yyyy HH:mm", { locale: es })}
-          </span>
-        </div>
-      )
+      cell: ({ row }: { row: { original: Conversation } }) => {
+        const date = row.original.date;
+        let formattedDate = "Fecha desconocida";
+        
+        if (date) {
+          try {
+            formattedDate = format(new Date(date), "dd MMM yyyy HH:mm", { locale: es });
+          } catch (error) {
+            console.error("Error formatting date:", date, error);
+          }
+        }
+        
+        return (
+          <div className="w-full">
+            <span className="block text-right">{formattedDate}</span>
+          </div>
+        );
+      }
     }
   ];
 
@@ -74,7 +97,7 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       columns={columns}
       data={data.map(item => ({ row: { original: item } }))}
       onRowClick={onRowClick}
-      getRowId={(rowData) => rowData.row.original.id}
+      getRowId={(rowData) => rowData.row.original.id || Math.random().toString()}
     />
   );
 }

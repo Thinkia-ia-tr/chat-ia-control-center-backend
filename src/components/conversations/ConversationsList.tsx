@@ -31,7 +31,13 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   
-  const { data: conversations = [], isLoading, isError } = useConversations(startDate, endDate);
+  const { data: conversations = [], isLoading, isError, error } = useConversations(startDate, endDate);
+
+  console.log("ConversationsList render - data:", conversations, "isLoading:", isLoading, "isError:", isError);
+  
+  if (error) {
+    console.error("Error from useConversations:", error);
+  }
 
   // Reset pagination when search query changes
   useEffect(() => {
@@ -57,7 +63,7 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
     const searchLower = debouncedSearchQuery.toLowerCase();
     
     // Case-insensitive search on title
-    if (conversation.title.toLowerCase().includes(searchLower)) {
+    if (conversation.title && conversation.title.toLowerCase().includes(searchLower)) {
       return true;
     }
     
@@ -70,7 +76,7 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
     }
     
     // Search on channel
-    if (conversation.channel.toLowerCase().includes(searchLower)) {
+    if (conversation.channel && conversation.channel.toLowerCase().includes(searchLower)) {
       return true;
     }
     
