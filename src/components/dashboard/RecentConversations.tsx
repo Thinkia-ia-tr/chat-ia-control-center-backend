@@ -1,4 +1,3 @@
-
 import React from "react";
 import { MessageSquare, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +13,21 @@ interface RecentConversationsProps {
   startDate: Date;
   endDate: Date;
 }
+
+// Función para obtener nombres de canal amigables para el usuario
+const getChannelDisplayName = (channel: string): string => {
+  const channelMap: Record<string, string> = {
+    'web': 'Web',
+    'Web': 'Web',
+    'email': 'Email',
+    'sms': 'SMS',
+    'chat': 'Chat',
+    'call': 'Llamada',
+    'whatsapp_api': 'Whatsapp'  // Cambiado para mantener consistencia
+  };
+  
+  return channelMap[channel] || channel;
+};
 
 export function RecentConversations({ startDate, endDate }: RecentConversationsProps) {
   const navigate = useNavigate();
@@ -60,7 +74,9 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
       accessorKey: "channel",
       cell: ({ row }: any) => (
         <div className="w-full">
-          <Badge variant="default" className="bg-primary/70 hover:bg-primary/90">{row.original.channel}</Badge>
+          <Badge variant="default" className="bg-primary/70 hover:bg-primary/90">
+            {getChannelDisplayName(row.original.channel || "Desconocido")}
+          </Badge>
         </div>
       ),
     },
