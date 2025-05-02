@@ -26,8 +26,14 @@ const getChannelDisplayName = (channel: string): string => {
   return channelMap[channel] || channel;
 };
 
-// Function to get the appropriate icon based on client type
+// Function to get the appropriate icon based on client type and channel
 const getClientTypeIcon = (clientType: string, channel: string) => {
+  // For web channel, always use Hash icon
+  if (channel === 'web') {
+    return <Hash className="h-4 w-4 text-muted-foreground" />;
+  }
+  
+  // For other channels, use icon based on client type
   switch (clientType) {
     case 'phone':
       return <Phone className="h-4 w-4 text-muted-foreground" />;
@@ -37,13 +43,52 @@ const getClientTypeIcon = (clientType: string, channel: string) => {
       return <Hash className="h-4 w-4 text-muted-foreground" />;
     default:
       // Default icon based on channel
-      if (channel === 'web') {
-        return <User className="h-4 w-4 text-muted-foreground" />;
-      } else if (channel === 'chat' || channel === 'whatsapp_api') {
+      if (channel === 'chat' || channel === 'whatsapp_api') {
         return <MessageSquare className="h-4 w-4 text-muted-foreground" />;
       }
-      return null;
+      return <User className="h-4 w-4 text-muted-foreground" />;
   }
+};
+
+// Function to format client display value based on channel and client type
+const getFormattedClientValue = (client: any, channel: string): string => {
+  if (!client) return "Sin cliente";
+  
+  // For web channel, always format as ID
+  if (channel === 'web') {
+    if (typeof client === 'object' && client.value) {
+      const value = client.value.toString();
+      // Format UUID if present (extract last part)
+      if (value.includes('-')) {
+        const parts = value.split('-');
+        if (parts.length === 5) {
+          return `ID: ${parts[parts.length - 1]}`;
+        }
+      }
+      return `ID: ${value.substring(0, 8)}`;
+    }
+    return "ID: Sin valor";
+  }
+  
+  // For other channels
+  if (typeof client === 'string') {
+    return client;
+  } else if (typeof client === 'object' && client !== null) {
+    const clientType = client.type || 'unknown';
+    const value = client.value ? client.value.toString() : "Sin valor";
+    
+    // Special formatting for ID type
+    if (clientType === 'id' && value.includes('-')) {
+      const parts = value.split('-');
+      if (parts.length === 5) {
+        return `ID: ${parts[parts.length - 1]}`;
+      }
+    }
+    
+    return value;
+  }
+  
+  return "Sin cliente";
 };
 
 export function ConversationsTable({ data, onRowClick }: ConversationsTableProps) {
@@ -66,28 +111,14 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
         const client = row.original.client;
         const channel = row.original.channel;
         
-        // Handle all possible client data scenarios
-        let displayValue = "Sin cliente";
+        // Get client icon based on channel and client type
         let clientType = 'unknown';
-        
-        if (client) {
-          if (typeof client === 'string') {
-            displayValue = client;
-          } else if (typeof client === 'object' && client !== null) {
-            clientType = client.type || 'unknown';
-            displayValue = client.value ? client.value.toString() : "Sin valor";
-            
-            // For ID type clients, show only the last 8 characters if it's a UUID
-            if (clientType === 'id' && displayValue.includes('-')) {
-              const parts = displayValue.split('-');
-              if (parts.length === 5) {
-                displayValue = `ID: ${parts[parts.length - 1]}`;
-              }
-            }
-          }
+        if (typeof client === 'object' && client !== null && client.type) {
+          clientType = client.type;
         }
         
         const icon = getClientTypeIcon(clientType, channel);
+        const displayValue = getFormattedClientValue(client, channel);
         
         return (
           <div className="w-full flex items-center gap-2">
