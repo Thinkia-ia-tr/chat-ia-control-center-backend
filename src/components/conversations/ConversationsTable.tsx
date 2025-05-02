@@ -12,6 +12,20 @@ interface ConversationsTableProps {
   onRowClick: (row: { row: { original: Conversation } }) => void;
 }
 
+// Function to get user-friendly channel names
+const getChannelDisplayName = (channel: string): string => {
+  const channelMap: Record<string, string> = {
+    'web': 'Web',
+    'email': 'Email',
+    'sms': 'SMS',
+    'chat': 'Chat',
+    'call': 'Llamada',
+    'whatsapp_api': 'WhatsApp'
+  };
+  
+  return channelMap[channel] || channel;
+};
+
 export function ConversationsTable({ data, onRowClick }: ConversationsTableProps) {
   console.log("ConversationsTable render with data:", data);
 
@@ -30,7 +44,7 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
-        const isWhatsApp = row.original.channel === 'whatsapp';
+        const isWhatsApp = row.original.channel === 'whatsapp_api';
         
         // Handle all possible client data scenarios
         let displayValue = "Sin cliente";
@@ -57,7 +71,7 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       cell: ({ row }: { row: { original: Conversation } }) => (
         <div className="w-full">
           <Badge variant="default" className="bg-primary/70 hover:bg-primary/90">
-            {row.original.channel || "Desconocido"}
+            {getChannelDisplayName(row.original.channel || "Desconocido")}
           </Badge>
         </div>
       )

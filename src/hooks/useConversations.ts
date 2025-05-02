@@ -11,6 +11,9 @@ interface ClientData {
   value: string;
 }
 
+// These should match the allowed channel values in the database
+const VALID_CHANNELS = ['web', 'email', 'sms', 'chat', 'call', 'whatsapp_api'];
+
 export function useConversations(startDate?: Date, endDate?: Date) {
   const { toast } = useToast();
 
@@ -94,9 +97,14 @@ export function useConversations(startDate?: Date, endDate?: Date) {
             }
           }
 
+          // Normalize channel value - ensure it's one of the valid channels
+          let normalizedChannel = item.channel;
+          if (normalizedChannel === 'whatsapp') {
+            normalizedChannel = 'whatsapp_api'; // Map 'whatsapp' to 'whatsapp_api' which appears to be the valid value
+          }
+          
           // For WhatsApp conversations, client should always be phone type
-          // The database has been updated to ensure this, but we double-check here
-          if (item.channel === 'whatsapp') {
+          if (normalizedChannel === 'whatsapp_api') {
             if (clientData.type !== 'phone') {
               clientData.type = 'phone';
             }
@@ -133,6 +141,7 @@ export function useConversations(startDate?: Date, endDate?: Date) {
           
           return {
             ...item,
+            channel: normalizedChannel, // Use the normalized channel value
             client: clientData,
             date: dateObj
           };
