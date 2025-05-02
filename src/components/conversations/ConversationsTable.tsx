@@ -1,4 +1,3 @@
-
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +20,7 @@ const getChannelDisplayName = (channel: string): string => {
     'sms': 'SMS',
     'chat': 'Chat',
     'call': 'Llamada',
-    'whatsapp_api': 'Whatsapp'  // Changed from 'WhatsApp' to 'Whatsapp'
+    'whatsapp_api': 'Whatsapp'
   };
   
   return channelMap[channel] || channel;
@@ -55,31 +54,30 @@ const getClientTypeIcon = (clientType: string, channel: string) => {
 const getFormattedClientValue = (client: any, channel: string): string => {
   if (!client) return "Sin cliente";
   
-  // Para el canal Web, siempre formatear como ID (verificación case-insensitive)
+  // Para el canal Web, formatear sin el prefijo ID:
   if (channel.toLowerCase() === 'web') {
     if (typeof client === 'object' && client.value) {
       // Mostrar el UUID en formato abreviado para mejorar la legibilidad
       const uuid = client.value.toString();
       // Mostrar solo los primeros 8 y últimos 4 caracteres del UUID
-      return `ID: ${uuid.substring(0, 8)}...${uuid.substring(uuid.length - 4)}`;
+      return `${uuid.substring(0, 8)}...${uuid.substring(uuid.length - 4)}`;
     }
-    return "ID: Sin valor";
+    return "Sin valor";
   }
   
   // Para otros canales
   if (typeof client === 'string') {
     return client;
   } else if (typeof client === 'object' && client !== null) {
-    const clientType = client.type || 'unknown';
     const value = client.value ? client.value.toString() : "Sin valor";
     
-    // Para tipo 'id', mostrar formato abreviado
-    if (clientType === 'id') {
+    // Para tipo 'id', mostrar formato abreviado sin el prefijo ID:
+    if (client.type === 'id') {
       const idValue = value.toString();
       if (idValue.length > 12) {
-        return `ID: ${idValue.substring(0, 8)}...`;
+        return `${idValue.substring(0, 8)}...`;
       }
-      return `ID: ${idValue}`;
+      return idValue;
     }
     
     return value;
@@ -107,19 +105,10 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
         const channel = row.original.channel;
-        
-        // Get client icon based on channel and client type
-        let clientType = 'unknown';
-        if (typeof client === 'object' && client !== null && client.type) {
-          clientType = client.type;
-        }
-        
-        const icon = getClientTypeIcon(clientType, channel);
         const displayValue = getFormattedClientValue(client, channel);
         
         return (
-          <div className="w-full flex items-center gap-2">
-            {icon}
+          <div className="w-full">
             <span className="block">{displayValue}</span>
           </div>
         );
