@@ -23,13 +23,13 @@ const getChannelDisplayName = (channel: string): string => {
     'whatsapp_api': 'WhatsApp'
   };
   
-  return channelMap[channel] || channel;
+  return channelMap[channel.toLowerCase()] || channel;
 };
 
 // Function to get the appropriate icon based on client type and channel
 const getClientTypeIcon = (clientType: string, channel: string) => {
-  // For web channel, always use Hash icon
-  if (channel === 'web') {
+  // For web channel, always use Hash icon (case-insensitive check)
+  if (channel.toLowerCase() === 'web') {
     return <Hash className="h-4 w-4 text-muted-foreground" />;
   }
   
@@ -54,8 +54,8 @@ const getClientTypeIcon = (clientType: string, channel: string) => {
 const getFormattedClientValue = (client: any, channel: string): string => {
   if (!client) return "Sin cliente";
   
-  // For web channel, always format as ID
-  if (channel === 'web') {
+  // For web channel, always format as ID (case-insensitive check)
+  if (channel.toLowerCase() === 'web') {
     if (typeof client === 'object' && client.value) {
       const value = client.value.toString();
       // Format UUID if present (extract last part)
