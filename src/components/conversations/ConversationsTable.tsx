@@ -16,6 +16,7 @@ interface ConversationsTableProps {
 const getChannelDisplayName = (channel: string): string => {
   const channelMap: Record<string, string> = {
     'web': 'Web',
+    'Web': 'Web',
     'email': 'Email',
     'sms': 'SMS',
     'chat': 'Chat',
@@ -23,7 +24,7 @@ const getChannelDisplayName = (channel: string): string => {
     'whatsapp_api': 'WhatsApp'
   };
   
-  return channelMap[channel.toLowerCase()] || channel;
+  return channelMap[channel] || channel;
 };
 
 // Function to get the appropriate icon based on client type and channel
@@ -54,25 +55,31 @@ const getClientTypeIcon = (clientType: string, channel: string) => {
 const getFormattedClientValue = (client: any, channel: string): string => {
   if (!client) return "Sin cliente";
   
-  // For web channel, always format as ID (case-insensitive check)
+  // Para el canal Web, siempre formatear como ID (verificación case-insensitive)
   if (channel.toLowerCase() === 'web') {
     if (typeof client === 'object' && client.value) {
-      // Mostrar el UUID completo en lugar de solo una parte
-      return `ID: ${client.value.toString()}`;
+      // Mostrar el UUID en formato abreviado para mejorar la legibilidad
+      const uuid = client.value.toString();
+      // Mostrar solo los primeros 8 y últimos 4 caracteres del UUID
+      return `ID: ${uuid.substring(0, 8)}...${uuid.substring(uuid.length - 4)}`;
     }
     return "ID: Sin valor";
   }
   
-  // For other channels
+  // Para otros canales
   if (typeof client === 'string') {
     return client;
   } else if (typeof client === 'object' && client !== null) {
     const clientType = client.type || 'unknown';
     const value = client.value ? client.value.toString() : "Sin valor";
     
-    // Para tipo 'id', mostrar el valor completo
+    // Para tipo 'id', mostrar formato abreviado
     if (clientType === 'id') {
-      return `ID: ${value}`;
+      const idValue = value.toString();
+      if (idValue.length > 12) {
+        return `ID: ${idValue.substring(0, 8)}...`;
+      }
+      return `ID: ${idValue}`;
     }
     
     return value;
