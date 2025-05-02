@@ -45,7 +45,7 @@ export function ConversationDetail({
     <div className="flex flex-col gap-6">
       <div className="flex justify-end">
         <Button 
-          variant="outline" 
+          variant="default" 
           size="sm" 
           onClick={handleBackToList}
           className="flex items-center gap-2"
@@ -113,7 +113,7 @@ export function ConversationDetail({
 
       <div className="flex justify-end pt-4">
         <Button 
-          variant="outline" 
+          variant="default" 
           size="sm" 
           onClick={handleBackToList}
           className="flex items-center gap-2"
