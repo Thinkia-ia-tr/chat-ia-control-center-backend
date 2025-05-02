@@ -16,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ReferralListProps {
   startDate?: Date;
@@ -75,10 +77,34 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
       header: "Tipo de Derivación",
       accessorKey: "referral_type",
       cell: ({ row }: any) => (
-        <div className="w-full">
+        <div className="w-full flex items-center gap-2">
           <Badge variant="default" className="bg-primary/70 hover:bg-primary/90">
             {row.original.referral_type}
           </Badge>
+          
+          {row.original.contact_email && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle size={16} className="text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Contacto: {row.original.contact_email}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
+      )
+    },
+    {
+      header: "Contacto",
+      accessorKey: "contact_email",
+      cell: ({ row }: any) => (
+        <div className="w-full">
+          <span className="block text-sm text-muted-foreground">
+            {row.original.contact_email || "No disponible"}
+          </span>
         </div>
       )
     },

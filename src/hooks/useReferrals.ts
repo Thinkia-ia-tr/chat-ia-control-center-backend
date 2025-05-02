@@ -10,6 +10,7 @@ export interface Referral {
   client_type: string;
   client_value: string;
   referral_type: string;
+  contact_email: string; // Added contact email field
   created_at: string;
   notes?: string;
 }
@@ -42,7 +43,7 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
           created_at,
           notes,
           conversation_id,
-          referral_types (name),
+          referral_types (name, contact_info),
           conversations (title, client, date)
         `)
         .gte('created_at', startDate.toISOString())
@@ -59,6 +60,7 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
       // Transformar los datos para tener una estructura más fácil de usar
       const referrals: Referral[] = data.map((item: any) => {
         let client = { type: '', value: '' };
+        let contactEmail = '';
         
         // Asegurar que el cliente tenga una estructura válida
         if (item.conversations?.client) {
@@ -75,6 +77,20 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
             client = item.conversations.client;
           }
         }
+
+        // Extract contact email from referral_types.contact_info if available
+        if (item.referral_types?.contact_info) {
+          try {
+            if (typeof item.referral_types.contact_info === 'string') {
+              const contactInfo = JSON.parse(item.referral_types.contact_info);
+              contactEmail = contactInfo.email || '';
+            } else if (typeof item.referral_types.contact_info === 'object') {
+              contactEmail = item.referral_types.contact_info.email || '';
+            }
+          } catch (e) {
+            console.log("Error parsing contact info:", e);
+          }
+        }
         
         return {
           id: item.id,
@@ -84,6 +100,7 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
           client_type: client.type || '',
           client_value: client.value || '',
           referral_type: item.referral_types?.name || 'Desconocido',
+          contact_email: contactEmail,
           created_at: item.created_at,
           notes: item.notes
         };

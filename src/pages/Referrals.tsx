@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Layout from "@/components/layout/Layout";
 import { ReferralStats } from "@/components/referrals/ReferralStats";
+import { ReferralList } from "@/components/referrals/ReferralList";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Card } from "@/components/ui/card";
 
@@ -32,6 +33,11 @@ export default function ReferralsPage() {
         
         <Card className="p-6">
           <ReferralStats startDate={startDate} endDate={endDate} />
+        </Card>
+
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Listado de derivaciones</h2>
+          <ReferralList startDate={startDate} endDate={endDate} />
         </Card>
       </div>
     </Layout>
