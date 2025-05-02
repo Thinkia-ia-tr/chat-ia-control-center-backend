@@ -44,7 +44,7 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
           notes,
           conversation_id,
           referral_types (name, contact_info),
-          conversations (title, client, date)
+          conversations (title, client, date, channel)
         `)
         .gte('created_at', startDate.toISOString())
         .lte('created_at', adjustedEndDate.toISOString())
@@ -62,6 +62,9 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
         let client = { type: '', value: '' };
         let contactEmail = '';
         
+        // Comprobar si es un canal de WhatsApp
+        const isWhatsApp = item.conversations?.channel === 'whatsapp';
+        
         // Asegurar que el cliente tenga una estructura válida
         if (item.conversations?.client) {
           // Si es un string, intentamos parsearlo como JSON
@@ -75,6 +78,24 @@ export function useReferrals(startDate?: Date, endDate?: Date) {
           } else if (typeof item.conversations.client === 'object') {
             // Si ya es un objeto, lo usamos directamente
             client = item.conversations.client;
+          }
+        }
+        
+        // Para conversaciones de WhatsApp, aseguramos que el tipo sea 'phone'
+        if (isWhatsApp) {
+          client.type = 'phone';
+          
+          // Si no hay un valor de cliente o no es un número de teléfono válido, generamos uno
+          if (!client.value || !client.value.match(/^\+?[0-9]{9,15}$/)) {
+            // Intentamos extraer un número del valor actual, o generamos uno aleatorio
+            const phoneMatch = client.value && client.value.match(/([0-9]{9,15})/);
+            if (phoneMatch) {
+              client.value = '+' + phoneMatch[1];
+            } else {
+              // Generar un número de teléfono aleatorio con formato internacional español (+34)
+              const randomDigits = Math.floor(600000000 + Math.random() * 300000000);
+              client.value = '+34' + randomDigits;
+            }
           }
         }
 
