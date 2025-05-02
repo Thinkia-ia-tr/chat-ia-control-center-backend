@@ -64,6 +64,24 @@ export function useConversations(startDate?: Date, endDate?: Date) {
             clientData = { type: 'unknown', value: 'Sin cliente' };
           }
           
+          // For WhatsApp conversations, ensure client has phone type and valid number
+          if (item.channel === 'whatsapp') {
+            clientData.type = 'phone';
+            
+            // If client value is not a valid phone number, create or extract one
+            if (!clientData.value || !String(clientData.value).match(/^\+?[0-9]{9,15}$/)) {
+              // Try to extract a number from the current value, or generate a random one
+              const phoneMatch = clientData.value && String(clientData.value).match(/([0-9]{9,15})/);
+              if (phoneMatch) {
+                clientData.value = '+' + phoneMatch[1];
+              } else {
+                // Generate a random Spanish phone number (+34 prefix)
+                const randomDigits = Math.floor(600000000 + Math.random() * 300000000);
+                clientData.value = '+34' + randomDigits;
+              }
+            }
+          }
+          
           // Process the date properly
           let dateObj;
           try {

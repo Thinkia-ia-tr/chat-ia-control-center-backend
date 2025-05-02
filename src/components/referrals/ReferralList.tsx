@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { ConversationsPagination } from "@/components/conversations/ConversationsPagination";
 import { useNavigate } from "react-router-dom";
+import { Phone } from "lucide-react";
 import { 
   Select,
   SelectContent,
@@ -63,13 +64,17 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
     {
       header: "Cliente",
       accessorKey: "client_value",
-      cell: ({ row }: any) => (
-        <div className="w-full">
-          <span className="block">
-            {row.original.client_value || "Cliente anónimo"}
-          </span>
-        </div>
-      )
+      cell: ({ row }: any) => {
+        const isPhone = row.original.client_type === 'phone';
+        return (
+          <div className="w-full flex items-center gap-2">
+            {isPhone && <Phone className="h-4 w-4 text-muted-foreground" />}
+            <span className="block">
+              {row.original.client_value || "Cliente anónimo"}
+            </span>
+          </div>
+        )
+      }
     },
     {
       header: "Tipo de Derivación",

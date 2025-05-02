@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
+import { Phone } from "lucide-react";
 
 interface ConversationsTableProps {
   data: Conversation[];
@@ -29,6 +30,7 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
+        const isWhatsApp = row.original.channel === 'whatsapp';
         
         // Handle all possible client data scenarios
         let displayValue = "Sin cliente";
@@ -42,7 +44,8 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
         }
         
         return (
-          <div className="w-full">
+          <div className="w-full flex items-center gap-2">
+            {isWhatsApp && <Phone className="h-4 w-4 text-muted-foreground" />}
             <span className="block">{displayValue}</span>
           </div>
         );
