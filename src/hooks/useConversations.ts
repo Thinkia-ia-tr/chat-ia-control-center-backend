@@ -59,30 +59,54 @@ export function useConversations(startDate?: Date, endDate?: Date) {
         const processedData = data.map(item => {
           let clientData: ClientData = { type: 'unknown', value: 'Sin cliente' };
           
-          // Ensure client is in the correct format
-          if (typeof item.client === 'string') {
-            try {
-              clientData = JSON.parse(item.client) as ClientData;
-            } catch (e) {
-              clientData = { type: 'email', value: item.client };
+          // Parse client data based on its type
+          if (item.client) {
+            // If client is a string, try to parse it as JSON
+            if (typeof item.client === 'string') {
+              try {
+                clientData = JSON.parse(item.client) as ClientData;
+              } catch (e) {
+                clientData = { type: 'email', value: item.client };
+              }
+            } 
+            // If client is already an object
+            else if (typeof item.client === 'object') {
+              const clientObj = item.client as any;
+              
+              if (clientObj.type && clientObj.value) {
+                clientData = { 
+                  type: clientObj.type,
+                  value: clientObj.value.toString()
+                };
+              } else if (clientObj.value) {
+                clientData = { 
+                  type: 'unknown', 
+                  value: clientObj.value.toString() 
+                };
+              } else if (typeof clientObj === 'object' && Object.keys(clientObj).length > 0) {
+                // Try to get any value from the object
+                const firstKey = Object.keys(clientObj)[0];
+                clientData = { 
+                  type: 'unknown', 
+                  value: clientObj[firstKey]?.toString() || 'Sin cliente'
+                };
+              }
             }
-          } else if (item.client && typeof item.client === 'object') {
-            // Cast the client to our ClientData type if it's an object
-            const clientObj = item.client as any;
-            clientData = { 
-              type: clientObj.type || 'unknown',
-              value: clientObj.value || 'Sin cliente'
-            };
           }
-          
-          // For WhatsApp conversations, ensure client has phone type and valid number
+
+          // For WhatsApp conversations, client should always be phone type
+          // The database has been updated to ensure this, but we double-check here
           if (item.channel === 'whatsapp') {
-            clientData.type = 'phone';
-            
-            // If client value is not a valid phone number, create or extract one
-            if (!clientData.value || !String(clientData.value).match(/^\+?[0-9]{9,15}$/)) {
-              // Try to extract a number from the current value, or generate a random one
-              const phoneMatch = clientData.value && String(clientData.value).match(/([0-9]{9,15})/);
+            if (clientData.type !== 'phone') {
+              clientData.type = 'phone';
+            }
+              
+            // Validate phone number format (should already be fixed in database)
+            if (!clientData.value.match(/^\+?[0-9]{9,15}$/)) {
+              console.warn(`Invalid phone number format for WhatsApp conversation: ${clientData.value}`);
+              
+              // This is just a fallback in case our database migration missed something
+              const phoneMatch = clientData.value.match(/([0-9]{9,15})/);
               if (phoneMatch) {
                 clientData.value = '+' + phoneMatch[1];
               } else {
