@@ -5,6 +5,12 @@ import type { Conversation } from "@/components/conversations/types";
 import { useToast } from "@/components/ui/use-toast";
 import { isValid } from "date-fns";
 
+// Define the client object structure to help with type safety
+interface ClientData {
+  type: string;
+  value: string;
+}
+
 export function useConversations(startDate?: Date, endDate?: Date) {
   const { toast } = useToast();
 
@@ -51,17 +57,22 @@ export function useConversations(startDate?: Date, endDate?: Date) {
         
         // Transform and normalize the data
         const processedData = data.map(item => {
-          let clientData = item.client;
+          let clientData: ClientData = { type: 'unknown', value: 'Sin cliente' };
           
           // Ensure client is in the correct format
-          if (typeof clientData === 'string') {
+          if (typeof item.client === 'string') {
             try {
-              clientData = JSON.parse(clientData);
+              clientData = JSON.parse(item.client) as ClientData;
             } catch (e) {
-              clientData = { type: 'email', value: clientData };
+              clientData = { type: 'email', value: item.client };
             }
-          } else if (!clientData) {
-            clientData = { type: 'unknown', value: 'Sin cliente' };
+          } else if (item.client && typeof item.client === 'object') {
+            // Cast the client to our ClientData type if it's an object
+            const clientObj = item.client as any;
+            clientData = { 
+              type: clientObj.type || 'unknown',
+              value: clientObj.value || 'Sin cliente'
+            };
           }
           
           // For WhatsApp conversations, ensure client has phone type and valid number
