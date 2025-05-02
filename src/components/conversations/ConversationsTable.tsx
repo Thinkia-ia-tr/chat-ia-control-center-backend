@@ -54,33 +54,15 @@ const getClientTypeIcon = (clientType: string, channel: string) => {
 const getFormattedClientValue = (client: any, channel: string): string => {
   if (!client) return "Sin cliente";
   
-  // Para el canal Web, formatear sin el prefijo ID:
-  if (channel.toLowerCase() === 'web') {
-    if (typeof client === 'object' && client.value) {
-      // Mostrar el UUID en formato abreviado para mejorar la legibilidad
-      const uuid = client.value.toString();
-      // Mostrar solo los primeros 8 y últimos 4 caracteres del UUID
-      return `${uuid.substring(0, 8)}...${uuid.substring(uuid.length - 4)}`;
-    }
-    return "Sin valor";
-  }
-  
-  // Para otros canales
+  // Para todos los canales, mostrar el valor completo tal como está en la base de datos
   if (typeof client === 'string') {
     return client;
   } else if (typeof client === 'object' && client !== null) {
-    const value = client.value ? client.value.toString() : "Sin valor";
-    
-    // Para tipo 'id', mostrar formato abreviado sin el prefijo ID:
-    if (client.type === 'id') {
-      const idValue = value.toString();
-      if (idValue.length > 12) {
-        return `${idValue.substring(0, 8)}...`;
-      }
-      return idValue;
+    // Mostrar el valor completo sin abreviar
+    if (client.value) {
+      return client.value.toString();
     }
-    
-    return value;
+    return "Sin valor";
   }
   
   return "Sin cliente";
