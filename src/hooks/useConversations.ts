@@ -12,7 +12,7 @@ interface ClientData {
 }
 
 // These should match the allowed channel values in the database
-const VALID_CHANNELS = ['web', 'email', 'sms', 'chat', 'call', 'whatsapp_api'];
+const VALID_CHANNELS = ['web', 'Web', 'email', 'sms', 'chat', 'call', 'whatsapp_api'];
 
 export function useConversations(startDate?: Date, endDate?: Date) {
   const { toast } = useToast();
@@ -97,14 +97,28 @@ export function useConversations(startDate?: Date, endDate?: Date) {
             }
           }
 
-          // Normalize channel value - ensure it's one of the valid channels
+          // Normalize channel value - ensure it's properly handled
           let normalizedChannel = item.channel;
-          if (normalizedChannel === 'whatsapp') {
-            normalizedChannel = 'whatsapp_api'; // Map 'whatsapp' to 'whatsapp_api' which appears to be the valid value
+          
+          // Handle special cases for channel normalization
+          if (normalizedChannel && normalizedChannel.toLowerCase() === 'whatsapp') {
+            normalizedChannel = 'whatsapp_api'; // Map 'whatsapp' to 'whatsapp_api'
+          }
+          
+          // For Web channel conversations, client should always be id type
+          if (normalizedChannel && normalizedChannel.toLowerCase() === 'web') {
+            if (clientData.type !== 'id') {
+              clientData.type = 'id';
+            }
+            
+            // Make sure value is a properly formatted UUID
+            if (!clientData.value || !clientData.value.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+              console.warn(`Invalid UUID format for Web conversation client: ${clientData.value}`);
+            }
           }
           
           // For WhatsApp conversations, client should always be phone type
-          if (normalizedChannel === 'whatsapp_api') {
+          if (normalizedChannel && normalizedChannel.toLowerCase() === 'whatsapp_api') {
             if (clientData.type !== 'phone') {
               clientData.type = 'phone';
             }

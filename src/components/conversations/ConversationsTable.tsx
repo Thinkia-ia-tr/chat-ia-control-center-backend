@@ -1,3 +1,4 @@
+
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -42,7 +43,7 @@ const getClientTypeIcon = (clientType: string, channel: string) => {
       return <Hash className="h-4 w-4 text-muted-foreground" />;
     default:
       // Default icon based on channel
-      if (channel === 'chat' || channel === 'whatsapp_api') {
+      if (channel.toLowerCase() === 'chat' || channel.toLowerCase() === 'whatsapp_api') {
         return <MessageSquare className="h-4 w-4 text-muted-foreground" />;
       }
       return <User className="h-4 w-4 text-muted-foreground" />;
