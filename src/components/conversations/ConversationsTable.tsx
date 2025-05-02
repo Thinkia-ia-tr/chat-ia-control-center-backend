@@ -1,4 +1,3 @@
-
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -57,15 +56,8 @@ const getFormattedClientValue = (client: any, channel: string): string => {
   // For web channel, always format as ID (case-insensitive check)
   if (channel.toLowerCase() === 'web') {
     if (typeof client === 'object' && client.value) {
-      const value = client.value.toString();
-      // Format UUID if present (extract last part)
-      if (value.includes('-')) {
-        const parts = value.split('-');
-        if (parts.length === 5) {
-          return `ID: ${parts[parts.length - 1]}`;
-        }
-      }
-      return `ID: ${value.substring(0, 8)}`;
+      // Mostrar el UUID completo en lugar de solo una parte
+      return `ID: ${client.value.toString()}`;
     }
     return "ID: Sin valor";
   }
@@ -77,12 +69,9 @@ const getFormattedClientValue = (client: any, channel: string): string => {
     const clientType = client.type || 'unknown';
     const value = client.value ? client.value.toString() : "Sin valor";
     
-    // Special formatting for ID type
-    if (clientType === 'id' && value.includes('-')) {
-      const parts = value.split('-');
-      if (parts.length === 5) {
-        return `ID: ${parts[parts.length - 1]}`;
-      }
+    // Para tipo 'id', mostrar el valor completo
+    if (clientType === 'id') {
+      return `ID: ${value}`;
     }
     
     return value;
