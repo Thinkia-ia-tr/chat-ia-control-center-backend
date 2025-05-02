@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
-import { Phone } from "lucide-react";
+import { Phone, User, Hash, Mail, MessageSquare } from "lucide-react";
 
 interface ConversationsTableProps {
   data: Conversation[];
@@ -26,6 +26,26 @@ const getChannelDisplayName = (channel: string): string => {
   return channelMap[channel] || channel;
 };
 
+// Function to get the appropriate icon based on client type
+const getClientTypeIcon = (clientType: string, channel: string) => {
+  switch (clientType) {
+    case 'phone':
+      return <Phone className="h-4 w-4 text-muted-foreground" />;
+    case 'email':
+      return <Mail className="h-4 w-4 text-muted-foreground" />;
+    case 'id':
+      return <Hash className="h-4 w-4 text-muted-foreground" />;
+    default:
+      // Default icon based on channel
+      if (channel === 'web') {
+        return <User className="h-4 w-4 text-muted-foreground" />;
+      } else if (channel === 'chat' || channel === 'whatsapp_api') {
+        return <MessageSquare className="h-4 w-4 text-muted-foreground" />;
+      }
+      return null;
+  }
+};
+
 export function ConversationsTable({ data, onRowClick }: ConversationsTableProps) {
   console.log("ConversationsTable render with data:", data);
 
@@ -44,22 +64,34 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
-        const isWhatsApp = row.original.channel === 'whatsapp_api';
+        const channel = row.original.channel;
         
         // Handle all possible client data scenarios
         let displayValue = "Sin cliente";
+        let clientType = 'unknown';
         
         if (client) {
           if (typeof client === 'string') {
             displayValue = client;
           } else if (typeof client === 'object' && client !== null) {
+            clientType = client.type || 'unknown';
             displayValue = client.value ? client.value.toString() : "Sin valor";
+            
+            // For ID type clients, show only the last 8 characters if it's a UUID
+            if (clientType === 'id' && displayValue.includes('-')) {
+              const parts = displayValue.split('-');
+              if (parts.length === 5) {
+                displayValue = `ID: ${parts[parts.length - 1]}`;
+              }
+            }
           }
         }
         
+        const icon = getClientTypeIcon(clientType, channel);
+        
         return (
           <div className="w-full flex items-center gap-2">
-            {isWhatsApp && <Phone className="h-4 w-4 text-muted-foreground" />}
+            {icon}
             <span className="block">{displayValue}</span>
           </div>
         );
