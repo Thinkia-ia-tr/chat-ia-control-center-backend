@@ -1,10 +1,11 @@
+
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
-import { Phone, User, Hash, MessageSquare } from "lucide-react";
+import { Hash } from "lucide-react";
 
 interface ConversationsTableProps {
   data: Conversation[];
@@ -26,24 +27,13 @@ const getChannelDisplayName = (channel: string): string => {
   return channelMap[channel] || channel;
 };
 
-// Function to get the appropriate icon based on client type and channel
-const getClientTypeIcon = (clientType: string, channel: string) => {
-  // For all channels, use Hash icon as default
-  return <Hash className="h-4 w-4 text-muted-foreground" />;
-  
-  // The following code is removed as we only use 'id' type now
-  // But we keep the function for future extensibility
-};
-
-// Function to format client display value based on channel and client type
-const getFormattedClientValue = (client: any, channel: string): string => {
+// Function to format client display value
+const getFormattedClientValue = (client: any): string => {
   if (!client) return "Sin cliente";
   
-  // Para todos los canales, mostrar el valor completo tal como está en la base de datos
   if (typeof client === 'string') {
     return client;
   } else if (typeof client === 'object' && client !== null) {
-    // Mostrar el valor completo sin abreviar
     if (client.value) {
       return client.value.toString();
     }
@@ -71,12 +61,14 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
-        const channel = row.original.channel;
-        const displayValue = getFormattedClientValue(client, channel);
+        const displayValue = getFormattedClientValue(client);
         
         return (
           <div className="w-full">
-            <span className="block">{displayValue}</span>
+            <div className="flex items-center gap-2">
+              <Hash className="h-4 w-4 text-muted-foreground" />
+              <span className="block">{displayValue}</span>
+            </div>
           </div>
         );
       }

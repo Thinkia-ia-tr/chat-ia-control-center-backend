@@ -68,7 +68,7 @@ export function useConversations(startDate?: Date, endDate?: Date) {
             if (typeof item.client === 'string') {
               try {
                 clientData = JSON.parse(item.client) as ClientData;
-                // Convert type to 'id' regardless of what it was before
+                // Always set type to 'id' regardless of what it was before
                 clientData.type = 'id';
               } catch (e) {
                 clientData = { type: 'id', value: item.client };
@@ -102,7 +102,7 @@ export function useConversations(startDate?: Date, endDate?: Date) {
             normalizedChannel = 'whatsapp_api'; // Map 'whatsapp' to 'whatsapp_api'
           }
           
-          // For all conversations, client should always be id type
+          // Always set client type to 'id'
           clientData.type = 'id';
           
           // Process the date properly
