@@ -60,7 +60,7 @@ export function useConversations(startDate?: Date, endDate?: Date) {
         
         // Transform and normalize the data
         const processedData = data.map(item => {
-          let clientData: ClientData = { type: 'unknown', value: 'Sin cliente' };
+          let clientData: ClientData = { type: 'id', value: 'Sin cliente' };
           
           // Parse client data based on its type
           if (item.client) {
@@ -68,29 +68,26 @@ export function useConversations(startDate?: Date, endDate?: Date) {
             if (typeof item.client === 'string') {
               try {
                 clientData = JSON.parse(item.client) as ClientData;
+                // Convert type to 'id' regardless of what it was before
+                clientData.type = 'id';
               } catch (e) {
-                clientData = { type: 'email', value: item.client };
+                clientData = { type: 'id', value: item.client };
               }
             } 
             // If client is already an object
             else if (typeof item.client === 'object') {
               const clientObj = item.client as any;
               
-              if (clientObj.type && clientObj.value) {
+              if (clientObj.value) {
                 clientData = { 
-                  type: clientObj.type,
-                  value: clientObj.value.toString()
-                };
-              } else if (clientObj.value) {
-                clientData = { 
-                  type: 'unknown', 
+                  type: 'id',
                   value: clientObj.value.toString() 
                 };
               } else if (typeof clientObj === 'object' && Object.keys(clientObj).length > 0) {
                 // Try to get any value from the object
                 const firstKey = Object.keys(clientObj)[0];
                 clientData = { 
-                  type: 'unknown', 
+                  type: 'id', 
                   value: clientObj[firstKey]?.toString() || 'Sin cliente'
                 };
               }
@@ -105,39 +102,8 @@ export function useConversations(startDate?: Date, endDate?: Date) {
             normalizedChannel = 'whatsapp_api'; // Map 'whatsapp' to 'whatsapp_api'
           }
           
-          // For Web channel conversations, client should always be id type
-          if (normalizedChannel && normalizedChannel.toLowerCase() === 'web') {
-            if (clientData.type !== 'id') {
-              clientData.type = 'id';
-            }
-            
-            // Make sure value is a properly formatted UUID
-            if (!clientData.value || !clientData.value.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-              console.warn(`Invalid UUID format for Web conversation client: ${clientData.value}`);
-            }
-          }
-          
-          // For WhatsApp conversations, client should always be phone type
-          if (normalizedChannel && normalizedChannel.toLowerCase() === 'whatsapp_api') {
-            if (clientData.type !== 'phone') {
-              clientData.type = 'phone';
-            }
-              
-            // Validate phone number format (should already be fixed in database)
-            if (!clientData.value.match(/^\+?[0-9]{9,15}$/)) {
-              console.warn(`Invalid phone number format for Whatsapp conversation: ${clientData.value}`);
-              
-              // This is just a fallback in case our database migration missed something
-              const phoneMatch = clientData.value.match(/([0-9]{9,15})/);
-              if (phoneMatch) {
-                clientData.value = '+' + phoneMatch[1];
-              } else {
-                // Generate a random Spanish phone number (+34 prefix)
-                const randomDigits = Math.floor(600000000 + Math.random() * 300000000);
-                clientData.value = '+34' + randomDigits;
-              }
-            }
-          }
+          // For all conversations, client should always be id type
+          clientData.type = 'id';
           
           // Process the date properly
           let dateObj;

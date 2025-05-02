@@ -1,5 +1,6 @@
+
 import React from "react";
-import { MessageSquare, Loader2 } from "lucide-react";
+import { MessageSquare, Loader2, Hash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format, isValid } from "date-fns";
@@ -23,7 +24,7 @@ const getChannelDisplayName = (channel: string): string => {
     'sms': 'SMS',
     'chat': 'Chat',
     'call': 'Llamada',
-    'whatsapp_api': 'Whatsapp'  // Cambiado para mantener consistencia
+    'whatsapp_api': 'Whatsapp'
   };
   
   return channelMap[channel] || channel;
@@ -59,7 +60,8 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
         const client = row.original.client;
         
         return (
-          <div className="w-full">
+          <div className="w-full flex items-center gap-2">
+            <Hash className="h-4 w-4 text-muted-foreground" />
             <span className="block">
               {client && typeof client === 'object' && client.value 
                 ? client.value.toString() 

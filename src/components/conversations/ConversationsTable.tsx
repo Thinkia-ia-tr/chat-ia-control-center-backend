@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
-import { Phone, User, Hash, Mail, MessageSquare } from "lucide-react";
+import { Phone, User, Hash, MessageSquare } from "lucide-react";
 
 interface ConversationsTableProps {
   data: Conversation[];
@@ -28,26 +28,11 @@ const getChannelDisplayName = (channel: string): string => {
 
 // Function to get the appropriate icon based on client type and channel
 const getClientTypeIcon = (clientType: string, channel: string) => {
-  // For web channel, always use Hash icon (case-insensitive check)
-  if (channel.toLowerCase() === 'web') {
-    return <Hash className="h-4 w-4 text-muted-foreground" />;
-  }
+  // For all channels, use Hash icon as default
+  return <Hash className="h-4 w-4 text-muted-foreground" />;
   
-  // For other channels, use icon based on client type
-  switch (clientType) {
-    case 'phone':
-      return <Phone className="h-4 w-4 text-muted-foreground" />;
-    case 'email':
-      return <Mail className="h-4 w-4 text-muted-foreground" />;
-    case 'id':
-      return <Hash className="h-4 w-4 text-muted-foreground" />;
-    default:
-      // Default icon based on channel
-      if (channel.toLowerCase() === 'chat' || channel.toLowerCase() === 'whatsapp_api') {
-        return <MessageSquare className="h-4 w-4 text-muted-foreground" />;
-      }
-      return <User className="h-4 w-4 text-muted-foreground" />;
-  }
+  // The following code is removed as we only use 'id' type now
+  // But we keep the function for future extensibility
 };
 
 // Function to format client display value based on channel and client type
