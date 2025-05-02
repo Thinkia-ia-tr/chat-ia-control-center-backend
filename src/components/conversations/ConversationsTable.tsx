@@ -21,7 +21,7 @@ const getChannelDisplayName = (channel: string): string => {
     'sms': 'SMS',
     'chat': 'Chat',
     'call': 'Llamada',
-    'whatsapp_api': 'WhatsApp'
+    'whatsapp_api': 'Whatsapp'  // Changed from 'WhatsApp' to 'Whatsapp'
   };
   
   return channelMap[channel] || channel;

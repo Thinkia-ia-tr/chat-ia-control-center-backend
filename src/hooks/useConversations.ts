@@ -125,7 +125,7 @@ export function useConversations(startDate?: Date, endDate?: Date) {
               
             // Validate phone number format (should already be fixed in database)
             if (!clientData.value.match(/^\+?[0-9]{9,15}$/)) {
-              console.warn(`Invalid phone number format for WhatsApp conversation: ${clientData.value}`);
+              console.warn(`Invalid phone number format for Whatsapp conversation: ${clientData.value}`);
               
               // This is just a fallback in case our database migration missed something
               const phoneMatch = clientData.value.match(/([0-9]{9,15})/);
