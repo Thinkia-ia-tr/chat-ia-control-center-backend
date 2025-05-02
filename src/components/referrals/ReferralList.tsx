@@ -8,6 +8,7 @@ import { es } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { ConversationsPagination } from "@/components/conversations/ConversationsPagination";
+import { useNavigate } from "react-router-dom";
 import { 
   Select,
   SelectContent,
@@ -23,6 +24,7 @@ interface ReferralListProps {
 
 export function ReferralList({ startDate, endDate }: ReferralListProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const { data: referrals, isLoading, error } = useReferrals(startDate, endDate);
@@ -42,6 +44,11 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
       </div>
     );
   }
+
+  const handleRowClick = (rowData: any) => {
+    // Navigate to conversation detail when a row is clicked
+    navigate(`/conversaciones/${rowData.row.original.conversation_id}`);
+  };
 
   const columns = [
     {
@@ -120,6 +127,7 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
         columns={columns}
         data={paginatedData || []}
         getRowId={(rowData) => rowData.id}
+        onRowClick={handleRowClick}
       />
       
       {(!referrals || referrals.length === 0) ? (
