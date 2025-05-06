@@ -11,8 +11,8 @@ interface ClientData {
   value: string;
 }
 
-// These should match the allowed channel values in the database
-const VALID_CHANNELS = ['web', 'Web', 'email', 'sms', 'chat', 'call', 'whatsapp_api'];
+// Estos son los únicos canales permitidos en la base de datos
+const VALID_CHANNELS = ['Web', 'Whatsapp'];
 
 export function useConversations(startDate?: Date, endDate?: Date) {
   const { toast } = useToast();
@@ -94,12 +94,13 @@ export function useConversations(startDate?: Date, endDate?: Date) {
             }
           }
 
-          // Normalize channel value - ensure it's properly handled
+          // Normalizar el canal - asegurarse de que esté correctamente manejado
+          // y que solo sea uno de los dos valores permitidos: 'Web' o 'Whatsapp'
           let normalizedChannel = item.channel;
           
-          // Handle special cases for channel normalization
-          if (normalizedChannel && normalizedChannel.toLowerCase() === 'whatsapp') {
-            normalizedChannel = 'whatsapp_api'; // Map 'whatsapp' to 'whatsapp_api'
+          // Si el canal no es uno de los permitidos, usar 'Web' por defecto
+          if (!VALID_CHANNELS.includes(normalizedChannel)) {
+            normalizedChannel = 'Web';
           }
           
           // Always set client type to 'id'
@@ -121,7 +122,7 @@ export function useConversations(startDate?: Date, endDate?: Date) {
           
           return {
             ...item,
-            channel: normalizedChannel, // Use the normalized channel value
+            channel: normalizedChannel, // Usar el canal normalizado
             client: clientData,
             date: dateObj
           };

@@ -13,17 +13,9 @@ interface ConversationsTableProps {
 
 // Function to get user-friendly channel names
 const getChannelDisplayName = (channel: string): string => {
-  const channelMap: Record<string, string> = {
-    'web': 'Web',
-    'Web': 'Web',
-    'email': 'Email',
-    'sms': 'SMS',
-    'chat': 'Chat',
-    'call': 'Llamada',
-    'whatsapp_api': 'Whatsapp'
-  };
-  
-  return channelMap[channel] || channel;
+  // Solo tenemos dos canales posibles: 'Web' y 'Whatsapp'
+  if (channel === 'Whatsapp') return 'Whatsapp';
+  return 'Web';
 };
 
 // Function to format client display value
@@ -75,7 +67,7 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       cell: ({ row }: { row: { original: Conversation } }) => (
         <div className="w-full">
           <Badge variant="default" className="bg-primary/70 hover:bg-primary/90">
-            {getChannelDisplayName(row.original.channel || "Desconocido")}
+            {getChannelDisplayName(row.original.channel || "Web")}
           </Badge>
         </div>
       )

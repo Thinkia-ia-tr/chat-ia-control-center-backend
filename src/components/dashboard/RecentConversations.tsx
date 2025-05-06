@@ -17,17 +17,9 @@ interface RecentConversationsProps {
 
 // Función para obtener nombres de canal amigables para el usuario
 const getChannelDisplayName = (channel: string): string => {
-  const channelMap: Record<string, string> = {
-    'web': 'Web',
-    'Web': 'Web',
-    'email': 'Email',
-    'sms': 'SMS',
-    'chat': 'Chat',
-    'call': 'Llamada',
-    'whatsapp_api': 'Whatsapp'
-  };
-  
-  return channelMap[channel] || channel;
+  // Solo tenemos dos canales posibles ahora
+  if (channel === 'Whatsapp') return 'Whatsapp';
+  return 'Web';
 };
 
 export function RecentConversations({ startDate, endDate }: RecentConversationsProps) {
@@ -76,7 +68,7 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
       cell: ({ row }: any) => (
         <div className="w-full">
           <Badge variant="default" className="bg-primary/70 hover:bg-primary/90">
-            {getChannelDisplayName(row.original.channel || "Desconocido")}
+            {getChannelDisplayName(row.original.channel || "Web")}
           </Badge>
         </div>
       ),
