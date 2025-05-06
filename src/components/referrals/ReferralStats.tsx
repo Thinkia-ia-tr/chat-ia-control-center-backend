@@ -7,7 +7,6 @@ import { useReferralTimeSeries } from "@/hooks/useReferralTimeSeries";
 import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BriefcaseIcon, HeadphonesIcon, WrenchIcon, CalculatorIcon, UsersIcon } from "lucide-react";
-import { ReferralList } from "./ReferralList";
 
 interface ReferralStatsProps {
   startDate?: Date;
@@ -91,11 +90,6 @@ export function ReferralStats({ startDate, endDate }: ReferralStatsProps) {
             </StatCard>
           );
         })}
-      </div>
-
-      <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Listado de Derivaciones</h2>
-        <ReferralList startDate={startDate} endDate={endDate} />
       </div>
     </div>
   );
