@@ -76,9 +76,9 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
           return true;
         }
       } 
-      // Si client es un string directamente
+      // Si client es un string directamente - verificar su tipo antes de usar toLowerCase
       else if (typeof conversation.client === 'string') {
-        const clientValue = conversation.client.toLowerCase();
+        const clientValue = String(conversation.client).toLowerCase();
         if (clientValue.includes(searchLower)) {
           return true;
         }
