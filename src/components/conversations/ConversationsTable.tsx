@@ -1,10 +1,11 @@
-
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
+import { Tooltip } from "@/components/ui/tooltip";
+import { TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ConversationsTableProps {
   data: Conversation[];
@@ -34,6 +35,12 @@ const getFormattedClientValue = (client: any): string => {
   return "Sin cliente";
 };
 
+// Function to shorten UUID for display while keeping full value in tooltip
+const shortenUUID = (uuid: string): string => {
+  if (!uuid || uuid.length < 8) return uuid;
+  return `${uuid.substring(0, 8)}...`;
+};
+
 export function ConversationsTable({ data, onRowClick }: ConversationsTableProps) {
   console.log("ConversationsTable render with data:", data);
 
@@ -56,7 +63,16 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
         
         return (
           <div className="w-full">
-            <span className="block">{displayValue}</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="block cursor-help">{shortenUUID(displayValue)}</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{displayValue}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       }

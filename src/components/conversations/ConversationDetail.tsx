@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Message, Conversation } from "./types";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ConversationDetailProps {
   title: string;
@@ -15,6 +15,12 @@ interface ConversationDetailProps {
   messages: Message[];
   conversation: Conversation;
 }
+
+// Function to shorten UUID for display while keeping full value in tooltip
+const shortenUUID = (uuid: string): string => {
+  if (!uuid || uuid.length < 8) return uuid;
+  return `${uuid.substring(0, 8)}...`;
+};
 
 export function ConversationDetail({
   title,
@@ -33,7 +39,8 @@ export function ConversationDetail({
     if (message.sender === "client") {
       // If sender is client, use client value from conversation if available
       if (conversation?.client?.value) {
-        return conversation.client.value.toString();
+        const clientValue = conversation.client.value.toString();
+        return shortenUUID(clientValue);
       }
       return "Cliente";
     }
@@ -63,9 +70,18 @@ export function ConversationDetail({
         <div className="flex gap-4">
           <div className="flex flex-col items-center">
             <span className="text-sm font-medium">Usuario</span>
-            <Badge variant="outline" className="mt-1">
-              {conversation?.client?.value ? conversation.client.value.toString() : "Anonymous"}
-            </Badge>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" className="mt-1 cursor-help">
+                    {conversation?.client?.value ? shortenUUID(conversation.client.value.toString()) : "Anonymous"}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{conversation?.client?.value ? conversation.client.value.toString() : "Anonymous"}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-sm font-medium">Mensajes</span>
@@ -97,9 +113,20 @@ export function ConversationDetail({
             )}>
               <CardContent className="px-4 py-3">
                 <div className="flex items-center mb-2">
-                  <span className="font-medium text-sm">
-                    {getSenderName(message)}
-                  </span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="font-medium text-sm cursor-help">
+                          {getSenderName(message)}
+                        </span>
+                      </TooltipTrigger>
+                      {message.sender === "client" && conversation?.client?.value && (
+                        <TooltipContent>
+                          <p>{conversation.client.value.toString()}</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
                   <span className="text-xs ml-2 text-muted-foreground">{message.timestamp}</span>
                 </div>
                 <div className="text-sm whitespace-pre-wrap break-words">

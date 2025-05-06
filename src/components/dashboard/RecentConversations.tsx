@@ -9,6 +9,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Link, useNavigate } from "react-router-dom";
 import { useConversations } from "@/hooks/useConversations";
 import { useToast } from "@/components/ui/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface RecentConversationsProps {
   startDate: Date;
@@ -20,6 +21,12 @@ const getChannelDisplayName = (channel: string): string => {
   // Solo tenemos dos canales posibles ahora
   if (channel === 'Whatsapp') return 'Whatsapp';
   return 'Web';
+};
+
+// Función para acortar UUIDs para visualización
+const shortenUUID = (uuid: string): string => {
+  if (!uuid || uuid.length < 8) return uuid;
+  return `${uuid.substring(0, 8)}...`;
 };
 
 export function RecentConversations({ startDate, endDate }: RecentConversationsProps) {
@@ -50,14 +57,22 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
       accessorKey: "client",
       cell: ({ row }: any) => {
         const client = row.original.client;
+        const clientValue = client && typeof client === 'object' && client.value 
+          ? client.value.toString() 
+          : "Sin cliente";
         
         return (
           <div className="w-full">
-            <span className="block">
-              {client && typeof client === 'object' && client.value 
-                ? client.value.toString() 
-                : "Sin cliente"}
-            </span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="block cursor-help">{shortenUUID(clientValue)}</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{clientValue}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },
