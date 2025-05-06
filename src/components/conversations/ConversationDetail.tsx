@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -44,7 +43,7 @@ export function ConversationDetail({
       // If sender is client, use client value from conversation if available
       if (conversation?.client?.value) {
         const clientValue = conversation.client.value.toString();
-        return shortenUUID(clientValue);
+        return clientValue;
       }
       return "Cliente";
     }
@@ -73,19 +72,10 @@ export function ConversationDetail({
         </div>
         <div className="flex gap-4">
           <div className="flex flex-col items-center">
-            <span className="text-sm font-medium">Usuario</span>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge variant="outline" className="mt-1 cursor-help">
-                    {conversation?.client?.value ? shortenUUID(conversation.client.value.toString()) : "Anonymous"}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs break-all">{conversation?.client?.value ? conversation.client.value.toString() : "Anonymous"}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <span className="text-sm font-medium">Cliente</span>
+            <Badge variant="outline" className="mt-1 break-all">
+              {conversation?.client?.value ? conversation.client.value.toString() : "Anonymous"}
+            </Badge>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-sm font-medium">Mensajes</span>
@@ -117,20 +107,9 @@ export function ConversationDetail({
             )}>
               <CardContent className="px-4 py-3">
                 <div className="flex items-center mb-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="font-medium text-sm cursor-help">
-                          {getSenderName(message)}
-                        </span>
-                      </TooltipTrigger>
-                      {message.sender === "client" && conversation?.client?.value && (
-                        <TooltipContent>
-                          <p className="max-w-xs break-all">{conversation.client.value.toString()}</p>
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
-                  </TooltipProvider>
+                  <span className="font-medium text-sm">
+                    {getSenderName(message)}
+                  </span>
                   <span className="text-xs ml-2 text-muted-foreground">{message.timestamp}</span>
                 </div>
                 <div className="text-sm whitespace-pre-wrap break-words">
