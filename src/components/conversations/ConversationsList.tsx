@@ -62,20 +62,30 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
     
     const searchLower = debouncedSearchQuery.toLowerCase();
     
-    // Case-insensitive search on title
+    // Buscar en el título de la conversación
     if (conversation.title && conversation.title.toLowerCase().includes(searchLower)) {
       return true;
     }
     
-    // Search on client ID if available
-    if (conversation.client && typeof conversation.client === 'object' && conversation.client.value) {
-      const clientValue = conversation.client.value.toString().toLowerCase();
-      if (clientValue.includes(searchLower)) {
-        return true;
+    // Buscar en el cliente (ID o teléfono)
+    if (conversation.client) {
+      // Si client es un objeto con una propiedad value
+      if (typeof conversation.client === 'object' && conversation.client.value) {
+        const clientValue = conversation.client.value.toString().toLowerCase();
+        if (clientValue.includes(searchLower)) {
+          return true;
+        }
+      } 
+      // Si client es un string directamente
+      else if (typeof conversation.client === 'string') {
+        const clientValue = conversation.client.toLowerCase();
+        if (clientValue.includes(searchLower)) {
+          return true;
+        }
       }
     }
     
-    // Search on channel
+    // Buscar en el canal
     if (conversation.channel && conversation.channel.toLowerCase().includes(searchLower)) {
       return true;
     }
