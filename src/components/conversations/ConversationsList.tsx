@@ -56,38 +56,52 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
     navigate(`/conversaciones/${rowData.row.original.id}`);
   };
   
+  // Función para normalizar texto para búsquedas (elimina espacios)
+  const normalizeSearchValue = (value: string): string => {
+    return value.toLowerCase().replace(/\s+/g, '');
+  };
+  
   // Apply search filter to data
   const filteredData = conversations.filter(conversation => {
     if (!debouncedSearchQuery) return true;
     
-    const searchLower = debouncedSearchQuery.toLowerCase();
+    // Normaliza la consulta de búsqueda (elimina espacios)
+    const searchNormalized = normalizeSearchValue(debouncedSearchQuery);
     
     // Buscar en el título de la conversación
-    if (conversation.title && conversation.title.toLowerCase().includes(searchLower)) {
-      return true;
+    if (conversation.title) {
+      const titleNormalized = normalizeSearchValue(conversation.title);
+      if (titleNormalized.includes(searchNormalized)) {
+        return true;
+      }
     }
     
     // Buscar en el cliente (ID o teléfono)
     if (conversation.client) {
       // Si client es un objeto con una propiedad value
       if (typeof conversation.client === 'object' && conversation.client.value) {
-        const clientValue = conversation.client.value.toString().toLowerCase();
-        if (clientValue.includes(searchLower)) {
+        const clientValue = String(conversation.client.value);
+        const clientValueNormalized = normalizeSearchValue(clientValue);
+        if (clientValueNormalized.includes(searchNormalized)) {
           return true;
         }
       } 
       // Si client es un string directamente - verificar su tipo antes de usar toLowerCase
       else if (typeof conversation.client === 'string') {
-        const clientValue = String(conversation.client).toLowerCase();
-        if (clientValue.includes(searchLower)) {
+        const clientValue = String(conversation.client);
+        const clientValueNormalized = normalizeSearchValue(clientValue);
+        if (clientValueNormalized.includes(searchNormalized)) {
           return true;
         }
       }
     }
     
     // Buscar en el canal
-    if (conversation.channel && conversation.channel.toLowerCase().includes(searchLower)) {
-      return true;
+    if (conversation.channel) {
+      const channelNormalized = normalizeSearchValue(conversation.channel);
+      if (channelNormalized.includes(searchNormalized)) {
+        return true;
+      }
     }
     
     return false;
