@@ -52,6 +52,14 @@ const formatClientValue = (client: any): string => {
         clientValue = '+34' + clientValue;
       }
     }
+    
+    // Validar formato de número móvil después del prefijo
+    const phoneWithoutPrefix = clientValue.replace(/^\+34/, '');
+    if (!/^\d{9}$/.test(phoneWithoutPrefix)) {
+      console.warn(`Displaying phone with non-standard format: ${clientValue}`);
+      // Mostramos el valor tal cual está
+    }
+    
     return clientValue; // Mostrar el número de teléfono completo
   } 
   else if (clientType === 'id') {

@@ -55,6 +55,13 @@ const validateClientData = (client: any): { type: string; value: string } => {
         clientData.value = '+34' + clientData.value;
       }
     }
+    
+    // Validar que después del +34 solo haya dígitos (para números móviles)
+    const phoneWithoutPrefix = clientData.value.replace(/^\+34/, '');
+    if (!/^\d{9}$/.test(phoneWithoutPrefix)) {
+      console.warn(`Phone number with invalid format after +34 prefix: ${clientData.value}`);
+      // No modificamos más el valor, el backend se encargará
+    }
   }
   
   return clientData;
