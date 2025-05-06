@@ -1,4 +1,3 @@
-
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -31,23 +30,9 @@ const formatClientValue = (client: any): string => {
     clientValue = clientValue.toString();
   }
   
-  // Formatear según el tipo
+  // Para teléfonos, mantener el formato como viene de la base de datos (+34 xxx xxx xxx)
   if (clientType === 'phone') {
-    // Para teléfonos, asegurar que empiezan con +34
-    if (!clientValue.startsWith('+34')) {
-      if (/^\d+$/.test(clientValue)) {
-        clientValue = '+34' + clientValue;
-      }
-    }
-    
-    // Validar formato de número móvil después del prefijo
-    const phoneWithoutPrefix = clientValue.replace(/^\+34/, '');
-    if (!/^\d{9}$/.test(phoneWithoutPrefix)) {
-      console.warn(`Displaying phone with non-standard format: ${clientValue}`);
-      // Mostramos el valor tal cual está
-    }
-    
-    return clientValue; // Mostrar el número de teléfono completo
+    return clientValue;
   } 
   else if (clientType === 'id') {
     // Para IDs, validar formato UUID

@@ -37,30 +37,19 @@ const validateClientData = (client: any): { type: string; value: string } => {
     }
   }
   
-  // Validar y formatear según el tipo
+  // Validación básica según el tipo, pero el formato ya lo maneja el backend
   if (clientData.type === 'id') {
     // Validar formato UUID para tipo 'id'
     const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
     if (!uuidPattern.test(clientData.value)) {
       console.warn(`Client ID with invalid UUID format: ${clientData.value}`);
-      // No modificamos el valor, el backend se encargará
     }
   } 
   else if (clientData.type === 'phone') {
-    // Validar que los números de teléfono empiecen con +34
-    if (!clientData.value.startsWith('+34')) {
-      console.warn(`Phone number without +34 prefix: ${clientData.value}`);
-      if (/^\d+$/.test(clientData.value)) {
-        // Si solo son dígitos, añadir el prefijo
-        clientData.value = '+34' + clientData.value;
-      }
-    }
-    
-    // Validar que después del +34 solo haya dígitos (para números móviles)
-    const phoneWithoutPrefix = clientData.value.replace(/^\+34/, '');
-    if (!/^\d{9}$/.test(phoneWithoutPrefix)) {
-      console.warn(`Phone number with invalid format after +34 prefix: ${clientData.value}`);
-      // No modificamos más el valor, el backend se encargará
+    // Solo verificar que tenga el formato esperado pero no modificarlo
+    // ya que el backend se encarga de esto mediante la función validate_client_format
+    if (!clientData.value.startsWith('+34 ')) {
+      console.warn(`Phone number without expected format: ${clientData.value}`);
     }
   }
   
