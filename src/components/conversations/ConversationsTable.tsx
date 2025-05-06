@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
-import { Hash } from "lucide-react";
 
 interface ConversationsTableProps {
   data: Conversation[];
@@ -65,10 +64,7 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
         
         return (
           <div className="w-full">
-            <div className="flex items-center gap-2">
-              <Hash className="h-4 w-4 text-muted-foreground" />
-              <span className="block">{displayValue}</span>
-            </div>
+            <span className="block">{displayValue}</span>
           </div>
         );
       }
