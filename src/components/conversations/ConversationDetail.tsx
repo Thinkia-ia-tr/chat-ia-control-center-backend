@@ -1,10 +1,11 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Phone, UserSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Message, Conversation } from "./types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -51,6 +52,49 @@ export function ConversationDetail({
     return message.sender === "agent" ? "Agente" : "Sistema";
   };
 
+  // Function to render a client identifier with the appropriate icon
+  const renderClientIdentifier = () => {
+    const clientType = conversation?.client?.type || "";
+    const clientValue = conversation?.client?.value || "Anonymous";
+    
+    return (
+      <div className="flex flex-col items-start">
+        <span className="text-sm font-medium">Cliente</span>
+        <div className="flex items-center gap-2 mt-1">
+          {clientType === "phone" ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" className="px-2 py-1 flex items-center gap-1">
+                    <Phone className="h-3 w-3" />
+                    <span>{clientValue.toString()}</span>
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Cliente identificado por teléfono</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" className="px-2 py-1 flex items-center gap-1">
+                    <UserSquare className="h-3 w-3" />
+                    <span>{clientValue.toString()}</span>
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Cliente identificado por ID</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-end">
@@ -71,12 +115,7 @@ export function ConversationDetail({
           <div className="text-sm text-muted-foreground">{date}</div>
         </div>
         <div className="flex gap-4">
-          <div className="flex flex-col items-center">
-            <span className="text-sm font-medium">Cliente</span>
-            <Badge variant="outline" className="mt-1 break-all">
-              {conversation?.client?.value ? conversation.client.value.toString() : "Anonymous"}
-            </Badge>
-          </div>
+          {renderClientIdentifier()}
           <div className="flex flex-col items-center">
             <span className="text-sm font-medium">Mensajes</span>
             <Badge variant="outline" className="mt-1">{messages.length}</Badge>
