@@ -4,6 +4,62 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Conversation, Message } from "@/components/conversations/types";
 import { useToast } from "@/components/ui/use-toast";
 
+// Función para validar y formatear datos de cliente
+const validateClientData = (client: any): { type: string; value: string } => {
+  let clientData = { type: 'id', value: 'Sin cliente' };
+  
+  if (!client) return clientData;
+  
+  // Convertir string a objeto si es necesario
+  if (typeof client === 'string') {
+    try {
+      clientData = JSON.parse(client);
+    } catch (e) {
+      clientData = { type: 'id', value: client };
+    }
+  } 
+  // Si ya es un objeto
+  else if (typeof client === 'object') {
+    const clientObj = client as any;
+    
+    if (clientObj.value) {
+      clientData = { 
+        type: clientObj.type || 'id',
+        value: clientObj.value.toString() 
+      };
+    } else if (typeof clientObj === 'object' && Object.keys(clientObj).length > 0) {
+      // Intentar obtener cualquier valor del objeto
+      const firstKey = Object.keys(clientObj)[0];
+      clientData = { 
+        type: 'id', 
+        value: clientObj[firstKey]?.toString() || 'Sin cliente'
+      };
+    }
+  }
+  
+  // Validar y formatear según el tipo
+  if (clientData.type === 'id') {
+    // Validar formato UUID para tipo 'id'
+    const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (!uuidPattern.test(clientData.value)) {
+      console.warn(`Client ID with invalid UUID format: ${clientData.value}`);
+      // No modificamos el valor, el backend se encargará
+    }
+  } 
+  else if (clientData.type === 'phone') {
+    // Validar que los números de teléfono empiecen con +34
+    if (!clientData.value.startsWith('+34')) {
+      console.warn(`Phone number without +34 prefix: ${clientData.value}`);
+      if (/^\d+$/.test(clientData.value)) {
+        // Si solo son dígitos, añadir el prefijo
+        clientData.value = '+34' + clientData.value;
+      }
+    }
+  }
+  
+  return clientData;
+};
+
 export function useConversationDetails(conversationId: string) {
   const { toast } = useToast();
 
@@ -44,11 +100,15 @@ export function useConversationDetails(conversationId: string) {
           });
           throw messagesError;
         }
+
+        // Validar y formatear los datos del cliente
+        const validatedClient = validateClientData(conversation.client);
         
         return {
           conversation: {
             ...conversation,
-            date: new Date(conversation.date)
+            date: new Date(conversation.date),
+            client: validatedClient
           } as Conversation,
           messages: messages as Message[]
         };

@@ -14,6 +14,67 @@ interface ClientData {
 // Estos son los únicos canales permitidos en la base de datos
 const VALID_CHANNELS = ['Web', 'Whatsapp'];
 
+// Función para validar y formatear datos de cliente
+const validateClientData = (client: any): ClientData => {
+  let clientData: ClientData = { type: 'id', value: 'Sin cliente' };
+  
+  // Si no hay datos de cliente, devolver valor por defecto
+  if (!client) return clientData;
+  
+  // Convertir string a objeto si es necesario
+  if (typeof client === 'string') {
+    try {
+      clientData = JSON.parse(client) as ClientData;
+    } catch (e) {
+      clientData = { type: 'id', value: client };
+    }
+  } 
+  // Si ya es un objeto
+  else if (typeof client === 'object') {
+    const clientObj = client as any;
+    
+    if (clientObj.value) {
+      clientData = { 
+        type: clientObj.type || 'id',
+        value: clientObj.value.toString() 
+      };
+    } else if (typeof clientObj === 'object' && Object.keys(clientObj).length > 0) {
+      // Intentar obtener cualquier valor del objeto
+      const firstKey = Object.keys(clientObj)[0];
+      clientData = { 
+        type: 'id', 
+        value: clientObj[firstKey]?.toString() || 'Sin cliente'
+      };
+    }
+  }
+  
+  // Validar y formatear según el tipo
+  if (clientData.type === 'id') {
+    // Validar formato UUID para tipo 'id'
+    const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (!uuidPattern.test(clientData.value)) {
+      console.warn(`Client ID with invalid UUID format: ${clientData.value}`);
+      // No generamos uno nuevo aquí, solo devolvemos el valor tal cual
+      // El backend se encargará de la validación real
+    }
+  } 
+  else if (clientData.type === 'phone') {
+    // Validar que los números de teléfono empiecen con +34
+    if (!clientData.value.startsWith('+34')) {
+      console.warn(`Phone number without +34 prefix: ${clientData.value}`);
+      if (/^\d+$/.test(clientData.value)) {
+        // Si solo son dígitos, añadir el prefijo
+        clientData.value = '+34' + clientData.value;
+      } else {
+        // Si tiene un formato incorrecto, no modificamos el valor
+        // El backend se encargará de la validación real
+      }
+    }
+  }
+  
+  return clientData;
+};
+
 export function useConversations(startDate?: Date, endDate?: Date) {
   const { toast } = useToast();
 
@@ -60,40 +121,9 @@ export function useConversations(startDate?: Date, endDate?: Date) {
         
         // Transform and normalize the data
         const processedData = data.map(item => {
-          let clientData: ClientData = { type: 'id', value: 'Sin cliente' };
+          // Procesar y validar datos del cliente
+          const clientData = validateClientData(item.client);
           
-          // Parse client data based on its type
-          if (item.client) {
-            // If client is a string, try to parse it as JSON
-            if (typeof item.client === 'string') {
-              try {
-                clientData = JSON.parse(item.client) as ClientData;
-                // Always set type to 'id' regardless of what it was before
-                clientData.type = 'id';
-              } catch (e) {
-                clientData = { type: 'id', value: item.client };
-              }
-            } 
-            // If client is already an object
-            else if (typeof item.client === 'object') {
-              const clientObj = item.client as any;
-              
-              if (clientObj.value) {
-                clientData = { 
-                  type: 'id',
-                  value: clientObj.value.toString() 
-                };
-              } else if (typeof clientObj === 'object' && Object.keys(clientObj).length > 0) {
-                // Try to get any value from the object
-                const firstKey = Object.keys(clientObj)[0];
-                clientData = { 
-                  type: 'id', 
-                  value: clientObj[firstKey]?.toString() || 'Sin cliente'
-                };
-              }
-            }
-          }
-
           // Normalizar el canal - asegurarse de que esté correctamente manejado
           // y que solo sea uno de los dos valores permitidos: 'Web' o 'Whatsapp'
           let normalizedChannel = item.channel;
@@ -102,9 +132,6 @@ export function useConversations(startDate?: Date, endDate?: Date) {
           if (!VALID_CHANNELS.includes(normalizedChannel)) {
             normalizedChannel = 'Web';
           }
-          
-          // Always set client type to 'id'
-          clientData.type = 'id';
           
           // Process the date properly
           let dateObj;

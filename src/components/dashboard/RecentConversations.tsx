@@ -32,6 +32,43 @@ const shortenUUID = (uuid: string): string => {
   return `${uuid.substring(0, 8)}...${uuid.substring(32)}`;
 };
 
+// Función para formatear correctamente valores de cliente según su tipo
+const formatClientValue = (client: any): string => {
+  if (!client) return "Sin cliente";
+  
+  const clientType = client.type || 'id';
+  let clientValue = client.value || '';
+  
+  // Asegurar que el valor es un string
+  if (typeof clientValue !== 'string') {
+    clientValue = clientValue.toString();
+  }
+  
+  // Formatear según el tipo
+  if (clientType === 'phone') {
+    // Para teléfonos, asegurar que empiezan con +34
+    if (!clientValue.startsWith('+34')) {
+      if (/^\d+$/.test(clientValue)) {
+        clientValue = '+34' + clientValue;
+      }
+    }
+    return clientValue; // Mostrar el número de teléfono completo
+  } 
+  else if (clientType === 'id') {
+    // Para IDs, mostrar formato UUID
+    const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (!uuidPattern.test(clientValue)) {
+      // Si no tiene el formato correcto, solo devolver el valor tal cual
+      return clientValue;
+    }
+    // Si tiene formato UUID, devolverlo tal cual
+    return clientValue;
+  }
+  
+  // Para cualquier otro tipo, devolver el valor sin cambios
+  return clientValue;
+};
+
 export function RecentConversations({ startDate, endDate }: RecentConversationsProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -60,16 +97,16 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
       accessorKey: "client",
       cell: ({ row }: any) => {
         const client = row.original.client;
-        const clientValue = client && typeof client === 'object' && client.value 
-          ? client.value.toString() 
-          : "Sin cliente";
+        const clientValue = formatClientValue(client);
         
         return (
           <div className="w-full">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="block cursor-help">{shortenUUID(clientValue)}</span>
+                  <span className="block cursor-help">
+                    {client?.type === 'phone' ? clientValue : shortenUUID(clientValue)}
+                  </span>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="max-w-xs break-all">{clientValue}</p>

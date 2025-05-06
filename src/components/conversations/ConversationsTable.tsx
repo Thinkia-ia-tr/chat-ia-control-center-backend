@@ -1,4 +1,3 @@
-
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -19,20 +18,39 @@ const getChannelDisplayName = (channel: string): string => {
   return 'Web';
 };
 
-// Function to format client display value
-const getFormattedClientValue = (client: any): string => {
+// Función para formatear correctamente valores de cliente según su tipo
+const formatClientValue = (client: any): string => {
   if (!client) return "Sin cliente";
   
-  if (typeof client === 'string') {
-    return client;
-  } else if (typeof client === 'object' && client !== null) {
-    if (client.value) {
-      return client.value.toString();
-    }
-    return "Sin valor";
+  const clientType = client.type || 'id';
+  let clientValue = client.value || '';
+  
+  // Asegurar que el valor es un string
+  if (typeof clientValue !== 'string') {
+    clientValue = clientValue.toString();
   }
   
-  return "Sin cliente";
+  // Formatear según el tipo
+  if (clientType === 'phone') {
+    // Para teléfonos, asegurar que empiezan con +34
+    if (!clientValue.startsWith('+34')) {
+      if (/^\d+$/.test(clientValue)) {
+        clientValue = '+34' + clientValue;
+      }
+    }
+    return clientValue; // Mostrar el número de teléfono completo
+  } 
+  else if (clientType === 'id') {
+    // Para IDs, validar formato UUID
+    const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    if (!uuidPattern.test(clientValue)) {
+      return clientValue;
+    }
+    return clientValue;
+  }
+  
+  // Para cualquier otro tipo, devolver el valor sin cambios
+  return clientValue;
 };
 
 // Function to shorten UUID for display while keeping full value in tooltip
@@ -62,17 +80,19 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       accessorKey: "client",
       cell: ({ row }: { row: { original: Conversation } }) => {
         const client = row.original.client;
-        const displayValue = getFormattedClientValue(client);
+        const formattedValue = formatClientValue(client);
         
         return (
           <div className="w-full">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="block cursor-help">{shortenUUID(displayValue)}</span>
+                  <span className="block cursor-help">
+                    {client?.type === 'phone' ? formattedValue : shortenUUID(formattedValue)}
+                  </span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="max-w-xs break-all">{displayValue}</p>
+                  <p className="max-w-xs break-all">{formattedValue}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
