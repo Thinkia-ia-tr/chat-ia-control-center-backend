@@ -1,11 +1,11 @@
+
 import React from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Conversation } from "./types";
-import { Tooltip } from "@/components/ui/tooltip";
-import { TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ConversationsTableProps {
   data: Conversation[];
@@ -37,8 +37,11 @@ const getFormattedClientValue = (client: any): string => {
 
 // Function to shorten UUID for display while keeping full value in tooltip
 const shortenUUID = (uuid: string): string => {
-  if (!uuid || uuid.length < 8) return uuid;
-  return `${uuid.substring(0, 8)}...`;
+  if (!uuid || uuid.length < 36) return uuid;
+  
+  // For full UUID format (75bbf54a-110d-4b59-86f6-5f41baa0f17d)
+  // Display first 8 chars and last 4 chars with ellipsis in between
+  return `${uuid.substring(0, 8)}...${uuid.substring(32)}`;
 };
 
 export function ConversationsTable({ data, onRowClick }: ConversationsTableProps) {
@@ -69,7 +72,7 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
                   <span className="block cursor-help">{shortenUUID(displayValue)}</span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{displayValue}</p>
+                  <p className="max-w-xs break-all">{displayValue}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

@@ -25,8 +25,11 @@ const getChannelDisplayName = (channel: string): string => {
 
 // Función para acortar UUIDs para visualización
 const shortenUUID = (uuid: string): string => {
-  if (!uuid || uuid.length < 8) return uuid;
-  return `${uuid.substring(0, 8)}...`;
+  if (!uuid || uuid.length < 36) return uuid;
+  
+  // For full UUID format (75bbf54a-110d-4b59-86f6-5f41baa0f17d)
+  // Display first 8 chars and last 4 chars with ellipsis in between
+  return `${uuid.substring(0, 8)}...${uuid.substring(32)}`;
 };
 
 export function RecentConversations({ startDate, endDate }: RecentConversationsProps) {
@@ -69,7 +72,7 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
                   <span className="block cursor-help">{shortenUUID(clientValue)}</span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{clientValue}</p>
+                  <p className="max-w-xs break-all">{clientValue}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

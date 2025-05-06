@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -18,8 +19,11 @@ interface ConversationDetailProps {
 
 // Function to shorten UUID for display while keeping full value in tooltip
 const shortenUUID = (uuid: string): string => {
-  if (!uuid || uuid.length < 8) return uuid;
-  return `${uuid.substring(0, 8)}...`;
+  if (!uuid || uuid.length < 36) return uuid;
+  
+  // For full UUID format (75bbf54a-110d-4b59-86f6-5f41baa0f17d)
+  // Display first 8 chars and last 4 chars with ellipsis in between
+  return `${uuid.substring(0, 8)}...${uuid.substring(32)}`;
 };
 
 export function ConversationDetail({
@@ -78,7 +82,7 @@ export function ConversationDetail({
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>{conversation?.client?.value ? conversation.client.value.toString() : "Anonymous"}</p>
+                  <p className="max-w-xs break-all">{conversation?.client?.value ? conversation.client.value.toString() : "Anonymous"}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -122,7 +126,7 @@ export function ConversationDetail({
                       </TooltipTrigger>
                       {message.sender === "client" && conversation?.client?.value && (
                         <TooltipContent>
-                          <p>{conversation.client.value.toString()}</p>
+                          <p className="max-w-xs break-all">{conversation.client.value.toString()}</p>
                         </TooltipContent>
                       )}
                     </Tooltip>
