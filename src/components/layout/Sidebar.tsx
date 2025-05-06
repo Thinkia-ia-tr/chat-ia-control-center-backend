@@ -62,13 +62,15 @@ export function Sidebar() {
                 icon={<LineChart size={20} />} 
                 label="Insights de Productos" 
                 to="/insights" 
-                isActive={location.pathname === '/insights'} 
+                isActive={location.pathname === '/insights'}
+                disabled
               />
               <SidebarNavItem 
                 icon={<Bot size={20} />} 
                 label="IA chat sobre los datos" 
                 to="/ia-chat" 
-                isActive={location.pathname === '/ia-chat'} 
+                isActive={location.pathname === '/ia-chat'}
+                disabled
               />
             </SidebarMenu>
           </SidebarGroupContent>
@@ -83,9 +85,10 @@ interface SidebarNavItemProps {
   label: string;
   to: string;
   isActive?: boolean;
+  disabled?: boolean;
 }
 
-function SidebarNavItem({ icon, label, to, isActive }: SidebarNavItemProps) {
+function SidebarNavItem({ icon, label, to, isActive, disabled }: SidebarNavItemProps) {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton 
@@ -93,10 +96,16 @@ function SidebarNavItem({ icon, label, to, isActive }: SidebarNavItemProps) {
         isActive={isActive}
         className={cn(
           "flex items-center gap-3 w-full px-3 py-2",
-          isActive && "bg-primary text-primary-foreground font-bold"
+          isActive && "bg-primary text-primary-foreground font-bold",
+          disabled && "text-muted-foreground cursor-not-allowed"
         )}
+        aria-disabled={disabled}
       >
-        <Link to={to} className={cn("flex items-center gap-3 w-full")}>
+        <Link 
+          to={disabled ? '#' : to} 
+          className={cn("flex items-center gap-3 w-full")}
+          onClick={(e) => disabled && e.preventDefault()}
+        >
           {icon}
           <span>{label}</span>
         </Link>
