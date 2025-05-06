@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useReferrals } from "@/hooks/useReferrals";
 import { DataTable } from "@/components/ui/data-table";
@@ -64,17 +63,13 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
     {
       header: "Cliente",
       accessorKey: "client_value",
-      cell: ({ row }: any) => {
-        const isPhone = row.original.client_type === 'phone';
-        return (
-          <div className="w-full flex items-center gap-2">
-            {isPhone && <Phone className="h-4 w-4 text-muted-foreground" />}
-            <span className="block">
-              {row.original.client_value || "Cliente anónimo"}
-            </span>
-          </div>
-        )
-      }
+      cell: ({ row }: any) => (
+        <div className="w-full">
+          <span className="block">
+            {row.original.client_value || "Cliente anónimo"}
+          </span>
+        </div>
+      )
     },
     {
       header: "Tipo de Derivación",
