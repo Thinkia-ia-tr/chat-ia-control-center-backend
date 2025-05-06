@@ -1,5 +1,6 @@
+
 import React from "react";
-import { MessageSquare, Loader2, Hash } from "lucide-react";
+import { MessageSquare, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format, isValid } from "date-fns";
@@ -59,8 +60,7 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
         const client = row.original.client;
         
         return (
-          <div className="w-full flex items-center gap-2">
-            <Hash className="h-4 w-4 text-muted-foreground" />
+          <div className="w-full">
             <span className="block">
               {client && typeof client === 'object' && client.value 
                 ? client.value.toString() 
