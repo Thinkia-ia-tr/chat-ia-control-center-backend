@@ -1,3 +1,4 @@
+
 import React from "react";
 import { MessageSquare, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -168,8 +169,8 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
     return b.date.getTime() - a.date.getTime();
   });
   
-  // Mostrar solo las 5 más recientes del rango seleccionado
-  const recentConversations = sortedConversations.slice(0, 5);
+  // Mostrar las 10 más recientes del rango seleccionado (antes mostraba solo 5)
+  const recentConversations = sortedConversations.slice(0, 10);
 
   return (
     <div>
