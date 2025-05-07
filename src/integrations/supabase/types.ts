@@ -68,6 +68,103 @@ export type Database = {
           },
         ]
       }
+      product_mentions: {
+        Row: {
+          context: string | null
+          conversation_id: string
+          created_at: string
+          id: string
+          message_id: string
+          product_id: string
+        }
+        Insert: {
+          context?: string | null
+          conversation_id: string
+          created_at?: string
+          id?: string
+          message_id: string
+          product_id: string
+        }
+        Update: {
+          context?: string | null
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          message_id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_mentions_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_mentions_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_mentions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_types: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          keywords: Json | null
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          keywords?: Json | null
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          keywords?: Json | null
+          name?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       referral_types: {
         Row: {
           contact_info: Json
@@ -136,12 +233,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_product_stats: {
+        Args: { start_date: string; end_date: string }
+        Returns: {
+          product_id: string
+          product_name: string
+          mention_count: number
+        }[]
+      }
       get_referral_stats: {
         Args: { start_date: string; end_date: string }
         Returns: {
           referral_type: string
           count: number
         }[]
+      }
+      process_existing_messages: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
     }
     Enums: {

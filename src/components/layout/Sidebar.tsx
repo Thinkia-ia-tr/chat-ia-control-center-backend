@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { UserProfile } from "@/components/auth/UserProfile";
 
 export function Sidebar() {
   const location = useLocation();
@@ -21,10 +21,7 @@ export function Sidebar() {
   return (
     <SidebarComponent>
       <SidebarHeader className="p-4 flex items-center">
-        <Avatar className="rounded-full h-8 w-8 mr-4">
-          <AvatarFallback>U</AvatarFallback>
-        </Avatar>
-        <span className="font-medium">Username</span>
+        <UserProfile />
       </SidebarHeader>
       
       <SidebarContent>
@@ -97,7 +94,8 @@ function SidebarNavItem({ icon, label, to, isActive, disabled }: SidebarNavItemP
         className={cn(
           "flex items-center gap-3 w-full px-3 py-2",
           isActive && "bg-primary text-primary-foreground font-bold",
-          disabled && "text-muted-foreground cursor-not-allowed"
+          disabled && "text-muted-foreground cursor-not-allowed",
+          !isActive && !disabled && "hover:text-white"
         )}
         aria-disabled={disabled}
       >
