@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -9,6 +8,9 @@ import { ArrowLeft, Phone, UserSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Message, Conversation } from "./types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
+import { useEffect, useState } from "react";
 
 interface ConversationDetailProps {
   title: string;
@@ -26,6 +28,28 @@ const shortenUUID = (uuid: string): string => {
   return `${uuid.substring(0, 8)}...${uuid.substring(32)}`;
 };
 
+// Function to generate contextual agent responses
+const generateContextualResponse = (clientMessage: string, productName: string): string => {
+  if (!clientMessage) return `¡Claro! Puedo darte información sobre ${productName}.`;
+  
+  const clientMessageLower = clientMessage.toLowerCase();
+  
+  if (clientMessageLower.includes("precio") || clientMessageLower.includes("costo") || clientMessageLower.includes("cuánto")) {
+    return `Los precios de ${productName} varían según el modelo específico que estés buscando. ¿Tienes algún modelo en mente?`;
+  }
+  
+  if (clientMessageLower.includes("característica") || clientMessageLower.includes("especificación") || clientMessageLower.includes("cómo es")) {
+    return `${productName} cuenta con características avanzadas que lo hacen destacar en el mercado. ¿Hay alguna característica específica que te interese conocer?`;
+  }
+  
+  if (clientMessageLower.includes("disponibilidad") || clientMessageLower.includes("stock") || clientMessageLower.includes("cuando")) {
+    return `Actualmente tenemos ${productName} disponible en nuestras tiendas principales. ¿Te gustaría verificar la disponibilidad en alguna ubicación específica?`;
+  }
+  
+  // Default contextual response
+  return `Gracias por tu interés en ${productName}. Estoy aquí para resolver cualquier duda que tengas. ¿Qué información específica necesitas?`;
+};
+
 export function ConversationDetail({
   title,
   date,
@@ -33,6 +57,83 @@ export function ConversationDetail({
   conversation
 }: ConversationDetailProps) {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [productsList, setProductsList] = useState<{id: string, name: string}[]>([]);
+  const [processedMessages, setProcessedMessages] = useState<Message[]>(messages);
+  const [updatedTitle, setUpdatedTitle] = useState<string>(title);
+
+  useEffect(() => {
+    // Cargar productos desde la base de datos
+    const fetchProducts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('product_types')
+          .select('id, name')
+          .order('name');
+
+        if (error) {
+          console.error("Error fetching products:", error);
+          throw error;
+        }
+
+        if (data) {
+          setProductsList(data);
+          
+          // Procesar los mensajes con los productos obtenidos
+          processMessages(data);
+        }
+      } catch (error) {
+        console.error("Error loading products:", error);
+        toast({
+          title: "Error",
+          description: "No se pudieron cargar los productos",
+          variant: "destructive"
+        });
+      }
+    };
+
+    fetchProducts();
+  }, [messages, title]);
+
+  // Procesar mensajes para incluir menciones a productos
+  const processMessages = (products: {id: string, name: string}[]) => {
+    if (!products.length || !messages.length) return;
+
+    // Seleccionar un producto aleatorio para usar en los mensajes
+    const randomProduct = products[Math.floor(Math.random() * products.length)];
+    
+    // Crear una copia de los mensajes originales
+    let updatedMessages = [...messages];
+    
+    // Reemplazar respuestas del agente con respuestas contextuales
+    for (let i = 1; i < updatedMessages.length; i++) {
+      const currentMsg = updatedMessages[i];
+      const prevMsg = updatedMessages[i - 1];
+      
+      // Si es un mensaje del agente que comienza con "Hola, me interesa saber sobre"
+      if (currentMsg.sender === "agent" && 
+          (currentMsg.content.includes("Hola, me interesa saber sobre") || 
+           currentMsg.content.includes("Behumax"))) {
+        
+        // Solo cambiar la respuesta si hay un mensaje previo del cliente
+        if (prevMsg && prevMsg.sender === "client") {
+          updatedMessages[i] = {
+            ...currentMsg,
+            content: generateContextualResponse(prevMsg.content, randomProduct.name)
+          };
+        }
+      }
+    }
+
+    setProcessedMessages(updatedMessages);
+    
+    // Actualizar el título si es necesario
+    const clientMessage = updatedMessages.find(m => m.sender === "client" && m.content.includes("me interesa saber sobre"));
+    if (clientMessage) {
+      const newTitle = `Consulta sobre ${randomProduct.name}`;
+      setUpdatedTitle(newTitle);
+    }
+  };
 
   const handleBackToList = () => {
     navigate("/conversaciones");
@@ -111,14 +212,14 @@ export function ConversationDetail({
 
       <div className="flex items-center justify-between border-b border-border pb-4">
         <div>
-          <h2 className="text-xl font-bold mb-1">{title}</h2>
+          <h2 className="text-xl font-bold mb-1">{updatedTitle}</h2>
           <div className="text-sm text-muted-foreground">{date}</div>
         </div>
         <div className="flex gap-4">
           {renderClientIdentifier()}
           <div className="flex flex-col items-center">
             <span className="text-sm font-medium">Mensajes</span>
-            <Badge variant="outline" className="mt-1">{messages.length}</Badge>
+            <Badge variant="outline" className="mt-1">{processedMessages.length}</Badge>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-sm font-medium">Canal</span>
@@ -128,7 +229,7 @@ export function ConversationDetail({
       </div>
 
       <div className="flex flex-col gap-6">
-        {messages.map((message) => (
+        {processedMessages.map((message) => (
           <div
             key={message.id}
             className={cn("flex gap-4", 

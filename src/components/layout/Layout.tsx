@@ -6,10 +6,10 @@ import { Outlet } from "react-router-dom";
 export function Layout({ children }: { children?: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full">
+      <div className="min-h-screen flex w-full">
         <Sidebar />
-        <main className="flex-1 md:pl-[var(--sidebar-width)] transition-all duration-200 w-full">
-          <div className="p-6 w-full h-full overflow-auto">
+        <main className="flex-1 flex flex-col">
+          <div className="flex-1 p-6 overflow-auto">
             {children || <Outlet />}
           </div>
         </main>

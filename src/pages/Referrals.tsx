@@ -5,6 +5,7 @@ import { ReferralStats } from "@/components/referrals/ReferralStats";
 import { ReferralList } from "@/components/referrals/ReferralList";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { Card } from "@/components/ui/card";
+import { useReferralEmails } from "@/hooks/useReferralEmails";
 
 export default function ReferralsPage() {
   const now = new Date();
@@ -13,6 +14,9 @@ export default function ReferralsPage() {
   
   const [startDate, setStartDate] = useState<Date>(oneMonthAgo);
   const [endDate, setEndDate] = useState<Date>(now);
+
+  // Use the hook to listen for automatic referral creations
+  useReferralEmails();
 
   const handleDateRangeChange = (start: Date, end: Date) => {
     setStartDate(start);

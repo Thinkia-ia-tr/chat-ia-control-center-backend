@@ -141,30 +141,6 @@ export type Database = {
         }
         Relationships: []
       }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          first_name: string | null
-          id: string
-          last_name: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          first_name?: string | null
-          id: string
-          last_name?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          first_name?: string | null
-          id?: string
-          last_name?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       referral_types: {
         Row: {
           contact_info: Json
