@@ -23,7 +23,6 @@ export function Sidebar() {
       <SidebarHeader className="p-4 flex items-center">
         <UserProfile />
       </SidebarHeader>
-      
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Chatbot con IA</SidebarGroupLabel>
@@ -44,7 +43,6 @@ export function Sidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
         <SidebarGroup>
           <SidebarGroupLabel>Panel de inteligencia</SidebarGroupLabel>
           <SidebarGroupContent>
