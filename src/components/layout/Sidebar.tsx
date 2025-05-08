@@ -15,16 +15,48 @@ import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot, LogOu
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Sidebar() {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const [username, setUsername] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchUsername() {
+      if (!user) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching username:', error);
+          return;
+        }
+
+        setUsername(data?.username);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+
+    fetchUsername();
+  }, [user]);
 
   // Extraer iniciales del usuario para el avatar
   const getInitials = () => {
-    if (!user) return "U";
-    const email = user.email || "";
-    return email.charAt(0).toUpperCase();
+    if (username) {
+      return username.charAt(0).toUpperCase();
+    }
+    if (user?.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+    return "U";
   };
 
   return (
@@ -33,7 +65,7 @@ export function Sidebar() {
         <Avatar className="rounded-full h-8 w-8 mr-4">
           <AvatarFallback>{getInitials()}</AvatarFallback>
         </Avatar>
-        <span className="font-medium">{user ? user.email : "Invitado"}</span>
+        <span className="font-medium">{username || (user ? user.email : "Invitado")}</span>
       </SidebarHeader>
       
       <SidebarContent>
