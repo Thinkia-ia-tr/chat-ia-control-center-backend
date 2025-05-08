@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Layout from "@/components/layout/Layout";
 import { ReferralStats } from "@/components/referrals/ReferralStats";
 import { ReferralList } from "@/components/referrals/ReferralList";
@@ -14,6 +14,7 @@ import {
   SelectValue
 } from "@/components/ui/select";
 import { Filter } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function ReferralsPage() {
   const now = new Date();
@@ -23,6 +24,34 @@ export default function ReferralsPage() {
   const [startDate, setStartDate] = useState<Date>(oneMonthAgo);
   const [endDate, setEndDate] = useState<Date>(now);
   const [selectedReferralType, setSelectedReferralType] = useState<string | null>(null);
+  const [availableReferralTypes, setAvailableReferralTypes] = useState<string[]>([]);
+
+  // Fetch available referral types from the database
+  useEffect(() => {
+    async function fetchReferralTypes() {
+      try {
+        const { data, error } = await supabase
+          .from('referral_types')
+          .select('name')
+          .order('name');
+          
+        if (error) {
+          console.error("Error fetching referral types:", error);
+          return;
+        }
+        
+        // Extract unique referral type names
+        if (data) {
+          const types = data.map(item => item.name);
+          setAvailableReferralTypes(types);
+        }
+      } catch (err) {
+        console.error("Error fetching referral types:", err);
+      }
+    }
+    
+    fetchReferralTypes();
+  }, []);
 
   // Use the hook to listen for automatic referral creations
   useReferralEmails();
@@ -62,11 +91,11 @@ export default function ReferralsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todos">Todos los tipos</SelectItem>
-                  <SelectItem value="Soporte Técnico">Soporte Técnico</SelectItem>
-                  <SelectItem value="Ventas">Ventas</SelectItem>
-                  <SelectItem value="Reclamación">Reclamación</SelectItem>
-                  <SelectItem value="Consulta Especializada">Consulta Especializada</SelectItem>
-                  <SelectItem value="Seguimiento">Seguimiento</SelectItem>
+                  {availableReferralTypes.map(type => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
