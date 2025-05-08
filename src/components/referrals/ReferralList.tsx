@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useReferrals } from "@/hooks/useReferrals";
 import { DataTable } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -21,14 +21,25 @@ import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/comp
 interface ReferralListProps {
   startDate?: Date;
   endDate?: Date;
+  referralTypeFilter?: string | null;
 }
 
-export function ReferralList({ startDate, endDate }: ReferralListProps) {
+export function ReferralList({ startDate, endDate, referralTypeFilter }: ReferralListProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const { data: referrals, isLoading, error } = useReferrals(startDate, endDate);
+
+  // Filtrar las derivaciones por tipo si se ha seleccionado un filtro
+  const filteredReferrals = useMemo(() => {
+    if (!referrals) return [];
+    if (!referralTypeFilter) return referrals;
+    
+    return referrals.filter(referral => 
+      referral.referral_type === referralTypeFilter
+    );
+  }, [referrals, referralTypeFilter]);
 
   if (error) {
     toast({
@@ -106,10 +117,10 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
   ];
 
   // Calculate pagination
-  const totalPages = Math.max(1, Math.ceil((referrals?.length || 0) / rowsPerPage));
+  const totalPages = Math.max(1, Math.ceil((filteredReferrals?.length || 0) / rowsPerPage));
   const startIndex = (page - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
-  const paginatedData = referrals ? referrals.slice(startIndex, endIndex) : [];
+  const paginatedData = filteredReferrals ? filteredReferrals.slice(startIndex, endIndex) : [];
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -129,9 +140,9 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
         onRowClick={handleRowClick}
       />
       
-      {(!referrals || referrals.length === 0) ? (
+      {(!filteredReferrals || filteredReferrals.length === 0) ? (
         <div className="text-center py-6 text-muted-foreground">
-          No se encontraron derivaciones en el período seleccionado
+          No se encontraron derivaciones {referralTypeFilter ? `del tipo "${referralTypeFilter}"` : ""} en el período seleccionado
         </div>
       ) : (
         <div className="flex items-center justify-between gap-4">
