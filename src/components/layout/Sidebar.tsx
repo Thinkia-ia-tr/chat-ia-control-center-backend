@@ -1,4 +1,8 @@
 
+import { Link, useLocation } from "react-router-dom";
+import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { UserProfile } from "@/components/auth/UserProfile";
 import {
   Sidebar as SidebarComponent,
   SidebarContent,
@@ -10,10 +14,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { UserProfile } from "@/components/auth/UserProfile";
 
 export function Sidebar() {
   const location = useLocation();
