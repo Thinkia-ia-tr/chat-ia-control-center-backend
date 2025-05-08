@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
-export interface DateRangePickerProps {
+interface DateRangePickerProps {
   startDate: Date;
   endDate: Date;
   onChange: (startDate: Date, endDate: Date) => void;

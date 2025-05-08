@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useReferrals } from "@/hooks/useReferrals";
 import { DataTable } from "@/components/ui/data-table";
@@ -9,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { ConversationsPagination } from "@/components/conversations/ConversationsPagination";
 import { useNavigate } from "react-router-dom";
+import { Phone } from "lucide-react";
 import { 
   Select,
   SelectContent,
@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 interface ReferralListProps {
   startDate?: Date;
@@ -66,7 +65,9 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
       accessorKey: "client_value",
       cell: ({ row }: any) => (
         <div className="w-full">
-          <span>{row.original.client_value || "Cliente anónimo"}</span>
+          <span className="block">
+            {row.original.client_value || "Cliente anónimo"}
+          </span>
         </div>
       )
     },
@@ -74,7 +75,7 @@ export function ReferralList({ startDate, endDate }: ReferralListProps) {
       header: "Tipo de Derivación",
       accessorKey: "referral_type",
       cell: ({ row }: any) => (
-        <div className="w-full">
+        <div className="w-full flex items-center gap-2">
           <Badge variant="default" className="bg-primary/70 hover:bg-primary/90">
             {row.original.referral_type}
           </Badge>

@@ -30,6 +30,7 @@ export default function ConversationDetailPage() {
         </div>
       ) : data ? (
         <div className="flex flex-col gap-6">
+          <h1 className="text-2xl font-bold">{data.conversation.title}</h1>
           <ConversationDetailContent 
             title={data.conversation.title}
             date={format(data.conversation.date, "EEE., d 'de' MMM. 'de' yyyy HH:mm", { locale: es })}
