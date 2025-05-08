@@ -8,7 +8,7 @@ export function Layout({ children }: { children?: React.ReactNode }) {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <Sidebar />
-        <main className="flex-1">
+        <main className="flex-1 md:ml-[var(--sidebar-width)]">
           <div className="p-6 overflow-auto">
             {children || <Outlet />}
           </div>
