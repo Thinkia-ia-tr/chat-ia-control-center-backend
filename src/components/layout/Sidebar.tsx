@@ -11,20 +11,29 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot } from "lucide-react";
+import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot, LogOut, User } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Sidebar() {
   const location = useLocation();
+  const { user, signOut } = useAuth();
+
+  // Extraer iniciales del usuario para el avatar
+  const getInitials = () => {
+    if (!user) return "U";
+    const email = user.email || "";
+    return email.charAt(0).toUpperCase();
+  };
 
   return (
     <SidebarComponent>
       <SidebarHeader className="p-4 flex items-center">
         <Avatar className="rounded-full h-8 w-8 mr-4">
-          <AvatarFallback>U</AvatarFallback>
+          <AvatarFallback>{getInitials()}</AvatarFallback>
         </Avatar>
-        <span className="font-medium">Username</span>
+        <span className="font-medium">{user ? user.email : "Invitado"}</span>
       </SidebarHeader>
       
       <SidebarContent>
@@ -74,6 +83,31 @@ export function Sidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {user && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Cuenta</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarNavItem 
+                  icon={<User size={20} />} 
+                  label="Mi perfil" 
+                  to="/perfil" 
+                  isActive={location.pathname === '/perfil'} 
+                />
+                <SidebarMenuItem>
+                  <SidebarMenuButton 
+                    className="flex items-center gap-3 w-full px-3 py-2 text-red-500 hover:bg-red-50"
+                    onClick={() => signOut()}
+                  >
+                    <LogOut size={20} />
+                    <span>Cerrar sesión</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
     </SidebarComponent>
   );
