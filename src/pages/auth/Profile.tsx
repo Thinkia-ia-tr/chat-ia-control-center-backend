@@ -17,7 +17,7 @@ interface ProfileFormValues {
 
 interface ProfileData {
   id: string;
-  username: string;
+  username: string | null;
   avatar_url: string | null;
 }
 
