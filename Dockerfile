@@ -11,7 +11,7 @@ COPY . .
 RUN npm install -g serve
 
 # Expone el puerto por defecto de 'serve'
-EXPOSE 3000
+EXPOSE 8080
 
 # Comando para servir la carpeta actual (donde está index.html)
-CMD ["serve", ".", "-l", "3000"]
+CMD ["serve", ".", "-l", "8080"]
