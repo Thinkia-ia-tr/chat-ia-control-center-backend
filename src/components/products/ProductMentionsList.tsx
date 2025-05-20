@@ -44,7 +44,7 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
           </Badge>
         </div>
       ),
-      className: "w-[40%]", // Updated column width to 40%
+      className: "w-[40%]", // Column width set to 40%
     },
     {
       header: "Conversación",
@@ -74,7 +74,7 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
           </Button>
         </div>
       ),
-      className: "w-[50%]", // Keep column width at 50%
+      className: "w-[50%]", // Column width set to 50%
     },
     {
       header: "Fecha",
@@ -84,7 +84,7 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
           {format(new Date(row.original.created_at), "dd MMM yyyy", { locale: es })}
         </div>
       ),
-      className: "w-[10%] text-right", // Updated column width to 10% and keep text right-aligned
+      className: "w-[10%] text-right", // Column width set to 10% and text right-aligned
     },
   ];
 
