@@ -1,4 +1,5 @@
 
 project_id = "gnahnmuojpysajxirbce"
+# The send-invitation function is no longer actively used
 [functions.send-invitation]
 verify_jwt = true

@@ -1,17 +1,13 @@
 
-import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageContainer } from "@/components/ui/page-container";
 import { PageHeader } from "@/components/ui/page-header";
 import { UsersList } from "@/components/users/UsersList";
 import Layout from "@/components/layout/Layout";
-import CreateInvitation from "@/components/invitations/CreateInvitation";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { InfoIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { UserPlus } from "lucide-react";
 
 const UserManagement = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  
   return (
     <Layout>
       <PageContainer>
@@ -20,15 +16,11 @@ const UserManagement = () => {
             title="Gestión de Usuarios"
             description="Administra los usuarios y sus roles en el sistema"
           />
-          <CreateInvitation />
+          <Button variant="default">
+            <UserPlus className="mr-2 h-4 w-4" />
+            Invitar Usuario
+          </Button>
         </div>
-        
-        <Alert className="my-4">
-          <InfoIcon className="h-4 w-4" />
-          <AlertDescription>
-            Las invitaciones generan un enlace que debes compartir manualmente con el usuario. No se envían correos electrónicos.
-          </AlertDescription>
-        </Alert>
         
         <div className="mt-6">
           <UsersList />
