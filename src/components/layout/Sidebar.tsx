@@ -61,12 +61,15 @@ export function Sidebar() {
 
   return (
     <SidebarComponent>
-      <SidebarHeader className="p-4 flex items-center">
-        <Avatar className="rounded-full h-8 w-8 mr-4">
-          <AvatarFallback>{getInitials()}</AvatarFallback>
-        </Avatar>
-        <span className="font-medium">{username || (user ? user.email : "Invitado")}</span>
-      </SidebarHeader>
+      <div className="flex flex-col items-center p-4 border-b border-border">
+        <img src="/lovable-uploads/56fdf621-46ac-43d0-873e-c2676b134d9b.png" alt="Behumax Logo" className="h-12 mb-4" />
+        <div className="flex items-center w-full">
+          <Avatar className="rounded-full h-8 w-8 mr-4">
+            <AvatarFallback>{getInitials()}</AvatarFallback>
+          </Avatar>
+          <span className="font-medium">{username || (user ? user.email : "Invitado")}</span>
+        </div>
+      </div>
       
       <SidebarContent>
         <SidebarGroup>
