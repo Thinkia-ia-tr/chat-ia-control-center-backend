@@ -160,15 +160,14 @@ const handler = async (req: Request): Promise<Response> => {
     // Create the registration link
     const registrationLink = `${origin}/auth/register?token=${token}`;
     
-    // Simular el envío de correo - en un entorno real, aquí integrarías un servicio de correo
-    console.log(`[DEBUG] Simulando envío de correo a ${email} con enlace: ${registrationLink}`);
+    // Log for debugging
+    console.log(`[INFO] Generated registration link for ${email}: ${registrationLink}`);
     
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Invitation sent', 
+        message: 'Invitation link generated', 
         invitationId,
-        // Incluimos estos campos en desarrollo para facilitar las pruebas
         debug: {
           email,
           token,
