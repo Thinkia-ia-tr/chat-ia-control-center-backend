@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -111,14 +110,19 @@ export default function Register() {
   if (isVerifyingToken) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Verificando invitación</CardTitle>
-            <CardDescription>
-              Por favor espera mientras verificamos tu enlace de invitación...
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <div className="w-full max-w-md text-center mb-4">
+          <img src="/lovable-uploads/56fdf621-46ac-43d0-873e-c2676b134d9b.png" alt="Behumax Logo" className="mx-auto mb-4 max-w-[250px]" />
+          <h1 className="font-bold mt-6 mb-6 text-primary text-xl">Panel de inteligencia de<br />Att al Cliente</h1>
+          
+          <Card className="w-full">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Verificando invitación</CardTitle>
+              <CardDescription>
+                Por favor espera mientras verificamos tu enlace de invitación...
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -126,98 +130,108 @@ export default function Register() {
   if (invitationToken && !isTokenValid) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Enlace no válido</CardTitle>
-            <CardDescription>
-              El enlace de invitación que estás usando no es válido o ha expirado.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter className="flex flex-col">
-            <div className="text-center text-sm text-muted-foreground">
-              <Link to="/auth/login" className="text-primary hover:underline">
-                Volver al inicio de sesión
-              </Link>
-            </div>
-          </CardFooter>
-        </Card>
+        <div className="w-full max-w-md text-center mb-4">
+          <img src="/lovable-uploads/56fdf621-46ac-43d0-873e-c2676b134d9b.png" alt="Behumax Logo" className="mx-auto mb-4 max-w-[250px]" />
+          <h1 className="font-bold mt-6 mb-6 text-primary text-xl">Panel de inteligencia de<br />Att al Cliente</h1>
+          
+          <Card className="w-full">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">Enlace no válido</CardTitle>
+              <CardDescription>
+                El enlace de invitación que estás usando no es válido o ha expirado.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="flex flex-col">
+              <div className="text-center text-sm text-muted-foreground">
+                <Link to="/auth/login" className="text-primary hover:underline">
+                  Volver al inicio de sesión
+                </Link>
+              </div>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Crear cuenta</CardTitle>
-          <CardDescription>
-            {invitationToken 
-              ? "Completa el formulario para registrarte con tu invitación"
-              : "Completa el formulario para registrarte"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Correo electrónico</FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder="correo@ejemplo.com" 
-                        type="email" 
-                        required 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombre de usuario</FormLabel>
-                    <FormControl>
-                      <Input placeholder="usuario123" required {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contraseña</FormLabel>
-                    <FormControl>
-                      <Input placeholder="********" type="password" required minLength={8} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Registrando..." : "Registrarse"}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="flex flex-col">
-          <div className="text-center text-sm text-muted-foreground">
-            ¿Ya tienes una cuenta?{" "}
-            <Link to="/auth/login" className="text-primary hover:underline">
-              Inicia sesión
-            </Link>
-          </div>
-        </CardFooter>
-      </Card>
+      <div className="w-full max-w-md text-center mb-4">
+        <img src="/lovable-uploads/56fdf621-46ac-43d0-873e-c2676b134d9b.png" alt="Behumax Logo" className="mx-auto mb-4 max-w-[250px]" />
+        <h1 className="font-bold mt-6 mb-6 text-primary text-xl">Panel de inteligencia de<br />Att al Cliente</h1>
+        
+        <Card className="w-full">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Crear cuenta</CardTitle>
+            <CardDescription>
+              {invitationToken 
+                ? "Completa el formulario para registrarte con tu invitación"
+                : "Completa el formulario para registrarte"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Correo electrónico</FormLabel>
+                      <FormControl>
+                        <Input 
+                          placeholder="correo@ejemplo.com" 
+                          type="email" 
+                          required 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nombre de usuario</FormLabel>
+                      <FormControl>
+                        <Input placeholder="usuario123" required {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contraseña</FormLabel>
+                      <FormControl>
+                        <Input placeholder="********" type="password" required minLength={8} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Registrando..." : "Registrarse"}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+          <CardFooter className="flex flex-col">
+            <div className="text-center text-sm text-muted-foreground">
+              ¿Ya tienes una cuenta?{" "}
+              <Link to="/auth/login" className="text-primary hover:underline">
+                Inicia sesión
+              </Link>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 }
