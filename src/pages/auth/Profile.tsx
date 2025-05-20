@@ -19,6 +19,7 @@ interface ProfileFormValues {
 interface ProfileData {
   id: string;
   username: string | null;
+  email: string | null;
   avatar_url: string | null;
 }
 
@@ -30,7 +31,7 @@ export default function Profile() {
 
   const form = useForm<ProfileFormValues>({
     defaultValues: {
-      email: user?.email || "",
+      email: "",
       username: ""
     }
   });
@@ -43,7 +44,7 @@ export default function Profile() {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, username, avatar_url')
+          .select('id, username, email, avatar_url')
           .eq('id', user.id)
           .single();
 
@@ -54,7 +55,7 @@ export default function Profile() {
         if (data) {
           setProfileData(data);
           form.reset({
-            email: user.email || "",
+            email: data.email || user.email || "",
             username: data.username || ""
           });
         }
@@ -78,6 +79,7 @@ export default function Profile() {
         .from('profiles')
         .update({
           username: data.username,
+          email: data.email,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
@@ -135,7 +137,7 @@ export default function Profile() {
                     <FormItem>
                       <FormLabel>Correo electrónico</FormLabel>
                       <FormControl>
-                        <Input disabled {...field} />
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

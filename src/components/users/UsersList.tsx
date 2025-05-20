@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -28,10 +27,10 @@ export function UsersList() {
       setLoading(true);
       setError(null);
       
-      // Get profiles data first
+      // Get profiles data with email
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
-        .select('id, username');
+        .select('id, username, email');
         
       if (profilesError) throw profilesError;
       
@@ -40,44 +39,27 @@ export function UsersList() {
         return;
       }
       
-      // Fetch roles separately to avoid recursive policy issues
+      // Fetch roles separately
       const { data: rolesData, error: rolesError } = await supabase
         .from('user_roles')
         .select('*');
       
       if (rolesError) {
         console.error("Error fetching roles:", rolesError);
-        // Continue without roles data if there's an error
       }
       
-      // Try to get auth users data - this requires admin privileges
-      let authData = { users: [] };
-      try {
-        const { data, error } = await supabase.auth.admin.listUsers();
-        if (!error && data) {
-          authData = data;
-        } else {
-          console.warn("Could not fetch user emails. This requires admin privileges.");
-        }
-      } catch (err) {
-        console.warn("Could not fetch user emails. This requires admin privileges.");
-      }
-      
-      // Combine all the data
+      // Combine the data
       const combinedUsers: UserWithRole[] = profilesData.map(profile => {
         // Type assertion since we know the structure
-        const typedProfile = profile as { id: string; username: string | null };
+        const typedProfile = profile as { id: string; username: string | null; email: string | null };
         
         // Find role for this user
         const roleRecord = rolesData?.find(r => r.user_id === typedProfile.id);
         
-        // Find email for this user
-        const authUser = authData?.users?.find(u => u.id === typedProfile.id);
-        
         return {
           id: typedProfile.id,
           username: typedProfile.username,
-          email: authUser?.email || "No disponible",
+          email: typedProfile.email || "No disponible",
           role: (roleRecord?.role as "super_admin" | "admin" | "usuario") || "usuario"
         };
       });
