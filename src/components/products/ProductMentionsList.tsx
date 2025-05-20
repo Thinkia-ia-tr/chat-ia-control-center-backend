@@ -7,8 +7,9 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useToast } from "@/components/ui/use-toast";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Loader2, ExternalLink, MessageSquare } from "lucide-react";
+import { Loader2, ExternalLink, MessageSquare, Tag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 interface ProductMentionsListProps {
   startDate?: Date;
@@ -32,6 +33,17 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
     {
       header: "Producto",
       accessorKey: "product_name",
+      cell: ({ row }: { row: { original: ProductMention } }) => (
+        <div className="flex items-center">
+          <Badge 
+            variant="secondary"
+            className="flex items-center gap-1.5 py-1 px-2 font-medium bg-secondary/60 text-secondary-foreground hover:bg-secondary/80"
+          >
+            <Tag className="h-3.5 w-3.5" />
+            {row.original.product_name}
+          </Badge>
+        </div>
+      ),
     },
     {
       header: "Conversación",
