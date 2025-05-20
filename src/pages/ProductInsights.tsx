@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { subDays } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProductList } from "@/components/products/ProductList";
+import { ProductMentionsList } from "@/components/products/ProductMentionsList";
 
 export default function ProductInsightsPage() {
   // Default date range: last 30 days
@@ -63,7 +63,7 @@ export default function ProductInsightsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ProductList 
+                <ProductMentionsList 
                   startDate={startDate} 
                   endDate={endDate} 
                 />
