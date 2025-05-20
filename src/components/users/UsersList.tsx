@@ -27,38 +27,57 @@ export function UsersList() {
       setLoading(true);
       setError(null);
       
-      // Obtener todos los usuarios desde profiles
-      const { data: usersData, error: usersError } = await supabase
+      // Get profiles data first
+      const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('id, username');
         
-      if (usersError) throw usersError;
+      if (profilesError) throw profilesError;
       
-      // Obtener los roles de cada usuario
-      const { data: userRoles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
-      
-      if (rolesError) throw rolesError;
-      
-      // Obtener emails
-      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) {
-        // Solo registramos el error pero continuamos con los datos que tenemos
-        console.error("Error fetching auth users:", authError);
+      if (!profilesData || profilesData.length === 0) {
+        setUsers([]);
+        return;
       }
       
-      // Combinar datos
-      const combinedUsers = usersData.map(profile => {
-        const roleInfo = userRoles.find(r => r.user_id === profile.id);
-        const emailInfo = authData?.users?.find(u => u.id === profile.id);
+      // Fetch roles separately to avoid recursive policy issues
+      const { data: rolesData, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('*');
+      
+      if (rolesError) {
+        console.error("Error fetching roles:", rolesError);
+        // Continue without roles data if there's an error
+      }
+      
+      // Try to get auth users data - this requires admin privileges
+      let authData = { users: [] };
+      try {
+        const { data, error } = await supabase.auth.admin.listUsers();
+        if (!error && data) {
+          authData = data;
+        } else {
+          console.warn("Could not fetch user emails. This requires admin privileges.");
+        }
+      } catch (err) {
+        console.warn("Could not fetch user emails. This requires admin privileges.");
+      }
+      
+      // Combine all the data
+      const combinedUsers: UserWithRole[] = profilesData.map(profile => {
+        // Type assertion since we know the structure
+        const typedProfile = profile as { id: string; username: string | null };
+        
+        // Find role for this user
+        const roleRecord = rolesData?.find(r => r.user_id === typedProfile.id);
+        
+        // Find email for this user
+        const authUser = authData?.users?.find(u => u.id === typedProfile.id);
         
         return {
-          id: profile.id,
-          email: emailInfo?.email || "Sin acceso", // Si no tenemos permisos para ver emails
-          username: profile.username,
-          role: roleInfo?.role || "usuario",
+          id: typedProfile.id,
+          username: typedProfile.username,
+          email: authUser?.email || "No disponible",
+          role: (roleRecord?.role as "super_admin" | "admin" | "usuario") || "usuario"
         };
       });
       
@@ -78,7 +97,7 @@ export function UsersList() {
   
   const updateUserRole = async (userId: string, newRole: "super_admin" | "admin" | "usuario") => {
     try {
-      // Primero verificamos si el usuario tiene un rol asignado
+      // First check if the user has a role assigned
       const { data: existingRole, error: checkError } = await supabase
         .from('user_roles')
         .select('*')
@@ -90,7 +109,7 @@ export function UsersList() {
       }
       
       if (existingRole) {
-        // Actualizar rol existente
+        // Update existing role
         const { error: updateError } = await supabase
           .from('user_roles')
           .update({ role: newRole })
@@ -98,7 +117,7 @@ export function UsersList() {
           
         if (updateError) throw updateError;
       } else {
-        // Insertar nuevo rol
+        // Insert new role
         const { error: insertError } = await supabase
           .from('user_roles')
           .insert({ user_id: userId, role: newRole });
@@ -106,7 +125,7 @@ export function UsersList() {
         if (insertError) throw insertError;
       }
       
-      // Actualizar la lista local
+      // Update local list
       setUsers(prevUsers => 
         prevUsers.map(u => 
           u.id === userId ? { ...u, role: newRole } : u
@@ -139,7 +158,7 @@ export function UsersList() {
         const isSuperAdmin = user.role === "super_admin";
         const isCurrentUser = currentUser?.id === user.id;
         
-        // Mostrar solo el badge para super_admin o si es el usuario actual
+        // Show only badge for super_admin or if it's the current user
         if (isSuperAdmin || isCurrentUser) {
           return (
             <Badge variant={isSuperAdmin ? "destructive" : "outline"}>
@@ -148,7 +167,7 @@ export function UsersList() {
           );
         }
         
-        // Para otros usuarios, mostrar un select para cambiar el rol
+        // For other users, show a select to change role
         return (
           <Select
             defaultValue={user.role}
@@ -162,7 +181,7 @@ export function UsersList() {
             <SelectContent>
               <SelectItem value="usuario">Usuario</SelectItem>
               <SelectItem value="admin">Admin</SelectItem>
-              {/* No permitimos cambiar a super_admin desde la interfaz */}
+              {/* Don't allow changing to super_admin from the interface */}
             </SelectContent>
           </Select>
         );
