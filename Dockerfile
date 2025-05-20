@@ -1,17 +1,27 @@
-# Imagen base con Node.js
+
+# Base image with Node.js
 FROM node:18-alpine
 
-# Establece directorio de trabajo
+# Set working directory
 WORKDIR /app
 
-# Copia los archivos del proyecto
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application
 COPY . .
 
-# Instala el servidor estático 'serve'
+# Build the application
+RUN npm run build
+
+# Install the static server 'serve'
 RUN npm install -g serve
 
-# Expone el puerto por defecto de 'serve'
+# Expose the port that 'serve' will use
 EXPOSE 8080
 
-# Comando para servir la carpeta actual (donde está index.html)
-CMD ["serve", ".", "-l", "8080"]
+# Command to serve the built application
+CMD ["serve", "-s", "dist", "-l", "8080"]

@@ -231,6 +231,27 @@ export type Database = {
           },
         ]
       }
+      whatsapp_convers_ids: {
+        Row: {
+          conversation_id: string | null
+          created_at: string
+          id: number
+          userId: string | null
+        }
+        Insert: {
+          conversation_id?: string | null
+          created_at?: string
+          id?: number
+          userId?: string | null
+        }
+        Update: {
+          conversation_id?: string | null
+          created_at?: string
+          id?: number
+          userId?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
