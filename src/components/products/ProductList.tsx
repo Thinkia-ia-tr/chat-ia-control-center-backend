@@ -19,8 +19,6 @@ export function ProductList({ startDate, endDate }: ProductListProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { data: mentions, isLoading, isError } = useProductMentions(startDate, endDate);
-  
-  const [expandedContext, setExpandedContext] = useState<string | null>(null);
 
   if (isError) {
     toast({
@@ -72,32 +70,6 @@ export function ProductList({ startDate, endDate }: ProductListProps) {
           {format(row.original.created_at, "dd MMM yyyy HH:mm", { locale: es })}
         </div>
       ),
-    },
-    {
-      header: "Contexto",
-      accessorKey: "context",
-      cell: ({ row }: { row: { original: ProductMention } }) => {
-        const isExpanded = expandedContext === row.original.id;
-        const context = row.original.context || 'Sin contexto';
-        
-        return (
-          <div className={`${isExpanded ? '' : 'max-w-md truncate'}`}>
-            {context}
-            {context.length > 100 && (
-              <Button
-                variant="link"
-                className="ml-2 h-6 p-0"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setExpandedContext(isExpanded ? null : row.original.id);
-                }}
-              >
-                {isExpanded ? 'Ver menos' : 'Ver más'}
-              </Button>
-            )}
-          </div>
-        );
-      },
     },
   ];
 
