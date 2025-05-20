@@ -94,7 +94,7 @@ export function Sidebar() {
           </SidebarGroup>
         </div>
         
-        <div>
+        <div className="mb-8">
           {/* Solo los administradores y super administradores pueden ver Gestión */}
           {hasRole('admin') && (
             <SidebarGroup>
