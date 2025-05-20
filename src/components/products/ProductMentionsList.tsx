@@ -79,7 +79,7 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
       accessorKey: "created_at",
       cell: ({ row }: { row: { original: ProductMention } }) => (
         <div>
-          {format(row.original.created_at, "dd MMM yyyy", { locale: es })}
+          {format(new Date(row.original.created_at), "dd MMM yyyy", { locale: es })}
         </div>
       ),
     },
