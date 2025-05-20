@@ -49,7 +49,7 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
       header: "Conversación",
       accessorKey: "conversation_title",
       cell: ({ row }: { row: { original: ProductMention } }) => (
-        <div className="max-w-xs truncate flex items-center gap-2">
+        <div className="max-w-xs truncate flex items-center gap-2 w-[45%]">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -78,7 +78,7 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
       header: "Fecha",
       accessorKey: "created_at",
       cell: ({ row }: { row: { original: ProductMention } }) => (
-        <div>
+        <div className="w-[18%]">
           {format(new Date(row.original.created_at), "dd MMM yyyy", { locale: es })}
         </div>
       ),
