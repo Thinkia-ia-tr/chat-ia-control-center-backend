@@ -1,14 +1,11 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { DataTable } from "@/components/ui/data-table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
 
 interface UserWithRole {
   id: string;
@@ -152,66 +149,6 @@ export function UsersList() {
           <p className="text-sm">{row.original.email}</p>
         </div>
       )
-    },
-    {
-      header: "Rol",
-      accessorKey: "role",
-      cell: ({ row }: { row: { original: UserWithRole } }) => {
-        const user = row.original;
-        const isSuperAdmin = user.role === "super_admin";
-        const isCurrentUser = currentUser?.id === user.id;
-        const isThinkia = user.username === "thinkia";
-        
-        // Show super admin badge (with option to promote for thinkia)
-        if (isSuperAdmin) {
-          return (
-            <Badge variant="destructive" className="flex items-center gap-1">
-              <Shield size={12} />
-              super_admin
-            </Badge>
-          );
-        }
-        
-        // Special case for thinkia user - add promote button if not super admin
-        if (isThinkia && !isSuperAdmin) {
-          return (
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{user.role}</Badge>
-              <Button 
-                size="sm" 
-                variant="destructive" 
-                onClick={() => promoteSuperAdmin(user.id)}
-              >
-                Promover a Super Admin
-              </Button>
-            </div>
-          );
-        }
-        
-        // Show only badge if it's the current user
-        if (isCurrentUser) {
-          return <Badge variant="outline">{user.role}</Badge>;
-        }
-        
-        // For other users, show a select to change role
-        return (
-          <Select
-            defaultValue={user.role}
-            onValueChange={(value: "super_admin" | "admin" | "usuario") => {
-              updateUserRole(user.id, value);
-            }}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={user.role} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="usuario">Usuario</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="super_admin">Super Admin</SelectItem>
-            </SelectContent>
-          </Select>
-        );
-      }
     }
   ];
   
