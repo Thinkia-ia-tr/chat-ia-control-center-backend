@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -7,10 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
+
 interface LoginFormValues {
   email: string;
   password: string;
 }
+
 export default function Login() {
   const {
     signIn
@@ -27,6 +30,7 @@ export default function Login() {
       password: ""
     }
   });
+  
   const onSubmit = async (data: LoginFormValues) => {
     setIsLoading(true);
     try {
@@ -47,6 +51,7 @@ export default function Login() {
       setIsLoading(false);
     }
   };
+  
   return <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md text-center mb-4">
         <img src="/lovable-uploads/56fdf621-46ac-43d0-873e-c2676b134d9b.png" alt="Behumax Logo" className="mx-auto mb-4 max-w-[250px]" />
@@ -87,12 +92,7 @@ export default function Login() {
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <div className="text-center text-sm text-muted-foreground">
-              ¿No tienes una cuenta?{" "}
-              <Link to="/auth/register" className="text-primary hover:underline">
-                Regístrate
-              </Link>
-            </div>
+            {/* The div with "¿No tienes una cuenta?" text has been removed */}
           </CardFooter>
         </Card>
       </div>
