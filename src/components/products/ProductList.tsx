@@ -14,13 +14,20 @@ import {
   SelectValue
 } from "@/components/ui/select";
 
-export function ProductList() {
+interface ProductListProps {
+  startDate?: Date;
+  endDate?: Date;
+}
+
+export function ProductList({ startDate, endDate }: ProductListProps) {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   
   const { data: products, isLoading } = useQuery({
-    queryKey: ['products'],
+    queryKey: ['products', startDate?.toISOString(), endDate?.toISOString()],
     queryFn: async () => {
+      // If start and end date are provided, we could filter by date range
+      // For now, we're just fetching all products
       const { data, error } = await supabase
         .from('product_types')
         .select('id, name, created_at')
