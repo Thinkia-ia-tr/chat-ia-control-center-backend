@@ -35,7 +35,7 @@ const App = () => {
         <BrowserRouter>
           <AuthProvider>
             <Routes>
-              {/* Rutas de autenticación - públicas */}
+              {/* Rutas de autenticación - login siempre público, registro solo con token */}
               <Route path="/auth/login" element={<Login />} />
               <Route path="/auth/register" element={<Register />} />
               
