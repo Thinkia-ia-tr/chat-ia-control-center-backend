@@ -1,7 +1,7 @@
 
 import { Sidebar as SidebarComponent, SidebarContent, SidebarHeader, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot, LogOut, User, Package } from "lucide-react";
+import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot, LogOut, User, Package, Users } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
@@ -103,6 +103,12 @@ export function Sidebar() {
                   label="Productos" 
                   to="/productos" 
                   isActive={location.pathname === '/productos'} 
+                />
+                <SidebarNavItem 
+                  icon={<Users size={20} />} 
+                  label="Usuarios" 
+                  to="/usuarios" 
+                  isActive={location.pathname === '/usuarios'} 
                 />
               </SidebarMenu>
             </SidebarGroupContent>

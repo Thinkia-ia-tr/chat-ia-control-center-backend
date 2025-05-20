@@ -11,6 +11,7 @@ import ConversationDetail from "./pages/ConversationDetail";
 import Referrals from "./pages/Referrals";
 import ProductInsights from "./pages/ProductInsights";
 import ProductManagement from "./pages/ProductManagement";
+import UserManagement from "./pages/UserManagement";
 import AIChat from "./pages/AIChat";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -49,6 +50,12 @@ const App = () => {
               <Route path="/productos" element={
                 <RoleProtectedRoute requiredRole="admin">
                   <ProductManagement />
+                </RoleProtectedRoute>
+              } />
+              
+              <Route path="/usuarios" element={
+                <RoleProtectedRoute requiredRole="admin">
+                  <UserManagement />
                 </RoleProtectedRoute>
               } />
               
