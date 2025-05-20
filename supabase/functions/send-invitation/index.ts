@@ -67,8 +67,19 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Extract the email from the request
-    const { email }: InvitationRequest = await req.json();
+    // Parse request body
+    let data;
+    try {
+      data = await req.json();
+    } catch (error) {
+      console.error('Error parsing request body:', error);
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { email } = data as InvitationRequest;
     
     if (!email || !email.includes('@')) {
       return new Response(
