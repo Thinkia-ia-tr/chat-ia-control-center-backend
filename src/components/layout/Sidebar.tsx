@@ -1,4 +1,3 @@
-
 import { Sidebar as SidebarComponent, SidebarContent, SidebarHeader, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot, LogOut, User, Package, Users } from "lucide-react";
@@ -94,7 +93,7 @@ export function Sidebar() {
           </SidebarGroup>
         </div>
         
-        <div className="mb-8">
+        <div className="mb-4">
           {/* Solo los administradores y super administradores pueden ver Gestión */}
           {hasRole('admin') && (
             <SidebarGroup>
