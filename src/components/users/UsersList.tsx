@@ -140,7 +140,15 @@ export function UsersList() {
       cell: ({ row }: { row: { original: UserWithRole } }) => (
         <div>
           <p className="font-medium">{row.original.username || "Sin nombre de usuario"}</p>
-          <p className="text-xs text-muted-foreground">{row.original.email}</p>
+        </div>
+      )
+    },
+    {
+      header: "Correo electrónico",
+      accessorKey: "email",
+      cell: ({ row }: { row: { original: UserWithRole } }) => (
+        <div>
+          <p className="text-sm">{row.original.email}</p>
         </div>
       )
     },
