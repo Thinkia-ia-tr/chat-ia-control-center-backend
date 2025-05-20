@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, Link } from "lucide-react";
 
 interface InvitationFormValues {
   email: string;
@@ -36,7 +36,7 @@ export default function CreateInvitation() {
         throw new Error(response.error.message || 'Error al generar la invitación');
       }
 
-      toast.success('Invitación generada correctamente');
+      toast.success('Enlace de invitación generado correctamente');
       
       // Set the invitation link
       if (response.data?.debug?.registrationLink) {

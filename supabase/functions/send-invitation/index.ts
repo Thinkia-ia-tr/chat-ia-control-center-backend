@@ -166,7 +166,7 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Invitation link generated', 
+        message: 'Enlace de invitación generado correctamente', 
         invitationId,
         debug: {
           email,

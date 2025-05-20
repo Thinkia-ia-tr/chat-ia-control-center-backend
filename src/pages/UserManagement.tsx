@@ -26,7 +26,7 @@ const UserManagement = () => {
         <Alert className="my-4">
           <InfoIcon className="h-4 w-4" />
           <AlertDescription>
-            Las invitaciones generan un enlace que debes compartir con el usuario. No se envían correos automáticamente.
+            Las invitaciones generan un enlace que debes compartir manualmente con el usuario. No se envían correos electrónicos.
           </AlertDescription>
         </Alert>
         
