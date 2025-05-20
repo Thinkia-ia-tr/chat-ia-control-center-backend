@@ -1,3 +1,4 @@
+
 import { Sidebar as SidebarComponent, SidebarContent, SidebarHeader, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot, LogOut, User, Package, Users } from "lucide-react";
@@ -85,7 +86,8 @@ export function Sidebar() {
                     icon={<Bot size={20} />} 
                     label="IA sobre las conversaciones" 
                     to="/ia-chat" 
-                    isActive={location.pathname === '/ia-chat'} 
+                    isActive={location.pathname === '/ia-chat'}
+                    textColor="text-gray-400" 
                   />
                 )}
               </SidebarMenu>
@@ -149,7 +151,7 @@ interface SidebarNavItemProps {
   textColor?: string;
 }
 
-function SidebarNavItem({ icon, label, to, isActive, disabled }: SidebarNavItemProps) {
+function SidebarNavItem({ icon, label, to, isActive, disabled, textColor }: SidebarNavItemProps) {
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
@@ -158,7 +160,8 @@ function SidebarNavItem({ icon, label, to, isActive, disabled }: SidebarNavItemP
         className={cn(
           "flex items-center gap-3 w-full px-3 py-2",
           isActive && "bg-primary text-primary-foreground font-bold",
-          disabled && "text-muted-foreground cursor-not-allowed"
+          disabled && "text-muted-foreground cursor-not-allowed",
+          textColor
         )}
         aria-disabled={disabled}
       >
