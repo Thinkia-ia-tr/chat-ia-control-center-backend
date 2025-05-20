@@ -1,13 +1,14 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RegisterFormValues {
   email: string;
@@ -18,7 +19,11 @@ interface RegisterFormValues {
 export default function Register() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isTokenValid, setIsTokenValid] = useState(false);
+  const [isVerifyingToken, setIsVerifyingToken] = useState(true);
+  const [invitationToken, setInvitationToken] = useState<string | null>(null);
 
   const form = useForm<RegisterFormValues>({
     defaultValues: {
@@ -28,13 +33,71 @@ export default function Register() {
     }
   });
 
+  // Extract token from URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token');
+    
+    if (token) {
+      setInvitationToken(token);
+      verifyInvitationToken(token);
+    } else {
+      setIsVerifyingToken(false);
+      setIsTokenValid(false);
+    }
+  }, [location]);
+
+  // Verify if the token is valid and not expired
+  const verifyInvitationToken = async (token: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('registration_invitations')
+        .select('*')
+        .eq('token', token)
+        .eq('is_used', false)
+        .single();
+
+      if (error) throw error;
+
+      // Check if the invitation has expired
+      const now = new Date();
+      const expiresAt = new Date(data.expires_at);
+
+      if (expiresAt < now) {
+        setIsTokenValid(false);
+        toast.error("El enlace de invitación ha expirado");
+      } else {
+        setIsTokenValid(true);
+      }
+    } catch (error) {
+      console.error("Error verifying token:", error);
+      setIsTokenValid(false);
+      toast.error("El enlace de invitación no es válido");
+    } finally {
+      setIsVerifyingToken(false);
+    }
+  };
+
   const onSubmit = async (data: RegisterFormValues) => {
+    if (!isTokenValid && invitationToken) {
+      toast.error("El enlace de invitación no es válido o ha expirado");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const { error } = await signUp(data.email, data.password, data.username);
       if (error) {
         toast.error(`Error al registrarse: ${error.message}`);
       } else {
+        // Mark invitation as used if registration is successful and we have a valid token
+        if (invitationToken) {
+          await supabase
+            .from('registration_invitations')
+            .update({ is_used: true })
+            .eq('token', invitationToken);
+        }
+        
         toast.success("Registro exitoso. Por favor verifica tu correo electrónico.");
         navigate("/auth/login");
       }
@@ -45,13 +108,52 @@ export default function Register() {
     }
   };
 
+  if (isVerifyingToken) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Verificando invitación</CardTitle>
+            <CardDescription>
+              Por favor espera mientras verificamos tu enlace de invitación...
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  if (invitationToken && !isTokenValid) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Enlace no válido</CardTitle>
+            <CardDescription>
+              El enlace de invitación que estás usando no es válido o ha expirado.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="flex flex-col">
+            <div className="text-center text-sm text-muted-foreground">
+              <Link to="/auth/login" className="text-primary hover:underline">
+                Volver al inicio de sesión
+              </Link>
+            </div>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Crear cuenta</CardTitle>
           <CardDescription>
-            Completa el formulario para registrarte
+            {invitationToken 
+              ? "Completa el formulario para registrarte con tu invitación"
+              : "Completa el formulario para registrarte"}
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -234,6 +234,33 @@ export type Database = {
           },
         ]
       }
+      registration_invitations: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          is_used: boolean
+          token: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at: string
+          id?: string
+          is_used?: boolean
+          token: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean
+          token?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -281,6 +308,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      gen_random_token: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_product_stats: {
         Args: { start_date: string; end_date: string }
         Returns: {
