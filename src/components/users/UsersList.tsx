@@ -6,6 +6,8 @@ import { DataTable } from "@/components/ui/data-table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 interface UserWithRole {
   id: string;
@@ -17,42 +19,40 @@ interface UserWithRole {
 export function UsersList() {
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { user: currentUser } = useAuth();
   
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      setError(null);
       
-      // Obtener todos los usuarios
+      // Obtener todos los usuarios desde profiles
       const { data: usersData, error: usersError } = await supabase
         .from('profiles')
-        .select(`
-          id, 
-          username
-        `);
+        .select('id, username');
         
       if (usersError) throw usersError;
       
       // Obtener los roles de cada usuario
       const { data: userRoles, error: rolesError } = await supabase
         .from('user_roles')
-        .select(`
-          user_id,
-          role
-        `);
+        .select('user_id, role');
       
       if (rolesError) throw rolesError;
       
-      // Obtener emails (necesitamos ser admin o super_admin para esto)
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      // Obtener emails
+      const { data: authData, error: authError } = await supabase.auth.admin.listUsers();
       
-      // No lanzamos error aquí para manejar el caso de que no tengamos permisos
-      // Simplemente trabajaremos con los datos que tenemos
+      if (authError) {
+        // Solo registramos el error pero continuamos con los datos que tenemos
+        console.error("Error fetching auth users:", authError);
+      }
       
       // Combinar datos
       const combinedUsers = usersData.map(profile => {
         const roleInfo = userRoles.find(r => r.user_id === profile.id);
-        const emailInfo = authUsers?.users?.find(u => u.id === profile.id);
+        const emailInfo = authData?.users?.find(u => u.id === profile.id);
         
         return {
           id: profile.id,
@@ -65,6 +65,7 @@ export function UsersList() {
       setUsers(combinedUsers);
     } catch (error: any) {
       console.error("Error fetching users:", error);
+      setError(`Error al cargar usuarios: ${error.message}`);
       toast.error("Error al cargar usuarios: " + error.message);
     } finally {
       setLoading(false);
@@ -169,6 +170,16 @@ export function UsersList() {
     }
   ];
   
+  if (error) {
+    return (
+      <Alert variant="destructive" className="mb-6">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
+  
   return (
     <div className="w-full">
       <DataTable
@@ -176,6 +187,7 @@ export function UsersList() {
         data={users}
         className="bg-card"
       />
+      {loading && <p className="text-center py-4">Cargando usuarios...</p>}
     </div>
   );
 }
