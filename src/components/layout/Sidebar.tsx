@@ -77,8 +77,21 @@ export function Sidebar() {
             <SidebarMenu>
               <SidebarNavItem icon={<GitCompareArrows size={20} />} label="Derivaciones" to="/derivaciones" isActive={location.pathname === '/derivaciones'} />
               <SidebarNavItem icon={<LineChart size={20} />} label="Insights de Productos" to="/insights" isActive={location.pathname === '/insights'} />
-              <SidebarNavItem icon={<Package size={20} />} label="Gestión de Productos" to="/productos" isActive={location.pathname === '/productos'} />
               <SidebarNavItem icon={<Bot size={20} />} label="IA sobre las conversaciones" to="/ia-chat" isActive={location.pathname === '/ia-chat'} disabled />
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        
+        <SidebarGroup>
+          <SidebarGroupLabel>Gestión</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarNavItem 
+                icon={<Package size={20} />} 
+                label="Productos" 
+                to="/productos" 
+                isActive={location.pathname === '/productos'} 
+              />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
