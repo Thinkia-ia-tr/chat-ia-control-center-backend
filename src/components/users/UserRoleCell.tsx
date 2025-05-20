@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { UserWithRole } from "./demoUsers";
-import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 
 interface UserRoleCellProps {
@@ -18,15 +17,14 @@ interface UserRoleCellProps {
 export function UserRoleCell({ user, currentUserId, currentUserRole, onRoleUpdate }: UserRoleCellProps) {
   const isSuperAdmin = user.role === "super_admin";
   const isCurrentUser = currentUserId === user.id;
-  const isThinkia = user.username === "thinkia";
+  const isThinkia = user.email === "javier.olmo@thinkia.com" || user.username === "thinkia" || user.username === "Admin Thinkia";
   const isDemo = user.isDemo === true;
-  const canModifyRoles = currentUserRole === 'admin' || currentUserRole === 'super_admin';
   
   const promoteSuperAdmin = async (userId: string) => {
     await onRoleUpdate(userId, 'super_admin');
   };
 
-  // Always show super admin badge with icon
+  // Always show super admin badge with icon for users with that role
   if (isSuperAdmin) {
     return (
       <Badge variant="destructive" className="flex items-center gap-1">
@@ -52,12 +50,12 @@ export function UserRoleCell({ user, currentUserId, currentUserRole, onRoleUpdat
     );
   }
   
-  // Show badge for demo users, current user, or if user can't modify roles
-  if (isDemo || isCurrentUser || !canModifyRoles) {
+  // Show badge for demo users or current user as they can't change their own role
+  if (isDemo || isCurrentUser) {
     return <Badge variant="outline">{user.role}</Badge>;
   }
   
-  // For other users, show a select dropdown to change role
+  // For all other users, show a select dropdown to change role
   return (
     <Select
       defaultValue={user.role}
