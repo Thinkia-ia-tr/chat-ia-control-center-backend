@@ -35,11 +35,11 @@ export default function CreateInvitation() {
       }
 
       toast.success('Invitación enviada correctamente', {
-        description: `Se ha enviado un correo a ${data.email} con el enlace de registro.`
+        description: `Se ha enviado un enlace de registro a ${data.email}.`
       });
 
       // En desarrollo, mostramos el enlace para facilitar pruebas
-      if (response.data.debug && response.data.debug.registrationLink) {
+      if (response.data?.debug?.registrationLink) {
         setInvitationLink(response.data.debug.registrationLink);
       }
 
@@ -48,6 +48,7 @@ export default function CreateInvitation() {
       toast.error('Error al enviar la invitación', {
         description: error.message
       });
+      console.error('Error sending invitation:', error);
     } finally {
       setIsLoading(false);
     }

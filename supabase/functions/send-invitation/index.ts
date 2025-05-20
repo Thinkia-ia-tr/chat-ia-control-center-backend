@@ -144,28 +144,14 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Get the base URL from the request (for building the registration link)
     const url = new URL(req.url);
-    const baseUrl = `${url.protocol}//${url.host}`;
+    const origin = req.headers.get('origin') || `${url.protocol}//${url.host}`;
     
     // Create the registration link
-    const registrationLink = `${baseUrl}/auth/register?token=${token}`;
+    const registrationLink = `${origin}/auth/register?token=${token}`;
     
-    // Send email using the mailer function
-    const emailHTML = `
-      <h1>Invitación para registrarse en Behumax Panel</h1>
-      <p>Has sido invitado a crear una cuenta en el panel de inteligencia de atención al cliente de Behumax.</p>
-      <p>Haz clic en el siguiente enlace para registrarte (válido por 48 horas):</p>
-      <p><a href="${registrationLink}" style="display: inline-block; background-color: #0070f3; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Registrarse ahora</a></p>
-      <p>O copia y pega esta URL en tu navegador:</p>
-      <p>${registrationLink}</p>
-      <p>Si no esperabas esta invitación, puedes ignorar este correo.</p>
-    `;
-
-    // Este es un punto donde normalmente se enviaría el correo.
-    // Como no tenemos una integración de correo configurada, simplemente simulamos el envío
-    // y devolvemos el enlace en la respuesta para fines de prueba
-
-    console.log(`[DEBUG] Email link: ${registrationLink} para ${email}`);
-
+    // Simular el envío de correo - en un entorno real, aquí integrarías un servicio de correo
+    console.log(`[DEBUG] Simulando envío de correo a ${email} con enlace: ${registrationLink}`);
+    
     return new Response(
       JSON.stringify({ 
         success: true, 
