@@ -10,6 +10,7 @@ import Conversations from "./pages/Conversations";
 import ConversationDetail from "./pages/ConversationDetail";
 import Referrals from "./pages/Referrals";
 import ProductInsights from "./pages/ProductInsights";
+import ProductManagement from "./pages/ProductManagement";
 import AIChat from "./pages/AIChat";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -42,6 +43,7 @@ const App = () => {
               <Route path="/conversaciones/:id" element={<ProtectedRoute><ConversationDetail /></ProtectedRoute>} />
               <Route path="/derivaciones" element={<ProtectedRoute><Referrals /></ProtectedRoute>} />
               <Route path="/insights" element={<ProtectedRoute><ProductInsights /></ProtectedRoute>} />
+              <Route path="/productos" element={<ProtectedRoute><ProductManagement /></ProtectedRoute>} />
               <Route path="/ia-chat" element={<ProtectedRoute><AIChat /></ProtectedRoute>} />
               <Route path="/perfil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               
