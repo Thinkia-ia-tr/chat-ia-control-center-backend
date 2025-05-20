@@ -13,13 +13,19 @@ const UserManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
   
   const copyRegistrationLink = () => {
+    // Use the current origin to create the full registration URL
     const registrationUrl = `${window.location.origin}/auth/register`;
+    
+    // Copy the URL to clipboard
     navigator.clipboard.writeText(registrationUrl)
       .then(() => {
-        toast.success("Enlace copiado al portapapeles");
+        toast.success("Enlace de registro copiado al portapapeles", {
+          description: registrationUrl
+        });
       })
-      .catch(() => {
-        toast.error("No se pudo copiar el enlace");
+      .catch((error) => {
+        console.error("Error copying to clipboard:", error);
+        toast.error("No se pudo copiar el enlace de registro");
       });
   };
   
