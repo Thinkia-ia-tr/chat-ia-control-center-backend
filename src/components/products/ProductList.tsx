@@ -1,19 +1,14 @@
 
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { format, isValid } from "date-fns";
+import { useProductMentions, ProductMention } from "@/hooks/useProductMentions";
+import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { ConversationsPagination } from "@/components/conversations/ConversationsPagination";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Loader2, ExternalLink, MessageSquare } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface ProductListProps {
   startDate?: Date;
@@ -21,114 +16,116 @@ interface ProductListProps {
 }
 
 export function ProductList({ startDate, endDate }: ProductListProps) {
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const { data: mentions, isLoading, isError } = useProductMentions(startDate, endDate);
   
-  const { data: products, isLoading } = useQuery({
-    queryKey: ['products', startDate?.toISOString(), endDate?.toISOString()],
-    queryFn: async () => {
-      // If start and end date are provided, we could filter by date range
-      // For now, we're just fetching all products
-      const { data, error } = await supabase
-        .from('product_types')
-        .select('id, name, created_at')
-        .order('name');
-      
-      if (error) {
-        console.error("Error fetching products:", error);
-        throw error;
-      }
-      
-      return data;
-    }
-  });
+  const [expandedContext, setExpandedContext] = useState<string | null>(null);
 
-  if (isLoading) {
-    return <Skeleton className="h-[400px] w-full" />;
+  if (isError) {
+    toast({
+      title: "Error",
+      description: "No se pudieron cargar las menciones de productos",
+      variant: "destructive"
+    });
   }
 
   const columns = [
     {
       header: "Producto",
-      accessorKey: "name"
+      accessorKey: "product_name",
     },
     {
-      header: "Fecha de creación",
+      header: "Conversación",
+      accessorKey: "conversation_title",
+      cell: ({ row }: { row: { original: ProductMention } }) => (
+        <div className="max-w-xs truncate flex items-center gap-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="truncate cursor-help">{row.original.conversation_title}</span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{row.original.conversation_title}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/conversaciones/${row.original.conversation_id}`);
+            }}
+            className="h-6 w-6"
+          >
+            <ExternalLink className="h-4 w-4" />
+          </Button>
+        </div>
+      ),
+    },
+    {
+      header: "Fecha",
       accessorKey: "created_at",
-      cell: ({ row }: any) => {
-        const dateValue = row.original.created_at;
-        let formattedDate = "Fecha no disponible";
-        
-        if (dateValue) {
-          const date = new Date(dateValue);
-          if (isValid(date)) {
-            formattedDate = format(date, "dd MMM yyyy", { locale: es });
-          }
-        }
+      cell: ({ row }: { row: { original: ProductMention } }) => (
+        <div>
+          {format(row.original.created_at, "dd MMM yyyy HH:mm", { locale: es })}
+        </div>
+      ),
+    },
+    {
+      header: "Contexto",
+      accessorKey: "context",
+      cell: ({ row }: { row: { original: ProductMention } }) => {
+        const isExpanded = expandedContext === row.original.id;
+        const context = row.original.context || 'Sin contexto';
         
         return (
-          <div className="text-right">
-            <span>{formattedDate}</span>
+          <div className={`${isExpanded ? '' : 'max-w-md truncate'}`}>
+            {context}
+            {context.length > 100 && (
+              <Button
+                variant="link"
+                className="ml-2 h-6 p-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setExpandedContext(isExpanded ? null : row.original.id);
+                }}
+              >
+                {isExpanded ? 'Ver menos' : 'Ver más'}
+              </Button>
+            )}
           </div>
         );
-      }
-    }
+      },
+    },
   ];
 
-  // Calculate pagination
-  const totalPages = Math.max(1, Math.ceil((products?.length || 0) / rowsPerPage));
-  const startIndex = (page - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const paginatedData = products ? products.slice(startIndex, endIndex) : [];
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleRowsPerPageChange = (value: string) => {
-    setRowsPerPage(parseInt(value));
-    setPage(1);
+  const handleRowClick = (data: { row: { original: ProductMention } }) => {
+    navigate(`/conversaciones/${data.row.original.conversation_id}`);
   };
 
   return (
-    <div className="w-full space-y-4">
-      <DataTable
-        columns={columns}
-        data={paginatedData || []}
-        getRowId={(rowData) => rowData.id}
-      />
-      
-      {(!products || products.length === 0) ? (
-        <div className="text-center py-6 text-muted-foreground">
-          No se encontraron productos en el sistema
+    <div>
+      {isLoading ? (
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <span className="ml-2">Cargando menciones de productos...</span>
         </div>
+      ) : mentions && mentions.length > 0 ? (
+        <DataTable
+          columns={columns}
+          data={mentions}
+          onRowClick={handleRowClick}
+          getRowId={(row) => row.id}
+        />
       ) : (
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 whitespace-nowrap">
-            <span className="text-sm text-muted-foreground">Mostrar</span>
-            <Select
-              value={rowsPerPage.toString()}
-              onValueChange={handleRowsPerPageChange}
-            >
-              <SelectTrigger className="w-[70px]">
-                <SelectValue placeholder={rowsPerPage} />
-              </SelectTrigger>
-              <SelectContent>
-                {[5, 10, 25, 50].map((option) => (
-                  <SelectItem key={option} value={option.toString()}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <span className="text-sm text-muted-foreground">por página</span>
-          </div>
-          
-          <ConversationsPagination 
-            currentPage={page} 
-            totalPages={totalPages} 
-            onPageChange={handlePageChange} 
-          />
+        <div className="text-center py-10 border rounded-md bg-muted/20">
+          <MessageSquare className="mx-auto h-10 w-10 text-muted-foreground opacity-50" />
+          <p className="mt-2 text-lg font-medium">No hay menciones de productos</p>
+          <p className="text-sm text-muted-foreground">
+            No se han detectado menciones de productos en el período seleccionado.
+          </p>
         </div>
       )}
     </div>
