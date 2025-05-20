@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,8 +79,8 @@ export default function Register() {
   };
 
   const onSubmit = async (data: RegisterFormValues) => {
-    if (!isTokenValid && invitationToken) {
-      toast.error("El enlace de invitación no es válido o ha expirado");
+    if (!isTokenValid || !invitationToken) {
+      toast.error("Se requiere un enlace de invitación válido para registrarse");
       return;
     }
 
@@ -90,12 +91,10 @@ export default function Register() {
         toast.error(`Error al registrarse: ${error.message}`);
       } else {
         // Mark invitation as used if registration is successful and we have a valid token
-        if (invitationToken) {
-          await supabase
-            .from('registration_invitations')
-            .update({ is_used: true })
-            .eq('token', invitationToken);
-        }
+        await supabase
+          .from('registration_invitations')
+          .update({ is_used: true })
+          .eq('token', invitationToken);
         
         toast.success("Registro exitoso. Por favor verifica tu correo electrónico.");
         navigate("/auth/login");
@@ -106,6 +105,12 @@ export default function Register() {
       setIsLoading(false);
     }
   };
+
+  // If there's no token, redirect to login
+  if (!invitationToken && !isVerifyingToken) {
+    toast.error("Se requiere una invitación para registrarse");
+    return <Navigate to="/auth/login" />;
+  }
 
   if (isVerifyingToken) {
     return (
@@ -127,7 +132,7 @@ export default function Register() {
     );
   }
 
-  if (invitationToken && !isTokenValid) {
+  if (!isTokenValid) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="w-full max-w-md text-center mb-4">
@@ -164,9 +169,7 @@ export default function Register() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Crear cuenta</CardTitle>
             <CardDescription>
-              {invitationToken 
-                ? "Completa el formulario para registrarte con tu invitación"
-                : "Completa el formulario para registrarte"}
+              Completa el formulario para registrarte con tu invitación
             </CardDescription>
           </CardHeader>
           <CardContent>
