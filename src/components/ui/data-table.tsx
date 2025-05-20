@@ -8,6 +8,7 @@ interface DataTableProps<T> {
     header: string;
     accessorKey: string;
     cell?: (item: { row: { original: T } }) => React.ReactNode;
+    className?: string; // Added className property to support column width
   }[];
   data: T[];
   onRowClick?: (row: { row: { original: T } }) => void;
@@ -38,6 +39,7 @@ export function DataTable<T>({
                   key={column.accessorKey} 
                   className={cn(
                     "text-left",
+                    column.className, // Apply the column's className to the TableHead
                     index === columns.length - 1 && "text-right"
                   )}
                 >
@@ -65,7 +67,7 @@ export function DataTable<T>({
                       <TableCell 
                         key={column.accessorKey}
                         className={cn(
-                          index === 0 ? "w-1/2" : "w-1/2",
+                          column.className, // Apply the column's className to the TableCell instead of fixed width
                           index === columns.length - 1 && "text-right"
                         )}
                       >
