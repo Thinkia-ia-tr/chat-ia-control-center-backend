@@ -42,7 +42,7 @@ const UserManagement = () => {
             onClick={copyRegistrationLink}
           >
             <Copy size={16} />
-            <span>Invitar a registrarse</span>
+            <span>Enlace de registro</span>
           </Button>
         </div>
         
