@@ -1,5 +1,5 @@
 
-import { Sidebar as SidebarComponent, SidebarContent, SidebarHeader, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
+import { Sidebar as SidebarComponent, SidebarContent, SidebarHeader, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarFooter } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
 import { LayoutDashboard, MessageSquare, GitCompareArrows, LineChart, Bot, LogOut, User, Package, Users } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -60,78 +60,82 @@ export function Sidebar() {
         </div>
       </div>
       
-      <SidebarContent>
-        {/* Todos los usuarios pueden ver el apartado de Chatbot con IA */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Chatbot con IA</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarNavItem icon={<LayoutDashboard size={20} />} label="Dashboard" to="/" isActive={location.pathname === '/'} />
-              <SidebarNavItem icon={<MessageSquare size={20} />} label="Conversaciones" to="/conversaciones" isActive={location.pathname === '/conversaciones'} />
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+      <SidebarContent className="flex flex-col h-full justify-between">
+        <div>
+          {/* Todos los usuarios pueden ver el apartado de Chatbot con IA */}
+          <SidebarGroup>
+            <SidebarGroupLabel>Chatbot con IA</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarNavItem icon={<LayoutDashboard size={20} />} label="Dashboard" to="/" isActive={location.pathname === '/'} />
+                <SidebarNavItem icon={<MessageSquare size={20} />} label="Conversaciones" to="/conversaciones" isActive={location.pathname === '/conversaciones'} />
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-        {/* Todos los usuarios pueden ver el Panel de Inteligencia */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Panel de inteligencia</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarNavItem icon={<GitCompareArrows size={20} />} label="Derivaciones" to="/derivaciones" isActive={location.pathname === '/derivaciones'} />
-              <SidebarNavItem icon={<LineChart size={20} />} label="Insights de Productos" to="/insights" isActive={location.pathname === '/insights'} />
-              {/* Solo Super Administradores pueden ver IA sobre las conversaciones */}
-              {hasRole('super_admin') && (
-                <SidebarNavItem 
-                  icon={<Bot size={20} />} 
-                  label="IA sobre las conversaciones" 
-                  to="/ia-chat" 
-                  isActive={location.pathname === '/ia-chat'} 
-                />
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+          {/* Todos los usuarios pueden ver el Panel de Inteligencia */}
+          <SidebarGroup>
+            <SidebarGroupLabel>Panel de inteligencia</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarNavItem icon={<GitCompareArrows size={20} />} label="Derivaciones" to="/derivaciones" isActive={location.pathname === '/derivaciones'} />
+                <SidebarNavItem icon={<LineChart size={20} />} label="Insights de Productos" to="/insights" isActive={location.pathname === '/insights'} />
+                {/* Solo Super Administradores pueden ver IA sobre las conversaciones */}
+                {hasRole('super_admin') && (
+                  <SidebarNavItem 
+                    icon={<Bot size={20} />} 
+                    label="IA sobre las conversaciones" 
+                    to="/ia-chat" 
+                    isActive={location.pathname === '/ia-chat'} 
+                  />
+                )}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </div>
         
-        {/* Solo los administradores y super administradores pueden ver Gestión */}
-        {hasRole('admin') && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Gestión</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarNavItem 
-                  icon={<Package size={20} />} 
-                  label="Productos" 
-                  to="/productos" 
-                  isActive={location.pathname === '/productos'} 
-                />
-                <SidebarNavItem 
-                  icon={<Users size={20} />} 
-                  label="Usuarios" 
-                  to="/usuarios" 
-                  isActive={location.pathname === '/usuarios'} 
-                />
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+        <div>
+          {/* Solo los administradores y super administradores pueden ver Gestión */}
+          {hasRole('admin') && (
+            <SidebarGroup>
+              <SidebarGroupLabel>Gestión</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarNavItem 
+                    icon={<Package size={20} />} 
+                    label="Productos" 
+                    to="/productos" 
+                    isActive={location.pathname === '/productos'} 
+                  />
+                  <SidebarNavItem 
+                    icon={<Users size={20} />} 
+                    label="Usuarios" 
+                    to="/usuarios" 
+                    isActive={location.pathname === '/usuarios'} 
+                  />
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
 
-        {/* Todos los usuarios pueden gestionar su cuenta */}
-        {user && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Cuenta</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarNavItem icon={<User size={20} />} label="Mi perfil" to="/perfil" isActive={location.pathname === '/perfil'} />
-                <SidebarMenuItem>
-                  <SidebarMenuButton className="flex items-center gap-3 w-full px-3 py-2 text-red-500 hover:bg-red-50" onClick={() => signOut()}>
-                    <LogOut size={20} />
-                    <span>Cerrar sesión</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+          {/* Todos los usuarios pueden gestionar su cuenta */}
+          {user && (
+            <SidebarGroup>
+              <SidebarGroupLabel>Cuenta</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarNavItem icon={<User size={20} />} label="Mi perfil" to="/perfil" isActive={location.pathname === '/perfil'} />
+                  <SidebarMenuItem>
+                    <SidebarMenuButton className="flex items-center gap-3 w-full px-3 py-2 text-red-500 hover:bg-red-50" onClick={() => signOut()}>
+                      <LogOut size={20} />
+                      <span>Cerrar sesión</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
+        </div>
       </SidebarContent>
     </SidebarComponent>
   );
