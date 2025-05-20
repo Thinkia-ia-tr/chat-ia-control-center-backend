@@ -6,6 +6,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format, isValid } from "date-fns";
 import { es } from "date-fns/locale";
+import { ConversationsPagination } from "@/components/conversations/ConversationsPagination";
 import { 
   Select,
   SelectContent,
@@ -123,25 +124,11 @@ export function ProductList({ startDate, endDate }: ProductListProps) {
             <span className="text-sm text-muted-foreground">por página</span>
           </div>
           
-          <div className="flex items-center gap-2">
-            <button 
-              className="p-2 rounded hover:bg-muted disabled:opacity-50 disabled:pointer-events-none"
-              onClick={() => handlePageChange(page - 1)}
-              disabled={page === 1}
-            >
-              Anterior
-            </button>
-            <span className="text-sm text-muted-foreground">
-              Página {page} de {totalPages}
-            </span>
-            <button 
-              className="p-2 rounded hover:bg-muted disabled:opacity-50 disabled:pointer-events-none"
-              onClick={() => handlePageChange(page + 1)}
-              disabled={page >= totalPages}
-            >
-              Siguiente
-            </button>
-          </div>
+          <ConversationsPagination 
+            currentPage={page} 
+            totalPages={totalPages} 
+            onPageChange={handlePageChange} 
+          />
         </div>
       )}
     </div>
