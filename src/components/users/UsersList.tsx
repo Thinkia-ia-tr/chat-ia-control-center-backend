@@ -26,12 +26,21 @@ export function UsersList() {
         return;
       }
       
-      // Añadir los usuarios de demostración a la lista
-      const allUsers = [...fetchedUsers, ...demoUsers];
-      setUsers(allUsers);
-      
       // Check if 'thinkia' user exists and update to super_admin if needed
-      await checkAndUpdateThinkiaUser(fetchedUsers);
+      // This should happen BEFORE adding demo users
+      const updated = await checkAndUpdateThinkiaUser(fetchedUsers);
+      
+      // If thinkia user was updated to super_admin, refresh the user list
+      if (updated) {
+        const { users: refreshedUsers } = await fetchUsersData();
+        // Add the demo users to the refreshed list
+        const allUsers = [...refreshedUsers, ...demoUsers];
+        setUsers(allUsers);
+      } else {
+        // Add the demo users to the original list
+        const allUsers = [...fetchedUsers, ...demoUsers];
+        setUsers(allUsers);
+      }
       
     } catch (error: any) {
       setError(`Error al cargar usuarios: ${error.message}`);

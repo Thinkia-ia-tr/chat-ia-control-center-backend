@@ -95,10 +95,17 @@ export async function updateUserRole(userId: string, newRole: "super_admin" | "a
 
 export async function checkAndUpdateThinkiaUser(users: UserWithRole[]) {
   try {
-    const thinkiaUser = users.find(u => u.username === 'thinkia');
+    // Buscar usuario Admin Thinkia por correo electrónico exacto en caso de cambio de nombre
+    const thinkiaUser = users.find(u => 
+      u.email === "javier.olmo@thinkia.com" || 
+      u.username === "thinkia" || 
+      u.username === "Admin Thinkia"
+    );
+    
     if (thinkiaUser && thinkiaUser.role !== 'super_admin') {
+      console.log("Encontrado Admin Thinkia con rol:", thinkiaUser.role, "- Actualizando a super_admin");
       await updateUserRole(thinkiaUser.id, 'super_admin');
-      toast.success("Usuario 'thinkia' actualizado a Super Admin");
+      toast.success("Usuario Admin Thinkia actualizado a Super Admin");
       return true;
     }
     return false;
