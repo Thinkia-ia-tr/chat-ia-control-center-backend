@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,7 +21,7 @@ export function UsersList() {
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, userRole: currentUserRole } = useAuth();
   
   const fetchUsers = async () => {
     try {
@@ -132,6 +133,9 @@ export function UsersList() {
   const promoteSuperAdmin = async (userId: string) => {
     await updateUserRole(userId, 'super_admin');
   };
+
+  // Check if current user can modify roles (must be admin or super_admin)
+  const canModifyRoles = currentUserRole === 'admin' || currentUserRole === 'super_admin';
   
   const columns = [
     {
@@ -161,7 +165,7 @@ export function UsersList() {
         const isCurrentUser = currentUser?.id === user.id;
         const isThinkia = user.username === "thinkia";
         
-        // Show super admin badge (with option to promote for thinkia)
+        // Always show super admin badge with icon
         if (isSuperAdmin) {
           return (
             <Badge variant="destructive" className="flex items-center gap-1">
@@ -187,12 +191,12 @@ export function UsersList() {
           );
         }
         
-        // Show only badge if it's the current user
-        if (isCurrentUser) {
+        // Show badge for current user or if user can't modify roles
+        if (isCurrentUser || !canModifyRoles) {
           return <Badge variant="outline">{user.role}</Badge>;
         }
         
-        // For other users, show a select to change role
+        // For other users, show a select dropdown to change role
         return (
           <Select
             defaultValue={user.role}
