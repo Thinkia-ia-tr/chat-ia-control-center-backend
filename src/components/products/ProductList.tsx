@@ -26,15 +26,6 @@ export function ProductList() {
       accessorKey: "name",
     },
     {
-      header: "Descripción",
-      accessorKey: "description",
-      cell: ({ row }: { row: { original: Product } }) => (
-        <div className="max-w-xs truncate">
-          {row.original.description || "Sin descripción"}
-        </div>
-      ),
-    },
-    {
       header: "Fecha de creación",
       accessorKey: "created_at",
       cell: ({ row }: { row: { original: Product } }) => (
@@ -42,18 +33,6 @@ export function ProductList() {
           {format(new Date(row.original.created_at), "dd/MM/yyyy")}
         </div>
       ),
-    },
-    {
-      header: "Keywords",
-      accessorKey: "keywords",
-      cell: ({ row }: { row: { original: Product } }) => {
-        const keywords = Array.isArray(row.original.keywords) ? row.original.keywords : [];
-        return (
-          <div className="max-w-xs truncate">
-            {keywords.length > 0 ? keywords.join(", ") : "Sin keywords"}
-          </div>
-        );
-      },
     },
   ];
 
