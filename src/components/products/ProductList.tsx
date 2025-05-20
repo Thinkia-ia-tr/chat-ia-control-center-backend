@@ -25,7 +25,7 @@ export function ProductList() {
       header: "Nombre",
       accessorKey: "name",
       cell: ({ row }: { row: { original: Product } }) => (
-        <div className="font-medium">{row.original.name}</div>
+        <div className="font-medium break-words">{row.original.name}</div>
       ),
     },
     {

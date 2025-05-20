@@ -65,7 +65,7 @@ export function DataTable<T>({
                       <TableCell 
                         key={column.accessorKey}
                         className={cn(
-                          index === 0 ? "w-2/3" : "w-1/3",
+                          index === 0 ? "w-1/2" : "w-1/2",
                           index === columns.length - 1 && "text-right"
                         )}
                       >
