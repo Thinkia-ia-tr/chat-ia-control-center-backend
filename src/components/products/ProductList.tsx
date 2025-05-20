@@ -24,12 +24,15 @@ export function ProductList() {
     {
       header: "Nombre",
       accessorKey: "name",
+      cell: ({ row }: { row: { original: Product } }) => (
+        <div className="font-medium">{row.original.name}</div>
+      ),
     },
     {
       header: "Fecha de creación",
       accessorKey: "created_at",
       cell: ({ row }: { row: { original: Product } }) => (
-        <div>
+        <div className="text-right">
           {format(new Date(row.original.created_at), "dd/MM/yyyy")}
         </div>
       ),
@@ -48,6 +51,7 @@ export function ProductList() {
           columns={columns}
           data={products}
           getRowId={(row) => row.id}
+          className="w-full"
         />
       ) : (
         <div className="text-center py-10 border rounded-md bg-muted/20">

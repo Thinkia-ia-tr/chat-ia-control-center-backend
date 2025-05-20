@@ -33,8 +33,14 @@ export function DataTable<T>({
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>
-              {columns.map((column) => (
-                <TableHead key={column.accessorKey} className="text-left">
+              {columns.map((column, index) => (
+                <TableHead 
+                  key={column.accessorKey} 
+                  className={cn(
+                    "text-left",
+                    index === columns.length - 1 && "text-right"
+                  )}
+                >
                   {column.header}
                 </TableHead>
               ))}
@@ -55,8 +61,14 @@ export function DataTable<T>({
                     )}
                     onClick={() => onRowClick?.({ row: { original: row } })}
                   >
-                    {columns.map((column) => (
-                      <TableCell key={column.accessorKey}>
+                    {columns.map((column, index) => (
+                      <TableCell 
+                        key={column.accessorKey}
+                        className={cn(
+                          index === 0 ? "w-2/3" : "w-1/3",
+                          index === columns.length - 1 && "text-right"
+                        )}
+                      >
                         {column.cell
                           ? column.cell({ row: { original: row } })
                           // @ts-ignore - This is a simplification, in practice we'd want to create a proper type
