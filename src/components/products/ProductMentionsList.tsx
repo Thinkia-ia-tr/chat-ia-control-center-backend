@@ -34,7 +34,7 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
       header: "Producto",
       accessorKey: "product_name",
       cell: ({ row }: { row: { original: ProductMention } }) => (
-        <div className="flex items-center">
+        <div className="flex items-center w-[95%]">
           <Badge 
             variant="default"
             className="flex items-center gap-1.5 py-1 px-2 font-medium bg-primary/70 hover:bg-primary/90 text-primary-foreground"
