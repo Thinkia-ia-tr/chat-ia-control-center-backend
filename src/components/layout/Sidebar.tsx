@@ -45,7 +45,7 @@ export function Sidebar() {
   };
   return <SidebarComponent>
       <div className="flex flex-col items-center p-4 border-b border-border">
-        <img src="/lovable-uploads/56fdf621-46ac-43d0-873e-c2676b134d9b.png" alt="Behumax Logo" className="h-6 mb-6" />
+        <img src="/lovable-uploads/56fdf621-46ac-43d0-873e-c2676b134d9b.png" alt="Behumax Logo" className="h-6 mt-6 mb-6" />
         <div className="flex items-center w-full">
           <Avatar className="rounded-full h-8 w-8 mr-4">
             <AvatarFallback>{getInitials()}</AvatarFallback>
