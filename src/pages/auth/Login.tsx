@@ -50,7 +50,7 @@ export default function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-md text-center mb-4">
-        <h1 className="text-3xl font-bold mb-8 text-primary">Panel de inteligencia de Att al Cliente</h1>
+        <h1 className="text-3xl font-bold mb-8 text-primary">Panel de inteligencia de<br />Att al Cliente</h1>
         
         <Card className="w-full">
           <CardHeader className="text-center">
