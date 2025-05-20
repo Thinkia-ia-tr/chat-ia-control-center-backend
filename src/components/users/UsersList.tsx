@@ -1,47 +1,12 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { DataTable } from "@/components/ui/data-table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-interface UserWithRole {
-  id: string;
-  email: string;
-  username: string | null;
-  role: "super_admin" | "admin" | "usuario";
-  isDemo?: boolean;
-}
-
-// Usuarios de demostración definidos manualmente
-const demoUsers: UserWithRole[] = [
-  {
-    id: "demo-user-1",
-    email: "user@demo.local",
-    username: "User Demo",
-    role: "usuario",
-    isDemo: true
-  },
-  {
-    id: "demo-user-2",
-    email: "operaciones@behumax.com",
-    username: "Nacho Tribiño",
-    role: "admin",
-    isDemo: true
-  },
-  {
-    id: "demo-user-3",
-    email: "marketing@behumax.com",
-    username: "Martín Delgado",
-    role: "admin",
-    isDemo: true
-  }
-];
+import { AlertCircle } from "lucide-react";
+import { demoUsers, UserWithRole } from "./demoUsers";
+import { fetchUsersData, updateUserRole, checkAndUpdateThinkiaUser } from "@/services/usersService";
+import { UserRow } from "./UserRow";
 
 export function UsersList() {
   const [users, setUsers] = useState<UserWithRole[]>([]);
@@ -54,56 +19,22 @@ export function UsersList() {
       setLoading(true);
       setError(null);
       
-      // Get profiles data with email
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select('id, username, email');
-        
-      if (profilesError) throw profilesError;
+      const { users: fetchedUsers, error: fetchError } = await fetchUsersData();
       
-      let combinedUsers: UserWithRole[] = [];
-      
-      if (profilesData && profilesData.length > 0) {
-        // Fetch roles separately
-        const { data: rolesData, error: rolesError } = await supabase
-          .from('user_roles')
-          .select('*');
-        
-        if (rolesError) {
-          console.error("Error fetching roles:", rolesError);
-        }
-        
-        // Combine the data
-        combinedUsers = profilesData.map(profile => {
-          // Type assertion since we know the structure
-          const typedProfile = profile as { id: string; username: string | null; email: string | null };
-          
-          // Find role for this user
-          const roleRecord = rolesData?.find(r => r.user_id === typedProfile.id);
-          
-          return {
-            id: typedProfile.id,
-            username: typedProfile.username,
-            email: typedProfile.email || "No disponible",
-            role: (roleRecord?.role as "super_admin" | "admin" | "usuario") || "usuario"
-          };
-        });
+      if (fetchError) {
+        setError(`Error al cargar usuarios: ${fetchError}`);
+        return;
       }
       
       // Añadir los usuarios de demostración a la lista
-      const allUsers = [...combinedUsers, ...demoUsers];
+      const allUsers = [...fetchedUsers, ...demoUsers];
       setUsers(allUsers);
       
       // Check if 'thinkia' user exists and update to super_admin if needed
-      const thinkiaUser = combinedUsers.find(u => u.username === 'thinkia');
-      if (thinkiaUser && thinkiaUser.role !== 'super_admin') {
-        await updateUserRole(thinkiaUser.id, 'super_admin');
-        toast.success("Usuario 'thinkia' actualizado a Super Admin");
-      }
+      await checkAndUpdateThinkiaUser(fetchedUsers);
+      
     } catch (error: any) {
-      console.error("Error fetching users:", error);
       setError(`Error al cargar usuarios: ${error.message}`);
-      toast.error("Error al cargar usuarios: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -113,144 +44,56 @@ export function UsersList() {
     fetchUsers();
   }, []);
   
-  const updateUserRole = async (userId: string, newRole: "super_admin" | "admin" | "usuario") => {
-    // No actualizar roles para usuarios de demostración
-    if (userId.startsWith('demo-user-')) {
-      toast.error("No se puede cambiar el rol de usuarios de demostración");
-      return;
-    }
-    
-    try {
-      // First check if the user has a role assigned
-      const { data: existingRole, error: checkError } = await supabase
-        .from('user_roles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-        
-      if (checkError && checkError.code !== 'PGRST116') {
-        throw checkError;
-      }
-      
-      if (existingRole) {
-        // Update existing role
-        const { error: updateError } = await supabase
-          .from('user_roles')
-          .update({ role: newRole })
-          .eq('user_id', userId);
-          
-        if (updateError) throw updateError;
-      } else {
-        // Insert new role
-        const { error: insertError } = await supabase
-          .from('user_roles')
-          .insert({ user_id: userId, role: newRole });
-          
-        if (insertError) throw insertError;
-      }
-      
+  const handleRoleUpdate = async (userId: string, newRole: "super_admin" | "admin" | "usuario") => {
+    const success = await updateUserRole(userId, newRole);
+    if (success) {
       // Update local list
       setUsers(prevUsers => 
         prevUsers.map(u => 
           u.id === userId ? { ...u, role: newRole } : u
         )
       );
-      
-      toast.success(`Rol actualizado a ${newRole}`);
-    } catch (error: any) {
-      console.error("Error updating role:", error);
-      toast.error("Error al actualizar el rol: " + error.message);
     }
   };
-  
-  const promoteSuperAdmin = async (userId: string) => {
-    await updateUserRole(userId, 'super_admin');
-  };
-
-  // Check if current user can modify roles (must be admin or super_admin)
-  const canModifyRoles = currentUserRole === 'admin' || currentUserRole === 'super_admin';
   
   const columns = [
     {
       header: "Usuario",
       accessorKey: "username",
-      cell: ({ row }: { row: { original: UserWithRole } }) => (
-        <div>
-          <p className="font-medium">
-            {row.original.username || "Sin nombre de usuario"}
-            {row.original.isDemo && <span className="ml-2 text-xs text-gray-500">(Demo)</span>}
-          </p>
-        </div>
-      )
+      cell: ({ row }: { row: { original: UserWithRole } }) => {
+        const user = row.original;
+        return UserRow({ 
+          user, 
+          currentUserId: currentUser?.id, 
+          currentUserRole, 
+          onRoleUpdate: handleRoleUpdate 
+        }).username;
+      }
     },
     {
       header: "Correo electrónico",
       accessorKey: "email",
-      cell: ({ row }: { row: { original: UserWithRole } }) => (
-        <div>
-          <p className="text-sm">{row.original.email}</p>
-        </div>
-      )
+      cell: ({ row }: { row: { original: UserWithRole } }) => {
+        const user = row.original;
+        return UserRow({ 
+          user, 
+          currentUserId: currentUser?.id, 
+          currentUserRole, 
+          onRoleUpdate: handleRoleUpdate 
+        }).email;
+      }
     },
     {
       header: "Rol",
       accessorKey: "role",
       cell: ({ row }: { row: { original: UserWithRole } }) => {
         const user = row.original;
-        const isSuperAdmin = user.role === "super_admin";
-        const isCurrentUser = currentUser?.id === user.id;
-        const isThinkia = user.username === "thinkia";
-        const isDemo = user.isDemo === true;
-        
-        // Always show super admin badge with icon
-        if (isSuperAdmin) {
-          return (
-            <Badge variant="destructive" className="flex items-center gap-1">
-              <Shield size={12} />
-              super_admin
-            </Badge>
-          );
-        }
-        
-        // Special case for thinkia user - add promote button if not super admin
-        if (isThinkia && !isSuperAdmin) {
-          return (
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{user.role}</Badge>
-              <Button 
-                size="sm" 
-                variant="destructive" 
-                onClick={() => promoteSuperAdmin(user.id)}
-              >
-                Promover a Super Admin
-              </Button>
-            </div>
-          );
-        }
-        
-        // Show badge for demo users, current user, or if user can't modify roles
-        if (isDemo || isCurrentUser || !canModifyRoles) {
-          return <Badge variant="outline">{user.role}</Badge>;
-        }
-        
-        // For other users, show a select dropdown to change role
-        return (
-          <Select
-            defaultValue={user.role}
-            onValueChange={(value: "super_admin" | "admin" | "usuario") => {
-              updateUserRole(user.id, value);
-            }}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder={user.role} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="usuario">Usuario</SelectItem>
-              <SelectItem value="admin">Admin</SelectItem>
-              <SelectItem value="super_admin">Super Admin</SelectItem>
-            </SelectContent>
-          </Select>
-        );
+        return UserRow({ 
+          user, 
+          currentUserId: currentUser?.id, 
+          currentUserRole, 
+          onRoleUpdate: handleRoleUpdate 
+        }).role;
       }
     }
   ];
