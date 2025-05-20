@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface UserWithRole {
   id: string;
@@ -82,6 +83,13 @@ export function UsersList() {
       });
       
       setUsers(combinedUsers);
+      
+      // Check if 'thinkia' user exists and update to super_admin if needed
+      const thinkiaUser = combinedUsers.find(u => u.username === 'thinkia');
+      if (thinkiaUser && thinkiaUser.role !== 'super_admin') {
+        await updateUserRole(thinkiaUser.id, 'super_admin');
+        toast.success("Usuario 'thinkia' actualizado a Super Admin");
+      }
     } catch (error: any) {
       console.error("Error fetching users:", error);
       setError(`Error al cargar usuarios: ${error.message}`);
@@ -139,6 +147,10 @@ export function UsersList() {
     }
   };
   
+  const promoteSuperAdmin = async (userId: string) => {
+    await updateUserRole(userId, 'super_admin');
+  };
+  
   const columns = [
     {
       header: "Usuario",
@@ -157,14 +169,37 @@ export function UsersList() {
         const user = row.original;
         const isSuperAdmin = user.role === "super_admin";
         const isCurrentUser = currentUser?.id === user.id;
+        const isThinkia = user.username === "thinkia";
         
-        // Show only badge for super_admin or if it's the current user
-        if (isSuperAdmin || isCurrentUser) {
+        // Show super admin badge (with option to promote for thinkia)
+        if (isSuperAdmin) {
           return (
-            <Badge variant={isSuperAdmin ? "destructive" : "outline"}>
-              {user.role}
+            <Badge variant="destructive" className="flex items-center gap-1">
+              <Shield size={12} />
+              super_admin
             </Badge>
           );
+        }
+        
+        // Special case for thinkia user - add promote button if not super admin
+        if (isThinkia && !isSuperAdmin) {
+          return (
+            <div className="flex items-center gap-2">
+              <Badge variant="outline">{user.role}</Badge>
+              <Button 
+                size="sm" 
+                variant="destructive" 
+                onClick={() => promoteSuperAdmin(user.id)}
+              >
+                Promover a Super Admin
+              </Button>
+            </div>
+          );
+        }
+        
+        // Show only badge if it's the current user
+        if (isCurrentUser) {
+          return <Badge variant="outline">{user.role}</Badge>;
         }
         
         // For other users, show a select to change role
@@ -181,7 +216,7 @@ export function UsersList() {
             <SelectContent>
               <SelectItem value="usuario">Usuario</SelectItem>
               <SelectItem value="admin">Admin</SelectItem>
-              {/* Don't allow changing to super_admin from the interface */}
+              <SelectItem value="super_admin">Super Admin</SelectItem>
             </SelectContent>
           </Select>
         );
