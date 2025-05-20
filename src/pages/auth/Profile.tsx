@@ -9,6 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/componen
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Layout from "@/components/layout/Layout";
+import { Badge } from "@/components/ui/badge";
 
 interface ProfileFormValues {
   username: string;
@@ -22,7 +23,7 @@ interface ProfileData {
 }
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
@@ -94,6 +95,22 @@ export default function Profile() {
     }
   };
 
+  // Función para mostrar el rol de usuario con estilo apropiado
+  const getRoleBadge = () => {
+    if (!userRole) return null;
+    
+    let color = "bg-gray-500";
+    if (userRole === 'super_admin') color = "bg-red-500";
+    else if (userRole === 'admin') color = "bg-blue-500";
+    
+    return (
+      <Badge className={`${color} text-white`}>
+        {userRole === 'super_admin' ? 'Super Administrador' : 
+         userRole === 'admin' ? 'Administrador' : 'Usuario'}
+      </Badge>
+    );
+  };
+
   if (isLoading) {
     return <Layout><div className="flex justify-center p-6">Cargando perfil...</div></Layout>;
   }
@@ -104,8 +121,9 @@ export default function Profile() {
         <h1 className="text-3xl font-bold mb-6">Mi perfil</h1>
         
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Información personal</CardTitle>
+            {getRoleBadge()}
           </CardHeader>
           <CardContent>
             <Form {...form}>

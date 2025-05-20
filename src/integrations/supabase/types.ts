@@ -231,6 +231,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       whatsapp_convers_ids: {
         Row: {
           conversation_id: string | null
@@ -272,6 +293,17 @@ export type Database = {
           count: number
         }[]
       }
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      has_role: {
+        Args: {
+          _user_id: string
+          _role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: boolean
+      }
       process_existing_messages: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -284,6 +316,7 @@ export type Database = {
         | "Soporte Técnico"
         | "Presupuestos"
         | "Colaboraciones"
+      user_role: "super_admin" | "admin" | "usuario"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -406,6 +439,7 @@ export const Constants = {
         "Presupuestos",
         "Colaboraciones",
       ],
+      user_role: ["super_admin", "admin", "usuario"],
     },
   },
 } as const

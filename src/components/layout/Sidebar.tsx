@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export function Sidebar() {
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user, signOut, hasRole } = useAuth();
   const [username, setUsername] = useState<string | null>(null);
 
   useEffect(() => {
@@ -77,24 +77,33 @@ export function Sidebar() {
             <SidebarMenu>
               <SidebarNavItem icon={<GitCompareArrows size={20} />} label="Derivaciones" to="/derivaciones" isActive={location.pathname === '/derivaciones'} />
               <SidebarNavItem icon={<LineChart size={20} />} label="Insights de Productos" to="/insights" isActive={location.pathname === '/insights'} />
-              <SidebarNavItem icon={<Bot size={20} />} label="IA sobre las conversaciones" to="/ia-chat" isActive={location.pathname === '/ia-chat'} disabled />
+              {hasRole('super_admin') && (
+                <SidebarNavItem 
+                  icon={<Bot size={20} />} 
+                  label="IA sobre las conversaciones" 
+                  to="/ia-chat" 
+                  isActive={location.pathname === '/ia-chat'} 
+                />
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
         
-        <SidebarGroup>
-          <SidebarGroupLabel>Gestión</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarNavItem 
-                icon={<Package size={20} />} 
-                label="Productos" 
-                to="/productos" 
-                isActive={location.pathname === '/productos'} 
-              />
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {hasRole('admin') && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Gestión</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarNavItem 
+                  icon={<Package size={20} />} 
+                  label="Productos" 
+                  to="/productos" 
+                  isActive={location.pathname === '/productos'} 
+                />
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {user && (
           <SidebarGroup>

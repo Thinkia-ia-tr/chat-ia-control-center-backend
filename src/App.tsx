@@ -17,6 +17,7 @@ import Register from "./pages/auth/Register";
 import Profile from "./pages/auth/Profile";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import RoleProtectedRoute from "./components/auth/RoleProtectedRoute";
 import { useReferralEmails } from "./hooks/useReferralEmails";
 
 const queryClient = new QueryClient();
@@ -37,14 +38,27 @@ const App = () => {
               <Route path="/auth/login" element={<Login />} />
               <Route path="/auth/register" element={<Register />} />
               
-              {/* Rutas protegidas - requieren autenticación */}
+              {/* Rutas protegidas - requieren autenticación básica */}
               <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/conversaciones" element={<ProtectedRoute><Conversations /></ProtectedRoute>} />
               <Route path="/conversaciones/:id" element={<ProtectedRoute><ConversationDetail /></ProtectedRoute>} />
               <Route path="/derivaciones" element={<ProtectedRoute><Referrals /></ProtectedRoute>} />
               <Route path="/insights" element={<ProtectedRoute><ProductInsights /></ProtectedRoute>} />
-              <Route path="/productos" element={<ProtectedRoute><ProductManagement /></ProtectedRoute>} />
-              <Route path="/ia-chat" element={<ProtectedRoute><AIChat /></ProtectedRoute>} />
+              
+              {/* Rutas que requieren rol de administrador o superior */}
+              <Route path="/productos" element={
+                <RoleProtectedRoute requiredRole="admin">
+                  <ProductManagement />
+                </RoleProtectedRoute>
+              } />
+              
+              {/* Rutas que requieren rol de super administrador */}
+              <Route path="/ia-chat" element={
+                <RoleProtectedRoute requiredRole="super_admin">
+                  <AIChat />
+                </RoleProtectedRoute>
+              } />
+              
               <Route path="/perfil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               
               {/* Redirección a login y página no encontrada */}
