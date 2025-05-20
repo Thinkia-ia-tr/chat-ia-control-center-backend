@@ -135,8 +135,9 @@ export function ConversationDetail({
     }
   };
 
-  const handleBackToList = () => {
-    navigate("/conversaciones");
+  const handleBackButton = () => {
+    // Go back to the previous page in history
+    navigate(-1);
   };
 
   // Function to get the appropriate sender name
@@ -202,11 +203,11 @@ export function ConversationDetail({
         <Button 
           variant="default" 
           size="sm" 
-          onClick={handleBackToList}
+          onClick={handleBackButton}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Volver a conversaciones
+          Volver
         </Button>
       </div>
 
@@ -265,11 +266,11 @@ export function ConversationDetail({
         <Button 
           variant="default" 
           size="sm" 
-          onClick={handleBackToList}
+          onClick={handleBackButton}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Volver a conversaciones
+          Volver
         </Button>
       </div>
     </div>
