@@ -38,7 +38,7 @@ const App = () => {
               <Route path="/auth/login" element={<Login />} />
               <Route path="/auth/register" element={<Register />} />
               
-              {/* Rutas protegidas - requieren autenticación básica */}
+              {/* Rutas protegidas - requieren autenticación básica (cualquier rol puede acceder) */}
               <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/conversaciones" element={<ProtectedRoute><Conversations /></ProtectedRoute>} />
               <Route path="/conversaciones/:id" element={<ProtectedRoute><ConversationDetail /></ProtectedRoute>} />

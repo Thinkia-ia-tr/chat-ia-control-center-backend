@@ -61,6 +61,7 @@ export function Sidebar() {
       </div>
       
       <SidebarContent>
+        {/* Todos los usuarios pueden ver el apartado de Chatbot con IA */}
         <SidebarGroup>
           <SidebarGroupLabel>Chatbot con IA</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -71,12 +72,14 @@ export function Sidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {/* Todos los usuarios pueden ver el Panel de Inteligencia */}
         <SidebarGroup>
           <SidebarGroupLabel>Panel de inteligencia</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarNavItem icon={<GitCompareArrows size={20} />} label="Derivaciones" to="/derivaciones" isActive={location.pathname === '/derivaciones'} />
               <SidebarNavItem icon={<LineChart size={20} />} label="Insights de Productos" to="/insights" isActive={location.pathname === '/insights'} />
+              {/* Solo Super Administradores pueden ver IA sobre las conversaciones */}
               {hasRole('super_admin') && (
                 <SidebarNavItem 
                   icon={<Bot size={20} />} 
@@ -89,6 +92,7 @@ export function Sidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
         
+        {/* Solo los administradores y super administradores pueden ver Gestión */}
         {hasRole('admin') && (
           <SidebarGroup>
             <SidebarGroupLabel>Gestión</SidebarGroupLabel>
@@ -105,6 +109,7 @@ export function Sidebar() {
           </SidebarGroup>
         )}
 
+        {/* Todos los usuarios pueden gestionar su cuenta */}
         {user && (
           <SidebarGroup>
             <SidebarGroupLabel>Cuenta</SidebarGroupLabel>
