@@ -36,8 +36,8 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
       cell: ({ row }: { row: { original: ProductMention } }) => (
         <div className="flex items-center">
           <Badge 
-            variant="secondary"
-            className="flex items-center gap-1.5 py-1 px-2 font-medium bg-secondary/60 text-secondary-foreground hover:bg-secondary/80"
+            variant="default"
+            className="flex items-center gap-1.5 py-1 px-2 font-medium bg-primary/70 hover:bg-primary/90 text-primary-foreground"
           >
             <Tag className="h-3.5 w-3.5" />
             {row.original.product_name}
