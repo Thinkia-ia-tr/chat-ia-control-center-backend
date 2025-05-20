@@ -15,7 +15,33 @@ interface UserWithRole {
   email: string;
   username: string | null;
   role: "super_admin" | "admin" | "usuario";
+  isDemo?: boolean;
 }
+
+// Usuarios de demostración definidos manualmente
+const demoUsers: UserWithRole[] = [
+  {
+    id: "demo-user-1",
+    email: "user@demo.local",
+    username: "User Demo",
+    role: "usuario",
+    isDemo: true
+  },
+  {
+    id: "demo-user-2",
+    email: "operaciones@behumax.com",
+    username: "Nacho Tribiño",
+    role: "admin",
+    isDemo: true
+  },
+  {
+    id: "demo-user-3",
+    email: "marketing@behumax.com",
+    username: "Martín Delgado",
+    role: "admin",
+    isDemo: true
+  }
+];
 
 export function UsersList() {
   const [users, setUsers] = useState<UserWithRole[]>([]);
@@ -35,37 +61,38 @@ export function UsersList() {
         
       if (profilesError) throw profilesError;
       
-      if (!profilesData || profilesData.length === 0) {
-        setUsers([]);
-        return;
+      let combinedUsers: UserWithRole[] = [];
+      
+      if (profilesData && profilesData.length > 0) {
+        // Fetch roles separately
+        const { data: rolesData, error: rolesError } = await supabase
+          .from('user_roles')
+          .select('*');
+        
+        if (rolesError) {
+          console.error("Error fetching roles:", rolesError);
+        }
+        
+        // Combine the data
+        combinedUsers = profilesData.map(profile => {
+          // Type assertion since we know the structure
+          const typedProfile = profile as { id: string; username: string | null; email: string | null };
+          
+          // Find role for this user
+          const roleRecord = rolesData?.find(r => r.user_id === typedProfile.id);
+          
+          return {
+            id: typedProfile.id,
+            username: typedProfile.username,
+            email: typedProfile.email || "No disponible",
+            role: (roleRecord?.role as "super_admin" | "admin" | "usuario") || "usuario"
+          };
+        });
       }
       
-      // Fetch roles separately
-      const { data: rolesData, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('*');
-      
-      if (rolesError) {
-        console.error("Error fetching roles:", rolesError);
-      }
-      
-      // Combine the data
-      const combinedUsers: UserWithRole[] = profilesData.map(profile => {
-        // Type assertion since we know the structure
-        const typedProfile = profile as { id: string; username: string | null; email: string | null };
-        
-        // Find role for this user
-        const roleRecord = rolesData?.find(r => r.user_id === typedProfile.id);
-        
-        return {
-          id: typedProfile.id,
-          username: typedProfile.username,
-          email: typedProfile.email || "No disponible",
-          role: (roleRecord?.role as "super_admin" | "admin" | "usuario") || "usuario"
-        };
-      });
-      
-      setUsers(combinedUsers);
+      // Añadir los usuarios de demostración a la lista
+      const allUsers = [...combinedUsers, ...demoUsers];
+      setUsers(allUsers);
       
       // Check if 'thinkia' user exists and update to super_admin if needed
       const thinkiaUser = combinedUsers.find(u => u.username === 'thinkia');
@@ -87,6 +114,12 @@ export function UsersList() {
   }, []);
   
   const updateUserRole = async (userId: string, newRole: "super_admin" | "admin" | "usuario") => {
+    // No actualizar roles para usuarios de demostración
+    if (userId.startsWith('demo-user-')) {
+      toast.error("No se puede cambiar el rol de usuarios de demostración");
+      return;
+    }
+    
     try {
       // First check if the user has a role assigned
       const { data: existingRole, error: checkError } = await supabase
@@ -143,7 +176,10 @@ export function UsersList() {
       accessorKey: "username",
       cell: ({ row }: { row: { original: UserWithRole } }) => (
         <div>
-          <p className="font-medium">{row.original.username || "Sin nombre de usuario"}</p>
+          <p className="font-medium">
+            {row.original.username || "Sin nombre de usuario"}
+            {row.original.isDemo && <span className="ml-2 text-xs text-gray-500">(Demo)</span>}
+          </p>
         </div>
       )
     },
@@ -164,6 +200,7 @@ export function UsersList() {
         const isSuperAdmin = user.role === "super_admin";
         const isCurrentUser = currentUser?.id === user.id;
         const isThinkia = user.username === "thinkia";
+        const isDemo = user.isDemo === true;
         
         // Always show super admin badge with icon
         if (isSuperAdmin) {
@@ -191,8 +228,8 @@ export function UsersList() {
           );
         }
         
-        // Show badge for current user or if user can't modify roles
-        if (isCurrentUser || !canModifyRoles) {
+        // Show badge for demo users, current user, or if user can't modify roles
+        if (isDemo || isCurrentUser || !canModifyRoles) {
           return <Badge variant="outline">{user.role}</Badge>;
         }
         
