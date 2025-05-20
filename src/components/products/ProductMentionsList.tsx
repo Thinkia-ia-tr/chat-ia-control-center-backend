@@ -50,11 +50,11 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
       header: "Conversación",
       accessorKey: "conversation_title",
       cell: ({ row }: { row: { original: ProductMention } }) => (
-        <div className="max-w-xs truncate flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full pr-3">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="truncate cursor-help">{row.original.conversation_title}</span>
+                <span className="truncate cursor-help flex-grow">{row.original.conversation_title}</span>
               </TooltipTrigger>
               <TooltipContent>
                 <p>{row.original.conversation_title}</p>
@@ -68,7 +68,7 @@ export function ProductMentionsList({ startDate, endDate }: ProductMentionsListP
               e.stopPropagation();
               navigate(`/conversaciones/${row.original.conversation_id}`);
             }}
-            className="h-6 w-6"
+            className="h-6 w-6 flex-shrink-0"
           >
             <ExternalLink className="h-4 w-4" />
           </Button>
