@@ -1,6 +1,6 @@
-
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
+import { DIFY_CONFIG } from '@/config/dify';
 
 interface DifyMessage {
   id: string;
@@ -25,15 +25,15 @@ export function useDifyAPI() {
   const [conversationMessages, setConversationMessages] = useState<DifyMessage[]>([]);
   const { toast } = useToast();
 
-  const fetchConversationMessages = async (conversationId: string, userId: string, apiKey: string) => {
+  const fetchConversationMessages = async (conversationId: string, userId: string) => {
     setIsLoading(true);
     try {
-      const url = `https://api.dify.ai/v1/messages?conversation_id=${conversationId}&user=${userId}`;
+      const url = `${DIFY_CONFIG.BASE_URL}/messages?conversation_id=${conversationId}&user=${userId}`;
       
       const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
+          'Authorization': `Bearer ${DIFY_CONFIG.API_KEY}`,
           'Content-Type': 'application/json',
         },
       });

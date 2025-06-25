@@ -1,4 +1,3 @@
-
 import { ConversationsList } from "@/components/conversations/ConversationsList";
 import Layout from "@/components/layout/Layout";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
@@ -64,7 +63,6 @@ export default function ConversationsPage() {
         <DifyConversationsDialog 
           open={isDifyConversationsDialogOpen} 
           onOpenChange={setIsDifyConversationsDialogOpen}
-          apiKey="app-DToY7yxKG1CYtex1IVs60m1n"
         />
       </div>
     </Layout>

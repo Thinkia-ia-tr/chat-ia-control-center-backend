@@ -21,7 +21,6 @@ interface DifyAPIDialogProps {
 }
 
 export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
-  const [apiKey, setApiKey] = useState('');
   const [conversationId, setConversationId] = useState('');
   const [userId, setUserId] = useState('');
   const { isLoading, conversationMessages, fetchConversationMessages, clearConversationMessages } = useDifyAPI();
@@ -29,12 +28,12 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!apiKey.trim() || !conversationId.trim() || !userId.trim()) {
+    if (!conversationId.trim() || !userId.trim()) {
       return;
     }
 
     try {
-      await fetchConversationMessages(conversationId.trim(), userId.trim(), apiKey.trim());
+      await fetchConversationMessages(conversationId.trim(), userId.trim());
     } catch (error) {
       // Error handling is done in the hook
     }
@@ -42,7 +41,6 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
 
   const handleClose = () => {
     clearConversationMessages();
-    setApiKey('');
     setConversationId('');
     setUserId('');
     onOpenChange(false);
@@ -57,23 +55,11 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
             Recuperar Historial de Conversación de Dify
           </DialogTitle>
           <DialogDescription>
-            Ingresa tu API Key de Dify, el ID de la conversación y el ID del usuario para obtener el historial completo de mensajes.
+            Ingresa el ID de la conversación y el ID del usuario para obtener el historial completo de mensajes.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="apiKey">API Key de Dify</Label>
-            <Input
-              id="apiKey"
-              type="password"
-              placeholder="Bearer token..."
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              required
-            />
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="conversationId">ID de la Conversación</Label>
             <Input
@@ -105,7 +91,7 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
             <Button type="button" variant="outline" onClick={handleClose}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading || !apiKey.trim() || !conversationId.trim() || !userId.trim()}>
+            <Button type="submit" disabled={isLoading || !conversationId.trim() || !userId.trim()}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

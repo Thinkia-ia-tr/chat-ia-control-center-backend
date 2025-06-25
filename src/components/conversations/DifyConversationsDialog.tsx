@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import {
   Dialog,
@@ -17,17 +16,16 @@ import { Badge } from '@/components/ui/badge';
 interface DifyConversationsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  apiKey: string;
 }
 
-export function DifyConversationsDialog({ open, onOpenChange, apiKey }: DifyConversationsDialogProps) {
+export function DifyConversationsDialog({ open, onOpenChange }: DifyConversationsDialogProps) {
   const { isLoading, conversations, fetchDifyConversations, clearConversations } = useDifyConversations();
 
   useEffect(() => {
-    if (open && apiKey) {
-      fetchDifyConversations(apiKey);
+    if (open) {
+      fetchDifyConversations();
     }
-  }, [open, apiKey]);
+  }, [open]);
 
   const handleClose = () => {
     clearConversations();
