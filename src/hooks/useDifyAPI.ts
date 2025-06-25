@@ -2,20 +2,34 @@
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 
-interface DifySuggestedQuestionsResponse {
-  data: string[];
+interface DifyMessage {
+  id: string;
+  conversation_id: string;
+  inputs: Record<string, any>;
+  query: string;
+  answer: string;
+  message_files: any[];
+  feedback: any;
+  retriever_resources: any[];
+  created_at: number;
+}
+
+interface DifyConversationResponse {
+  data: DifyMessage[];
+  has_more: boolean;
+  limit: number;
 }
 
 export function useDifyAPI() {
   const [isLoading, setIsLoading] = useState(false);
-  const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
+  const [conversationMessages, setConversationMessages] = useState<DifyMessage[]>([]);
   const { toast } = useToast();
 
-  const fetchSuggestedQuestions = async (conversationId: string, apiKey: string) => {
+  const fetchConversationMessages = async (conversationId: string, apiKey: string) => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://api.dify.ai/v1/chat-messages/suggested-questions?conversation_id=${conversationId}`,
+        `https://api.dify.ai/v1/conversations/${conversationId}/messages`,
         {
           method: 'GET',
           headers: {
@@ -29,20 +43,20 @@ export function useDifyAPI() {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
-      const data: DifySuggestedQuestionsResponse = await response.json();
-      setSuggestedQuestions(data.data || []);
+      const data: DifyConversationResponse = await response.json();
+      setConversationMessages(data.data || []);
       
       toast({
         title: "Éxito",
-        description: `Se encontraron ${data.data?.length || 0} preguntas sugeridas`,
+        description: `Se encontraron ${data.data?.length || 0} mensajes en la conversación`,
       });
 
       return data.data;
     } catch (error) {
-      console.error('Error fetching suggested questions:', error);
+      console.error('Error fetching conversation messages:', error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Error al obtener las preguntas sugeridas",
+        description: error instanceof Error ? error.message : "Error al obtener los mensajes de la conversación",
         variant: "destructive"
       });
       throw error;
@@ -51,14 +65,14 @@ export function useDifyAPI() {
     }
   };
 
-  const clearSuggestedQuestions = () => {
-    setSuggestedQuestions([]);
+  const clearConversationMessages = () => {
+    setConversationMessages([]);
   };
 
   return {
     isLoading,
-    suggestedQuestions,
-    fetchSuggestedQuestions,
-    clearSuggestedQuestions
+    conversationMessages,
+    fetchConversationMessages,
+    clearConversationMessages
   };
 }

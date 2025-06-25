@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, MessageSquare } from 'lucide-react';
 import { useDifyAPI } from '@/hooks/useDifyAPI';
-import { DifySuggestedQuestions } from './DifySuggestedQuestions';
+import { DifyConversationMessages } from './DifyConversationMessages';
 
 interface DifyAPIDialogProps {
   open: boolean;
@@ -23,7 +23,7 @@ interface DifyAPIDialogProps {
 export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
   const [apiKey, setApiKey] = useState('');
   const [conversationId, setConversationId] = useState('');
-  const { isLoading, suggestedQuestions, fetchSuggestedQuestions, clearSuggestedQuestions } = useDifyAPI();
+  const { isLoading, conversationMessages, fetchConversationMessages, clearConversationMessages } = useDifyAPI();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,34 +33,29 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
     }
 
     try {
-      await fetchSuggestedQuestions(conversationId.trim(), apiKey.trim());
+      await fetchConversationMessages(conversationId.trim(), apiKey.trim());
     } catch (error) {
       // Error handling is done in the hook
     }
   };
 
   const handleClose = () => {
-    clearSuggestedQuestions();
+    clearConversationMessages();
     setApiKey('');
     setConversationId('');
     onOpenChange(false);
   };
 
-  const handleQuestionClick = (question: string) => {
-    console.log('Pregunta seleccionada:', question);
-    // Aquí podrías implementar lógica adicional para manejar la pregunta seleccionada
-  };
-
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
             Recuperar Conversaciones de Dify
           </DialogTitle>
           <DialogDescription>
-            Ingresa tu API Key de Dify y el ID de la conversación para obtener las preguntas sugeridas.
+            Ingresa tu API Key de Dify y el ID de la conversación para obtener el historial completo de mensajes.
           </DialogDescription>
         </DialogHeader>
 
@@ -88,7 +83,7 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
               required
             />
             <p className="text-xs text-muted-foreground">
-              Este debe ser el ID de la conversación en Dify.
+              Este debe ser el ID de la conversación en Dify para obtener su historial completo.
             </p>
           </div>
 
@@ -103,18 +98,17 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
                   Obteniendo...
                 </>
               ) : (
-                'Obtener Preguntas'
+                'Obtener Mensajes'
               )}
             </Button>
           </DialogFooter>
         </form>
 
-        {suggestedQuestions.length > 0 && (
+        {conversationMessages.length > 0 && (
           <div className="mt-6">
-            <DifySuggestedQuestions 
-              questions={suggestedQuestions}
+            <DifyConversationMessages 
+              messages={conversationMessages}
               conversationId={conversationId}
-              onQuestionClick={handleQuestionClick}
             />
           </div>
         )}
