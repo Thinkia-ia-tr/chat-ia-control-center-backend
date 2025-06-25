@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -71,8 +72,8 @@ export function ConversationDetail({
   const conversation = propConversation || conversationData?.conversation;
   const messages = propMessages.length > 0 ? propMessages : conversationData?.messages || [];
   const title = propTitle || conversationData?.conversation?.title || 'Conversación';
-  const date = propDate || (conversationData?.conversation?.created_at ? 
-    new Date(conversationData.conversation.created_at).toLocaleDateString() : '');
+  const date = propDate || (conversationData?.conversation?.date ? 
+    new Date(conversationData.conversation.date).toLocaleDateString() : '');
 
   useEffect(() => {
     if (!id) {
