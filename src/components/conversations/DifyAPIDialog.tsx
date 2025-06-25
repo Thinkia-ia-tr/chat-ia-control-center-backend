@@ -22,18 +22,18 @@ interface DifyAPIDialogProps {
 
 export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
   const [apiKey, setApiKey] = useState('');
-  const [messageId, setMessageId] = useState('');
+  const [conversationId, setConversationId] = useState('');
   const { isLoading, suggestedQuestions, fetchSuggestedQuestions, clearSuggestedQuestions } = useDifyAPI();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!apiKey.trim() || !messageId.trim()) {
+    if (!apiKey.trim() || !conversationId.trim()) {
       return;
     }
 
     try {
-      await fetchSuggestedQuestions(messageId.trim(), apiKey.trim());
+      await fetchSuggestedQuestions(conversationId.trim(), apiKey.trim());
     } catch (error) {
       // Error handling is done in the hook
     }
@@ -42,7 +42,7 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
   const handleClose = () => {
     clearSuggestedQuestions();
     setApiKey('');
-    setMessageId('');
+    setConversationId('');
     onOpenChange(false);
   };
 
@@ -60,7 +60,7 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
             Recuperar Conversaciones de Dify
           </DialogTitle>
           <DialogDescription>
-            Ingresa tu API Key de Dify y el ID del último mensaje para obtener las preguntas sugeridas.
+            Ingresa tu API Key de Dify y el ID de la conversación para obtener las preguntas sugeridas.
           </DialogDescription>
         </DialogHeader>
 
@@ -78,17 +78,17 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="messageId">ID del Mensaje</Label>
+            <Label htmlFor="conversationId">ID de la Conversación</Label>
             <Input
-              id="messageId"
+              id="conversationId"
               type="text"
-              placeholder="abc123..."
-              value={messageId}
-              onChange={(e) => setMessageId(e.target.value)}
+              placeholder="conversation-id-123..."
+              value={conversationId}
+              onChange={(e) => setConversationId(e.target.value)}
               required
             />
             <p className="text-xs text-muted-foreground">
-              Este debe ser el ID del último mensaje enviado por el usuario en la conversación.
+              Este debe ser el ID de la conversación en Dify.
             </p>
           </div>
 
@@ -96,7 +96,7 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
             <Button type="button" variant="outline" onClick={handleClose}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading || !apiKey.trim() || !messageId.trim()}>
+            <Button type="submit" disabled={isLoading || !apiKey.trim() || !conversationId.trim()}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -113,7 +113,7 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
           <div className="mt-6">
             <DifySuggestedQuestions 
               questions={suggestedQuestions}
-              messageId={messageId}
+              conversationId={conversationId}
               onQuestionClick={handleQuestionClick}
             />
           </div>

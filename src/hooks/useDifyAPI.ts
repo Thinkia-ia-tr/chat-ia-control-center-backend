@@ -11,11 +11,11 @@ export function useDifyAPI() {
   const [suggestedQuestions, setSuggestedQuestions] = useState<string[]>([]);
   const { toast } = useToast();
 
-  const fetchSuggestedQuestions = async (messageId: string, apiKey: string) => {
+  const fetchSuggestedQuestions = async (conversationId: string, apiKey: string) => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `https://api.dify.ai/v1/chat-messages/suggested-questions?message_id=${messageId}`,
+        `https://api.dify.ai/v1/chat-messages/suggested-questions?conversation_id=${conversationId}`,
         {
           method: 'GET',
           headers: {

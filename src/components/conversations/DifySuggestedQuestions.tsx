@@ -6,13 +6,13 @@ import { MessageSquare } from 'lucide-react';
 
 interface DifySuggestedQuestionsProps {
   questions: string[];
-  messageId?: string;
+  conversationId?: string;
   onQuestionClick?: (question: string) => void;
 }
 
 export function DifySuggestedQuestions({ 
   questions, 
-  messageId,
+  conversationId,
   onQuestionClick 
 }: DifySuggestedQuestionsProps) {
   if (questions.length === 0) {
@@ -39,9 +39,9 @@ export function DifySuggestedQuestions({
           Preguntas Sugeridas de Dify
         </CardTitle>
         <CardDescription>
-          {messageId && (
+          {conversationId && (
             <span className="text-xs text-muted-foreground">
-              Basado en el mensaje: {messageId}
+              Basado en la conversación: {conversationId}
             </span>
           )}
         </CardDescription>
