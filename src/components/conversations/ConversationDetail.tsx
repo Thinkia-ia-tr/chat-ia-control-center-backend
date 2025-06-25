@@ -5,18 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Phone, UserSquare } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import type { Message, Conversation } from "./types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
+import { useConversationDetails } from "@/hooks/useConversationDetails";
 
 interface ConversationDetailProps {
-  title: string;
-  date: string;
-  messages: Message[];
-  conversation: Conversation;
+  title?: string;
+  date?: string;
+  messages?: Message[];
+  conversation?: Conversation;
 }
 
 // Function to shorten UUID for display while keeping full value in tooltip
@@ -51,18 +52,35 @@ const generateContextualResponse = (clientMessage: string, productName: string):
 };
 
 export function ConversationDetail({
-  title,
-  date,
-  messages = [],
-  conversation
+  title: propTitle,
+  date: propDate,
+  messages: propMessages = [],
+  conversation: propConversation
 }: ConversationDetailProps) {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
   const [productsList, setProductsList] = useState<{id: string, name: string}[]>([]);
-  const [processedMessages, setProcessedMessages] = useState<Message[]>(messages);
-  const [updatedTitle, setUpdatedTitle] = useState<string>(title);
+  const [processedMessages, setProcessedMessages] = useState<Message[]>(propMessages);
+  const [updatedTitle, setUpdatedTitle] = useState<string>(propTitle || '');
+
+  // Use the hook to fetch conversation details if not provided as props
+  const { data: conversationData, isLoading, error } = useConversationDetails(id || '');
+
+  // Determine which data to use - props take precedence, then fetched data
+  const conversation = propConversation || conversationData?.conversation;
+  const messages = propMessages.length > 0 ? propMessages : conversationData?.messages || [];
+  const title = propTitle || conversationData?.conversation?.title || 'Conversación';
+  const date = propDate || (conversationData?.conversation?.created_at ? 
+    new Date(conversationData.conversation.created_at).toLocaleDateString() : '');
 
   useEffect(() => {
+    if (!id) {
+      console.error('No conversation ID provided');
+      navigate('/conversaciones');
+      return;
+    }
+
     // Cargar productos desde la base de datos
     const fetchProducts = async () => {
       try {
@@ -93,7 +111,7 @@ export function ConversationDetail({
     };
 
     fetchProducts();
-  }, [messages, title]);
+  }, [id, messages, title, navigate, toast]);
 
   // Procesar mensajes para incluir menciones a productos
   const processMessages = (products: {id: string, name: string}[]) => {
@@ -197,6 +215,27 @@ export function ConversationDetail({
     );
   };
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-muted-foreground">Cargando conversación...</div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="flex flex-col items-center gap-4 h-64 justify-center">
+        <div className="text-destructive">Error al cargar la conversación</div>
+        <Button onClick={() => navigate('/conversaciones')}>
+          Volver a conversaciones
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-end">
@@ -213,7 +252,7 @@ export function ConversationDetail({
 
       <div className="flex items-center justify-between border-b border-border pb-4">
         <div>
-          <h2 className="text-xl font-bold mb-1">{updatedTitle}</h2>
+          <h2 className="text-xl font-bold mb-1">{updatedTitle || title}</h2>
           <div className="text-sm text-muted-foreground">{date}</div>
         </div>
         <div className="flex gap-4">
