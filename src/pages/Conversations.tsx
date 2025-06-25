@@ -5,21 +5,31 @@ import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bot } from "lucide-react";
-import { DifyAPIDialog } from "@/components/conversations/DifyAPIDialog";
+import { RefreshCw } from "lucide-react";
+import { useDifySync } from "@/hooks/useDifySync";
 
 export default function ConversationsPage() {
   const now = new Date();
   const oneMonthAgo = new Date(now);
-  oneMonthAgo.setMonth(now.getMonth() - 1); // Un mes por defecto
+  oneMonthAgo.setMonth(now.getMonth() - 1);
   
   const [startDate, setStartDate] = useState<Date>(oneMonthAgo);
   const [endDate, setEndDate] = useState<Date>(now);
-  const [isDifyDialogOpen, setIsDifyDialogOpen] = useState(false);
+  const { isLoading, syncConversationsFromDify } = useDifySync();
   
   const handleDateRangeChange = (start: Date, end: Date) => {
     setStartDate(start);
     setEndDate(end);
+  };
+
+  const handleUpdateConversations = async () => {
+    try {
+      await syncConversationsFromDify();
+      // Opcional: recargar la lista de conversaciones
+      window.location.reload();
+    } catch (error) {
+      // Error ya manejado en el hook
+    }
   };
   
   return (
@@ -34,22 +44,18 @@ export default function ConversationsPage() {
             <div className="flex items-center gap-3">
               <Button
                 variant="outline"
-                onClick={() => setIsDifyDialogOpen(true)}
+                onClick={handleUpdateConversations}
+                disabled={isLoading}
                 className="flex items-center gap-2"
               >
-                <Bot className="h-4 w-4" />
-                Dify API
+                <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
+                {isLoading ? 'Actualizando...' : 'Actualizar conversaciones'}
               </Button>
               <DateRangePicker startDate={startDate} endDate={endDate} onChange={handleDateRangeChange} />
             </div>
           </CardContent>
         </Card>
         <ConversationsList startDate={startDate} endDate={endDate} />
-        
-        <DifyAPIDialog 
-          open={isDifyDialogOpen} 
-          onOpenChange={setIsDifyDialogOpen} 
-        />
       </div>
     </Layout>
   );
