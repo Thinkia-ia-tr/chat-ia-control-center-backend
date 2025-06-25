@@ -44,11 +44,18 @@ export function useDifySync() {
   const syncConversationsFromDify = async () => {
     setIsLoading(true);
     try {
-      console.log('Iniciando sincronización con Dify...');
+      console.log('=== INICIANDO SINCRONIZACIÓN CON DIFY ===');
       console.log('URL de API:', `${DIFY_CONFIG.BASE_URL}/conversations`);
-      console.log('API Key (últimos 4 caracteres):', DIFY_CONFIG.API_KEY.slice(-4));
+      console.log('API Key configurada:', DIFY_CONFIG.API_KEY ? 'Sí' : 'No');
+      console.log('Primeros caracteres de API Key:', DIFY_CONFIG.API_KEY.substring(0, 8));
       
-      // Obtener conversaciones de Dify
+      // Verificar configuración
+      if (!DIFY_CONFIG.API_KEY || !DIFY_CONFIG.BASE_URL) {
+        throw new Error('Configuración de Dify incompleta. Verifica API_KEY y BASE_URL en la configuración.');
+      }
+
+      // Obtener conversaciones de Dify con más detalles de debug
+      console.log('Realizando petición a Dify...');
       const conversationsResponse = await fetch(
         `${DIFY_CONFIG.BASE_URL}/conversations?limit=100`,
         {
@@ -60,24 +67,35 @@ export function useDifySync() {
         }
       );
 
-      console.log('Status de respuesta de conversaciones:', conversationsResponse.status);
+      console.log('Status de respuesta:', conversationsResponse.status);
+      console.log('Headers de respuesta:', Object.fromEntries(conversationsResponse.headers.entries()));
       
       if (!conversationsResponse.ok) {
         const errorText = await conversationsResponse.text();
-        console.error('Error response:', errorText);
-        throw new Error(`Error al obtener conversaciones: ${conversationsResponse.status} - ${errorText}`);
+        console.error('Respuesta de error completa:', errorText);
+        
+        let errorMessage = `Error ${conversationsResponse.status}`;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage += `: ${errorJson.message || errorJson.error || errorText}`;
+        } catch {
+          errorMessage += `: ${errorText}`;
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const conversationsData: DifyConversationsResponse = await conversationsResponse.json();
+      console.log('Respuesta completa de Dify:', JSON.stringify(conversationsData, null, 2));
+      
       const difyConversations = conversationsData.data || [];
-
-      console.log('Respuesta completa de Dify:', conversationsData);
-      console.log(`Encontradas ${difyConversations.length} conversaciones en Dify`);
+      console.log(`Conversaciones encontradas: ${difyConversations.length}`);
 
       if (difyConversations.length === 0) {
+        console.warn('No se encontraron conversaciones en Dify');
         toast({
           title: "Sin conversaciones",
-          description: "No se encontraron conversaciones en Dify. Verifica que existan conversaciones en tu instancia de Dify y que la API key tenga los permisos correctos.",
+          description: "No se encontraron conversaciones en tu instancia de Dify. Asegúrate de que existan conversaciones y que tu API key tenga los permisos correctos.",
           variant: "destructive"
         });
         return { conversationsUpdated: 0, messagesUpdated: 0 };
@@ -88,32 +106,40 @@ export function useDifySync() {
 
       // Procesar cada conversación
       for (const difyConv of difyConversations) {
-        console.log(`Procesando conversación: ${difyConv.id} - ${difyConv.name}`);
+        console.log(`\n--- Procesando conversación ${difyConv.id} ---`);
+        console.log('Nombre:', difyConv.name);
+        console.log('Estado:', difyConv.status);
+        console.log('Creada:', new Date(difyConv.created_at * 1000).toISOString());
         
-        // Insertar o actualizar conversación en Supabase
-        const { error: convError } = await supabase
-          .from('conversations')
-          .upsert({
+        try {
+          // Insertar o actualizar conversación en Supabase
+          const conversationData = {
             id: difyConv.id,
             title: difyConv.name || `Conversación ${difyConv.id.substring(0, 8)}`,
             channel: 'Dify',
             client: { type: 'id', value: 'dify-user' },
             date: new Date(difyConv.created_at * 1000).toISOString(),
             messages: 0 // Se actualizará después
-          }, {
-            onConflict: 'id'
-          });
+          };
 
-        if (convError) {
-          console.error(`Error al insertar conversación ${difyConv.id}:`, convError);
-          continue;
-        }
+          console.log('Insertando conversación en Supabase:', conversationData);
+          
+          const { error: convError } = await supabase
+            .from('conversations')
+            .upsert(conversationData, {
+              onConflict: 'id'
+            });
 
-        conversationsUpdated++;
+          if (convError) {
+            console.error(`Error al insertar conversación ${difyConv.id}:`, convError);
+            continue;
+          }
 
-        // Obtener mensajes de esta conversación desde Dify
-        try {
-          console.log(`Obteniendo mensajes para conversación ${difyConv.id}`);
+          conversationsUpdated++;
+          console.log(`✓ Conversación ${difyConv.id} insertada correctamente`);
+
+          // Obtener mensajes de esta conversación desde Dify
+          console.log(`Obteniendo mensajes para conversación ${difyConv.id}...`);
           
           const messagesResponse = await fetch(
             `${DIFY_CONFIG.BASE_URL}/messages?conversation_id=${difyConv.id}&limit=100`,
@@ -132,80 +158,112 @@ export function useDifySync() {
             const messagesData: DifyMessagesResponse = await messagesResponse.json();
             const difyMessages = messagesData.data || [];
 
-            console.log(`Encontrados ${difyMessages.length} mensajes para conversación ${difyConv.id}`);
+            console.log(`Mensajes encontrados: ${difyMessages.length}`);
+
+            let conversationMessageCount = 0;
 
             // Insertar mensajes en Supabase
             for (const difyMsg of difyMessages) {
-              // Insertar pregunta del usuario
-              if (difyMsg.query) {
+              console.log(`  Procesando mensaje ${difyMsg.id}`);
+              
+              // Insertar pregunta del usuario si existe
+              if (difyMsg.query && difyMsg.query.trim()) {
+                const queryMessage = {
+                  id: `${difyMsg.id}-query`,
+                  conversation_id: difyConv.id,
+                  content: difyMsg.query.trim(),
+                  sender: 'user',
+                  timestamp: new Date(difyMsg.created_at * 1000).toISOString()
+                };
+
                 const { error: queryError } = await supabase
                   .from('messages')
-                  .upsert({
-                    id: `${difyMsg.id}-query`,
-                    conversation_id: difyConv.id,
-                    content: difyMsg.query,
-                    sender: 'user',
-                    timestamp: new Date(difyMsg.created_at * 1000).toISOString()
-                  }, {
+                  .upsert(queryMessage, {
                     onConflict: 'id'
                   });
 
-                if (!queryError) messagesUpdated++;
-                else console.error(`Error al insertar query ${difyMsg.id}:`, queryError);
+                if (!queryError) {
+                  messagesUpdated++;
+                  conversationMessageCount++;
+                  console.log(`    ✓ Query insertada: ${difyMsg.query.substring(0, 50)}...`);
+                } else {
+                  console.error(`    ✗ Error al insertar query:`, queryError);
+                }
               }
 
-              // Insertar respuesta del asistente
-              if (difyMsg.answer) {
+              // Insertar respuesta del asistente si existe
+              if (difyMsg.answer && difyMsg.answer.trim()) {
+                const answerMessage = {
+                  id: `${difyMsg.id}-answer`,
+                  conversation_id: difyConv.id,
+                  content: difyMsg.answer.trim(),
+                  sender: 'assistant',
+                  timestamp: new Date(difyMsg.created_at * 1000 + 1000).toISOString() // +1 segundo
+                };
+
                 const { error: answerError } = await supabase
                   .from('messages')
-                  .upsert({
-                    id: `${difyMsg.id}-answer`,
-                    conversation_id: difyConv.id,
-                    content: difyMsg.answer,
-                    sender: 'assistant',
-                    timestamp: new Date(difyMsg.created_at * 1000 + 1000).toISOString() // +1 segundo para mantener orden
-                  }, {
+                  .upsert(answerMessage, {
                     onConflict: 'id'
                   });
 
-                if (!answerError) messagesUpdated++;
-                else console.error(`Error al insertar answer ${difyMsg.id}:`, answerError);
+                if (!answerError) {
+                  messagesUpdated++;
+                  conversationMessageCount++;
+                  console.log(`    ✓ Respuesta insertada: ${difyMsg.answer.substring(0, 50)}...`);
+                } else {
+                  console.error(`    ✗ Error al insertar respuesta:`, answerError);
+                }
               }
             }
 
             // Actualizar contador de mensajes en la conversación
             const { error: updateError } = await supabase
               .from('conversations')
-              .update({ messages: difyMessages.length * 2 }) // query + answer
+              .update({ messages: conversationMessageCount })
               .eq('id', difyConv.id);
 
             if (updateError) {
-              console.error(`Error al actualizar contador de mensajes para ${difyConv.id}:`, updateError);
+              console.error(`Error al actualizar contador de mensajes:`, updateError);
+            } else {
+              console.log(`✓ Contador de mensajes actualizado: ${conversationMessageCount}`);
             }
           } else {
             const errorText = await messagesResponse.text();
-            console.error(`Error al obtener mensajes para conversación ${difyConv.id}:`, messagesResponse.status, errorText);
+            console.error(`Error al obtener mensajes para ${difyConv.id}:`, messagesResponse.status, errorText);
           }
-        } catch (msgError) {
-          console.error(`Error al procesar mensajes para conversación ${difyConv.id}:`, msgError);
+        } catch (error) {
+          console.error(`Error procesando conversación ${difyConv.id}:`, error);
         }
       }
 
+      console.log('\n=== SINCRONIZACIÓN COMPLETADA ===');
+      console.log(`Conversaciones procesadas: ${conversationsUpdated}`);
+      console.log(`Mensajes procesados: ${messagesUpdated}`);
+
       toast({
         title: "Sincronización completada",
-        description: `Se actualizaron ${conversationsUpdated} conversaciones y ${messagesUpdated} mensajes`,
+        description: `Se procesaron ${conversationsUpdated} conversaciones y ${messagesUpdated} mensajes desde Dify`,
       });
 
-      console.log(`Sincronización completada: ${conversationsUpdated} conversaciones, ${messagesUpdated} mensajes`);
-      
       return { conversationsUpdated, messagesUpdated };
     } catch (error) {
-      console.error('Error en la sincronización:', error);
+      console.error('=== ERROR EN LA SINCRONIZACIÓN ===');
+      console.error('Tipo de error:', error?.constructor?.name);
+      console.error('Mensaje de error:', error instanceof Error ? error.message : String(error));
+      console.error('Stack trace:', error instanceof Error ? error.stack : 'No disponible');
+      
+      let errorMessage = 'Error desconocido al sincronizar con Dify';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: "Error en la sincronización",
-        description: error instanceof Error ? error.message : "Error desconocido al sincronizar con Dify",
+        description: errorMessage,
         variant: "destructive"
       });
+      
       throw error;
     } finally {
       setIsLoading(false);
