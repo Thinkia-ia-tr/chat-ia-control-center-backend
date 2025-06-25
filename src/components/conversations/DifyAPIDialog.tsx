@@ -23,17 +23,18 @@ interface DifyAPIDialogProps {
 export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
   const [apiKey, setApiKey] = useState('');
   const [conversationId, setConversationId] = useState('');
+  const [userId, setUserId] = useState('');
   const { isLoading, conversationMessages, fetchConversationMessages, clearConversationMessages } = useDifyAPI();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!apiKey.trim() || !conversationId.trim()) {
+    if (!apiKey.trim() || !conversationId.trim() || !userId.trim()) {
       return;
     }
 
     try {
-      await fetchConversationMessages(conversationId.trim(), apiKey.trim());
+      await fetchConversationMessages(conversationId.trim(), userId.trim(), apiKey.trim());
     } catch (error) {
       // Error handling is done in the hook
     }
@@ -43,6 +44,7 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
     clearConversationMessages();
     setApiKey('');
     setConversationId('');
+    setUserId('');
     onOpenChange(false);
   };
 
@@ -52,10 +54,10 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
-            Recuperar Conversaciones de Dify
+            Recuperar Historial de Conversación de Dify
           </DialogTitle>
           <DialogDescription>
-            Ingresa tu API Key de Dify y el ID de la conversación para obtener el historial completo de mensajes.
+            Ingresa tu API Key de Dify, el ID de la conversación y el ID del usuario para obtener el historial completo de mensajes.
           </DialogDescription>
         </DialogHeader>
 
@@ -77,13 +79,25 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
             <Input
               id="conversationId"
               type="text"
-              placeholder="conversation-id-123..."
+              placeholder="convo_abc123..."
               value={conversationId}
               onChange={(e) => setConversationId(e.target.value)}
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="userId">ID del Usuario</Label>
+            <Input
+              id="userId"
+              type="text"
+              placeholder="usuario-test..."
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              required
+            />
             <p className="text-xs text-muted-foreground">
-              Este debe ser el ID de la conversación en Dify para obtener su historial completo.
+              Proporciona el ID del usuario para filtrar los mensajes de la conversación.
             </p>
           </div>
 
@@ -91,14 +105,14 @@ export function DifyAPIDialog({ open, onOpenChange }: DifyAPIDialogProps) {
             <Button type="button" variant="outline" onClick={handleClose}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading || !apiKey.trim() || !conversationId.trim()}>
+            <Button type="submit" disabled={isLoading || !apiKey.trim() || !conversationId.trim() || !userId.trim()}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Obteniendo...
                 </>
               ) : (
-                'Obtener Mensajes'
+                'Obtener Historial'
               )}
             </Button>
           </DialogFooter>

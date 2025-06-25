@@ -14,7 +14,7 @@ interface DifyMessage {
   created_at: number;
 }
 
-interface DifyConversationResponse {
+interface DifyMessagesResponse {
   data: DifyMessage[];
   has_more: boolean;
   limit: number;
@@ -25,25 +25,24 @@ export function useDifyAPI() {
   const [conversationMessages, setConversationMessages] = useState<DifyMessage[]>([]);
   const { toast } = useToast();
 
-  const fetchConversationMessages = async (conversationId: string, apiKey: string) => {
+  const fetchConversationMessages = async (conversationId: string, userId: string, apiKey: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch(
-        `https://api.dify.ai/v1/conversations/${conversationId}/messages`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${apiKey}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const url = `https://api.dify.ai/v1/messages?conversation_id=${conversationId}&user=${userId}`;
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
-      const data: DifyConversationResponse = await response.json();
+      const data: DifyMessagesResponse = await response.json();
       setConversationMessages(data.data || []);
       
       toast({
