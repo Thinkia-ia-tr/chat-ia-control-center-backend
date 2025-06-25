@@ -4,6 +4,9 @@ import Layout from "@/components/layout/Layout";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { MessageSquare, Bot } from "lucide-react";
+import { DifyAPIDialog } from "@/components/conversations/DifyAPIDialog";
 
 export default function ConversationsPage() {
   const now = new Date();
@@ -12,6 +15,7 @@ export default function ConversationsPage() {
   
   const [startDate, setStartDate] = useState<Date>(oneMonthAgo);
   const [endDate, setEndDate] = useState<Date>(now);
+  const [isDifyDialogOpen, setIsDifyDialogOpen] = useState(false);
   
   const handleDateRangeChange = (start: Date, end: Date) => {
     setStartDate(start);
@@ -27,10 +31,25 @@ export default function ConversationsPage() {
           </CardHeader>
           <CardContent className="flex items-center justify-between">
             <h2 className="text-xl font-medium">Listado de conversaciones</h2>
-            <DateRangePicker startDate={startDate} endDate={endDate} onChange={handleDateRangeChange} />
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setIsDifyDialogOpen(true)}
+                className="flex items-center gap-2"
+              >
+                <Bot className="h-4 w-4" />
+                Dify API
+              </Button>
+              <DateRangePicker startDate={startDate} endDate={endDate} onChange={handleDateRangeChange} />
+            </div>
           </CardContent>
         </Card>
         <ConversationsList startDate={startDate} endDate={endDate} />
+        
+        <DifyAPIDialog 
+          open={isDifyDialogOpen} 
+          onOpenChange={setIsDifyDialogOpen} 
+        />
       </div>
     </Layout>
   );
