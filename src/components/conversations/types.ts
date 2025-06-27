@@ -12,6 +12,6 @@ export type Message = {
   id: string;
   conversation_id: string;
   content: string;
-  sender: "client" | "agent" | "system";
+  sender: "client" | "agent" | "system" | "user" | "assistant";
   timestamp: string;
 }

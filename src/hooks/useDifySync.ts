@@ -114,7 +114,7 @@ export function useDifySync() {
         try {
           // Insertar o actualizar conversación en Supabase
           const conversationData = {
-            id: difyConv.id,
+            id: difyConv.id, // Ahora es TEXT, no UUID
             title: difyConv.name || `Conversación ${difyConv.id.substring(0, 8)}`,
             channel: 'Dify',
             client: { type: 'id', value: 'dify-user' },
@@ -169,8 +169,8 @@ export function useDifySync() {
               // Insertar pregunta del usuario si existe
               if (difyMsg.query && difyMsg.query.trim()) {
                 const queryMessage = {
-                  id: `${difyMsg.id}-query`,
-                  conversation_id: difyConv.id,
+                  id: `${difyMsg.id}-query`, // Ahora es TEXT, no UUID
+                  conversation_id: difyConv.id, // Ahora es TEXT, no UUID
                   content: difyMsg.query.trim(),
                   sender: 'user',
                   timestamp: new Date(difyMsg.created_at * 1000).toISOString()
@@ -194,8 +194,8 @@ export function useDifySync() {
               // Insertar respuesta del asistente si existe
               if (difyMsg.answer && difyMsg.answer.trim()) {
                 const answerMessage = {
-                  id: `${difyMsg.id}-answer`,
-                  conversation_id: difyConv.id,
+                  id: `${difyMsg.id}-answer`, // Ahora es TEXT, no UUID
+                  conversation_id: difyConv.id, // Ahora es TEXT, no UUID
                   content: difyMsg.answer.trim(),
                   sender: 'assistant',
                   timestamp: new Date(difyMsg.created_at * 1000 + 1000).toISOString() // +1 segundo
