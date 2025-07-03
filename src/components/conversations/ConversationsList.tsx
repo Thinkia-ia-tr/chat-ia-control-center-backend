@@ -56,9 +56,9 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
     navigate(`/conversaciones/${rowData.row.original.id}`);
   };
   
-  // Función para normalizar texto para búsquedas (elimina espacios)
+  // Función para normalizar texto para búsquedas (elimina espacios, + y otros caracteres)
   const normalizeSearchValue = (value: string): string => {
-    return value.toLowerCase().replace(/\s+/g, '');
+    return value.toLowerCase().replace(/[\s\+\-\(\)]/g, '');
   };
   
   // Apply search filter to data
