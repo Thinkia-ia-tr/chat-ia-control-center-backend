@@ -30,6 +30,39 @@ const shortenUUID = (uuid: string): string => {
   return `${uuid.substring(0, 8)}...${uuid.substring(32)}`;
 };
 
+// Función para formatear correctamente valores de cliente
+const formatClientValue = (client: any): string => {
+  if (!client) return "Sin cliente";
+  
+  // El cliente ahora es un string directo después de la migración
+  let clientValue = '';
+  if (typeof client === 'string') {
+    clientValue = client;
+  } else if (typeof client === 'object' && client.value) {
+    clientValue = client.value.toString();
+  } else {
+    clientValue = client.toString();
+  }
+  
+  // Si es un número de teléfono (solo dígitos, posiblemente empezando con 34)
+  if (/^\d+$/.test(clientValue) && clientValue.length >= 9) {
+    // Formatear como +XX XXX XXX XXX
+    if (clientValue.startsWith('34') && clientValue.length === 11) {
+      // Formato español: +34 XXX XXX XXX
+      return `+${clientValue.substring(0, 2)} ${clientValue.substring(2, 5)} ${clientValue.substring(5, 8)} ${clientValue.substring(8)}`;
+    } else if (clientValue.length === 9) {
+      // Solo 9 dígitos, asumir español y agregar +34
+      return `+34 ${clientValue.substring(0, 3)} ${clientValue.substring(3, 6)} ${clientValue.substring(6)}`;
+    } else {
+      // Otros formatos de números
+      return `+${clientValue.substring(0, 2)} ${clientValue.substring(2, 5)} ${clientValue.substring(5, 8)} ${clientValue.substring(8)}`;
+    }
+  }
+  
+  // Para IDs o otros valores
+  return clientValue;
+};
+
 // Function to generate contextual agent responses
 const generateContextualResponse = (clientMessage: string, productName: string): string => {
   if (!clientMessage) return `¡Claro! Puedo darte información sobre ${productName}.`;
@@ -175,8 +208,9 @@ export function ConversationDetail({
 
   // Function to render a client identifier with the appropriate icon
   const renderClientIdentifier = () => {
+    const client = conversation?.client;
+    const formattedValue = formatClientValue(client);
     const clientType = conversation?.client?.type || "";
-    const clientValue = conversation?.client?.value || "Anonymous";
     
     return (
       <div className="flex flex-col items-start">
@@ -188,11 +222,11 @@ export function ConversationDetail({
                 <TooltipTrigger asChild>
                   <Badge variant="outline" className="px-2 py-1 flex items-center gap-1">
                     <Phone className="h-3 w-3" />
-                    <span>{clientValue.toString()}</span>
+                    <span>{formattedValue}</span>
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Cliente identificado por teléfono</p>
+                  <p className="max-w-xs break-all">{formattedValue}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -202,11 +236,11 @@ export function ConversationDetail({
                 <TooltipTrigger asChild>
                   <Badge variant="outline" className="px-2 py-1 flex items-center gap-1">
                     <UserSquare className="h-3 w-3" />
-                    <span>{clientValue.toString()}</span>
+                    <span>{/^\+\d+/.test(formattedValue) ? formattedValue : shortenUUID(formattedValue)}</span>
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Cliente identificado por ID</p>
+                  <p className="max-w-xs break-all">{formattedValue}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
