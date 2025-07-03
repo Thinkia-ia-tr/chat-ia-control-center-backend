@@ -20,8 +20,12 @@ const validateClientData = (client: any): ClientData => {
   // Si no hay datos de cliente, devolver valor por defecto
   if (!client) return clientData;
   
+  // Si es un número directamente
+  if (typeof client === 'number') {
+    clientData = { type: 'phone', value: client.toString() };
+  }
   // Convertir string a objeto si es necesario
-  if (typeof client === 'string') {
+  else if (typeof client === 'string') {
     try {
       clientData = JSON.parse(client) as ClientData;
     } catch (e) {
