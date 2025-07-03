@@ -113,8 +113,10 @@ export function ConversationsTable({ data, onRowClick }: ConversationsTableProps
       header: "Mensajes",
       accessorKey: "messages",
       cell: ({ row }: { row: { original: Conversation } }) => (
-        <div className="w-full flex items-center justify-center text-center">
-          {row.original.messages || 0}
+        <div className="w-full text-center">
+          <span className="inline-flex items-center justify-center min-w-[2rem] h-8 px-2 bg-muted rounded-md text-sm font-medium">
+            {row.original.messages || 0}
+          </span>
         </div>
       )
     },
