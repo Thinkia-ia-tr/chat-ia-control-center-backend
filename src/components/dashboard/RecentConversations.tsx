@@ -32,34 +32,36 @@ const shortenUUID = (uuid: string): string => {
   return `${uuid.substring(0, 8)}...${uuid.substring(32)}`;
 };
 
-// Función para formatear correctamente valores de cliente según su tipo
+// Función para formatear correctamente valores de cliente
 const formatClientValue = (client: any): string => {
   if (!client) return "Sin cliente";
   
-  const clientType = client.type || 'id';
-  let clientValue = client.value || '';
-  
-  // Asegurar que el valor es un string
-  if (typeof clientValue !== 'string') {
-    clientValue = clientValue.toString();
+  // El cliente ahora es un string directo después de la migración
+  let clientValue = '';
+  if (typeof client === 'string') {
+    clientValue = client;
+  } else if (typeof client === 'object' && client.value) {
+    clientValue = client.value.toString();
+  } else {
+    clientValue = client.toString();
   }
   
-  // Para teléfonos, mantener el formato como viene de la base de datos (+34 xxx xxx xxx)
-  if (clientType === 'phone') {
-    return clientValue;
-  } 
-  else if (clientType === 'id') {
-    // Para IDs, mostrar formato UUID
-    const uuidPattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-    if (!uuidPattern.test(clientValue)) {
-      // Si no tiene el formato correcto, solo devolver el valor tal cual
-      return clientValue;
+  // Si es un número de teléfono (solo dígitos, posiblemente empezando con 34)
+  if (/^\d+$/.test(clientValue) && clientValue.length >= 9) {
+    // Formatear como +XX XXX XXX XXX
+    if (clientValue.startsWith('34') && clientValue.length === 11) {
+      // Formato español: +34 XXX XXX XXX
+      return `+${clientValue.substring(0, 2)} ${clientValue.substring(2, 5)} ${clientValue.substring(5, 8)} ${clientValue.substring(8)}`;
+    } else if (clientValue.length === 9) {
+      // Solo 9 dígitos, asumir español y agregar +34
+      return `+34 ${clientValue.substring(0, 3)} ${clientValue.substring(3, 6)} ${clientValue.substring(6)}`;
+    } else {
+      // Otros formatos de números
+      return `+${clientValue.substring(0, 2)} ${clientValue.substring(2, 5)} ${clientValue.substring(5, 8)} ${clientValue.substring(8)}`;
     }
-    // Si tiene formato UUID, devolverlo tal cual
-    return clientValue;
   }
   
-  // Para cualquier otro tipo, devolver el valor sin cambios
+  // Para IDs o otros valores
   return clientValue;
 };
 
@@ -91,7 +93,7 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
       accessorKey: "client",
       cell: ({ row }: any) => {
         const client = row.original.client;
-        const clientValue = formatClientValue(client);
+        const formattedValue = formatClientValue(client);
         
         return (
           <div className="w-full">
@@ -99,11 +101,11 @@ export function RecentConversations({ startDate, endDate }: RecentConversationsP
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span className="block cursor-help">
-                    {client?.type === 'phone' ? clientValue : shortenUUID(clientValue)}
+                    {/^\+\d+/.test(formattedValue) ? formattedValue : shortenUUID(formattedValue)}
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p className="max-w-xs break-all">{clientValue}</p>
+                  <p className="max-w-xs break-all">{formattedValue}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
