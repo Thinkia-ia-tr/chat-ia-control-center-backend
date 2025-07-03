@@ -17,7 +17,7 @@ export function SearchFilter({ searchQuery, onSearchChange, totalRows, selectedC
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por título, teléfono o cliente"
+            placeholder="Buscar por título o cliente"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-10 w-[384px] bg-card border-input"
