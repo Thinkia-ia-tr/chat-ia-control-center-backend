@@ -78,21 +78,10 @@ export function ConversationsList({ startDate, endDate }: ConversationsListProps
     
     // Buscar en el cliente (ID o teléfono)
     if (conversation.client) {
-      // Si client es un objeto con una propiedad value
-      if (typeof conversation.client === 'object' && conversation.client.value) {
-        const clientValue = String(conversation.client.value);
-        const clientValueNormalized = normalizeSearchValue(clientValue);
-        if (clientValueNormalized.includes(searchNormalized)) {
-          return true;
-        }
-      } 
-      // Si client es un string directamente - verificar su tipo antes de usar toLowerCase
-      else if (typeof conversation.client === 'string') {
-        const clientValue = String(conversation.client);
-        const clientValueNormalized = normalizeSearchValue(clientValue);
-        if (clientValueNormalized.includes(searchNormalized)) {
-          return true;
-        }
+      const clientValue = String(conversation.client);
+      const clientValueNormalized = normalizeSearchValue(clientValue);
+      if (clientValueNormalized.includes(searchNormalized)) {
+        return true;
       }
     }
     
